@@ -130,6 +130,12 @@ app.post('/login', (req, res) => {
         if(data.length > 0) {
             const user = data[0];
             const checkPass = bcrypt.compareSync(req.body.password, user.password);
+            console.log("Login Debug:", {
+                email: req.body.email,
+                inputPass: req.body.password,
+                dbHash: user.password,
+                isMatch: checkPass
+            });
             
             if (!checkPass) return res.json({ status: "Fail", message: "Sai mật khẩu" });
 
