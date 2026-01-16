@@ -11,7 +11,7 @@ export const OrderManager = () => {
   // 1. LẤY DỮ LIỆU ĐƠN HÀNG
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://localhost:8081/api/orders');
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders`);
       setOrders(res.data);
     } catch (err) { console.error(err); }
   };
@@ -21,7 +21,7 @@ export const OrderManager = () => {
   // 2. CẬP NHẬT TRẠNG THÁI
   const handleStatusChange = async (id: number, newStatus: string) => {
     try {
-        await axios.put(`http://localhost:8081/api/orders/${id}`, { status: newStatus });
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/orders/${id}`, { status: newStatus });
         setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
         toast.success(`Đã cập nhật đơn #${id}: ${newStatus}`);
     } catch (error) { toast.error("Lỗi cập nhật trạng thái"); }
@@ -36,7 +36,7 @@ export const OrderManager = () => {
         setExpandedOrderId(orderId);
         try {
             // Gọi API lấy sản phẩm kèm thông tin review (API này đã update ở turn trước)
-            const res = await axios.get(`http://localhost:8081/api/orders/${orderId}/items`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/items`);
             setOrderItems(res.data);
         } catch (error) {
             console.error(error);

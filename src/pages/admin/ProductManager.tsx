@@ -18,7 +18,7 @@ export const ProductManager = () => {
   // 1. LẤY DỮ LIỆU
   const fetchProducts = async () => {
     try {
-        const res = await axios.get('http://localhost:8081/products?limit=1000');
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/products?limit=1000`);
         if (res.data.data && Array.isArray(res.data.data)) {
             setProducts(res.data.data);
         } else {
@@ -35,11 +35,11 @@ export const ProductManager = () => {
       try {
           if (editingId) {
               // --- LOGIC SỬA ---
-              await axios.put(`http://localhost:8081/api/products/${editingId}`, formData);
+              await axios.put(`${import.meta.env.VITE_API_URL}/api/products/${editingId}`, formData);
               toast.success("Cập nhật thành công!");
           } else {
               // --- LOGIC THÊM ---
-              await axios.post('http://localhost:8081/api/products', formData);
+              await axios.post(`${import.meta.env.VITE_API_URL}/api/products`, formData);
               toast.success("Thêm mới thành công!");
           }
           

@@ -23,9 +23,9 @@ export const AdminDashboard = () => {
     try {
         // Gọi song song 3 API cho nhanh
         const [resStats, resChart, resCats] = await Promise.all([
-            axios.get('http://localhost:8081/api/stats'),
-            axios.get('http://localhost:8081/api/stats/weekly'),
-            axios.get('http://localhost:8081/api/stats/categories')
+            axios.get(`${import.meta.env.VITE_API_URL}/api/stats`),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/stats/weekly`),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/stats/categories`)
         ]);
 
         setStats(resStats.data);

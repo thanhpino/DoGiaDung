@@ -12,7 +12,7 @@ export const HomePage = () => {
   // Lấy dữ liệu từ API khi component load
   useEffect(() => {
     // Gọi API với limit=8 để lấy đúng 8 sản phẩm mới nhất
-    axios.get('${import.meta.env.VITE_API_URL}/products?limit=8')
+    axios.get(`${import.meta.env.VITE_API_URL}/products?limit=8`)
          .then(res => {
              // API mới trả về { data: [...], pagination: ... }
              if (res.data && res.data.data) {

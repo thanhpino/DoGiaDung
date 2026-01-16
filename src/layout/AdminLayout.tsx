@@ -16,7 +16,7 @@ export const AdminLayout = () => {
     const checkNewOrders = async () => {
         try {
             // Gọi API thống kê để lấy tổng số đơn
-            const res = await axios.get('${import.meta.env.VITE_API_URL}/api/stats');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/stats`);
             const currentCount = res.data.orders; // API stats trả về { revenue, orders, users }
 
             if (isFirstLoad.current) {

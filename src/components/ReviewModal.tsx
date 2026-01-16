@@ -42,7 +42,7 @@ export const ReviewModal = ({ isOpen, onClose, product, userId, onSuccess }: Rev
         }
 
         try {
-            await axios.post('${import.meta.env.VITE_API_URL}/api/reviews', formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/reviews`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             toast.success('Cảm ơn bạn đã đánh giá!');

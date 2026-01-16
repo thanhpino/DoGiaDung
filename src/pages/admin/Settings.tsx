@@ -7,7 +7,7 @@ export const Settings = () => {
   // Hàm xuất dữ liệu ra file Excel (CSV)
   const handleExportCSV = async () => {
     try {
-        const res = await axios.get('http://localhost:8081/api/orders');
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders`);
         const orders = res.data;
 
         // Tạo nội dung CSV (Tiêu đề + Dữ liệu)

@@ -14,8 +14,8 @@ export const InvoicePage = () => {
             try {
                 // Gọi song song 2 API để lấy thông tin đơn hàng và sản phẩm
                 const [orderRes, itemsRes] = await Promise.all([
-                    axios.get(`http://localhost:8081/api/orders/${id}`),
-                    axios.get(`http://localhost:8081/api/orders/${id}/items`)
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${id}`),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${id}/items`)
                 ]);
 
                 setOrder(orderRes.data);

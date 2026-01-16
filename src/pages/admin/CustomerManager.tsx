@@ -6,7 +6,7 @@ export const CustomerManager = () => {
   const [customers, setCustomers] = useState<any[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/api/users')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/users`)
          .then(res => setCustomers(res.data))
          .catch(err => console.error(err));
   }, []);
