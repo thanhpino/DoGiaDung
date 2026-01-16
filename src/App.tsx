@@ -48,7 +48,6 @@ function App() {
         <CartProvider>
           <Routes>
             {/* --- PUBLIC ROUTES --- */}
-            {/* Vào trang chủ đầu tiên thay vì Login */}
             <Route path="/" element={<Navigate to="/home" replace />} /> 
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<SignupPage />} />

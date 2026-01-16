@@ -20,7 +20,7 @@ export const OrderHistory = () => {
 
     useEffect(() => {
         if (user) {
-            axios.get(`http://localhost:8081/api/orders/user/${user.id}`)
+            axios.get(`${import.meta.env.VITE_API_URL}/api/orders/user/${user.id}`)
                 .then(res => {
                     setOrders(res.data);
                     setLoading(false);
@@ -35,7 +35,7 @@ export const OrderHistory = () => {
     // HÀM TẢI LẠI ITEM
     const refreshOrderItems = async (orderId: string) => {
         try {
-            const res = await axios.get(`http://localhost:8081/api/orders/${orderId}/items`);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/items`);
             setOrderItems(res.data);
         } catch (error) {
             console.error("Lỗi tải chi tiết đơn:", error);

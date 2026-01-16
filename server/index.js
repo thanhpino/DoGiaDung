@@ -1,4 +1,5 @@
 // server/index.js
+require('dotenv').config(); // Load biến môi trường từ .env
 const express = require('express');
 const mysql = require('mysql'); 
 const cors = require('cors');
@@ -30,11 +31,13 @@ const upload = multer({ storage: storage });
 
 // 4. KẾT NỐI DATABASE
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root", 
-    password: "@Thanhquynh170456", 
-    database: "dogiadung_db",
-    charset: 'utf8mb4' // Hỗ trợ tiếng Việt
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "@Thanhquynh170456",
+    database: process.env.DB_NAME || "dogiadung_db",
+    port: process.env.DB_PORT || 3306,
+    charset: 'utf8mb4',
+    ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : undefined 
 });
 
 db.connect(err => {
@@ -42,12 +45,17 @@ db.connect(err => {
     else console.log("Đã kết nối MySQL thành công!");
 });
 
+setInterval(() => {
+    db.query('SELECT 1');
+}, 5000);
+
 // --- CẤU HÌNH GỬI EMAIL ---
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'tt3145539@gmail.com', // <--- Thay Email của bro vào đây
-        pass: 'xonjfzwxxmlvlghi' // <--- Thay App Password vào đây (ko phải pass đăng nhập đâu nhé)
+        // Ưu tiên lấy từ biến môi trường, không có thì lấy chuỗi cứng (khi chạy local)
+        user: process.env.EMAIL_USER || 'tt3145539@gmail.com', 
+        pass: process.env.EMAIL_PASS || 'xonjfzwxxmlvlghi' 
     }
 });
 // Hàm gửi email (Viết riêng cho gọn)
@@ -578,6 +586,9 @@ app.post('/api/chat', (req, res) => {
     else if (msg.includes('máy lọc không khí')) keyword = '%lọc không khí%';
     else if (msg.includes('máy nước nóng')) keyword = '%nước nóng%';
     else if (msg.includes('tủ lạnh')) keyword = '%tủ lạnh%';
+    else if (msg.includes('máy giặt')) keyword = '%giặt%';
+    else if (msg.includes('máy rửa chén')) keyword = '%rửa chén%';
+    else if  (msg.includes('đồ gia dụng')) keyword = '%đồ gia dụng%';
 
     else keyword = `%${msg}%`; 
 
@@ -596,6 +607,7 @@ app.post('/api/chat', (req, res) => {
     });
 });
 
-app.listen(8081, () => {
-    console.log("Server đang chạy tại port 8081...");
+const PORT = process.env.PORT || 8081;
+app.listen(PORT, () => {
+    console.log(`Server đang chạy tại port ${PORT}...`);
 });

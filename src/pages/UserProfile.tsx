@@ -27,7 +27,7 @@ export const UserProfile = () => {
     // Load dữ liệu
     useEffect(() => {
         if (user) {
-            axios.get(`http://localhost:8081/api/users/${user.id}`)
+            axios.get(`${import.meta.env.VITE_API_URL}/api/users/${user.id}`)
                 .then(res => {
                     // Cập nhật state với dữ liệu từ DB, nếu null thì để chuỗi rỗng
                     setInfo({
@@ -51,7 +51,7 @@ export const UserProfile = () => {
         if (!user) return;
 
         try {
-            await axios.put(`http://localhost:8081/api/users/${user.id}`, {
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${user.id}`, {
                 name: info.name,
                 phone: info.phone,
                 address: info.address
@@ -86,7 +86,7 @@ export const UserProfile = () => {
         }
 
         try {
-            const res = await axios.put(`http://localhost:8081/api/users/${user.id}/password`, {
+            const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/password`, {
                 oldPassword: pass.oldPassword,
                 newPassword: pass.newPassword
             });

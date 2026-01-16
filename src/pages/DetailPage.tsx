@@ -19,7 +19,7 @@ export const ProductDetail = () => {
   };
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/api/products/${id}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/api/products/${id}`)
          .then(res => {
              const data = res.data;
              if (data.image_url) data.img = data.image_url;

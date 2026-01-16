@@ -1,3 +1,4 @@
+# --- PHẦN CHUNG ---
 # Logs
 logs
 *.log
@@ -7,15 +8,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Thư viện nặng
+node_modules/
+server/node_modules/
+
+# Build files
+dist/
+dist-ssr/
 *.local
-build
-env
+build/
 
-
-# Editor directories and files
+# Editor config
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -25,3 +28,7 @@ env
 *.njsproj
 *.sln
 *.sw?
+
+# --- PHẦN BẢO MẬT & SERVER ---
+.env
+server/.env

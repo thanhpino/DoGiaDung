@@ -44,7 +44,7 @@ export const ProductsPage = () => {
         search: debouncedSearch
     }).toString();
 
-    axios.get(`http://localhost:8081/products?${query}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/products?${query}`)
          .then(res => {
              setProducts(res.data.data); // Cập nhật danh sách sản phẩm
              setPagination(res.data.pagination);

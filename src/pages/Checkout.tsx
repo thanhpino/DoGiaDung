@@ -67,7 +67,7 @@ export const Checkout = () => {
           };
 
           // 3. Gọi API
-          await axios.post('http://localhost:8081/api/orders', payload);
+          await axios.post('${import.meta.env.VITE_API_URL}/api/orders', payload);
           
           toast.success("Đặt hàng thành công! 🎉");
           clearCart(); // Xóa giỏ hàng
