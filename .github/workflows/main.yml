@@ -1,0 +1,47 @@
+name: CI Check (Build & Test)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # Job 1: Kiểm tra Frontend
+  frontend-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        run: npm install
+
+      - name: Try Build Frontend
+        run: npm run build
+
+  # Job 2: Kiểm tra Backend
+  backend-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Backend Dependencies
+        working-directory: ./server
+        run: npm install
+
+      
+      # - name: Run Backend Tests
+      #   working-directory: ./server
+      #   run: npm test
