@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password: pass });
       
       if(res.data.status === "Success") {
-        const userData = res.data.user;
+        const userData = res.data.data;
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData)); // Lưu vào Storage
         
