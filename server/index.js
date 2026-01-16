@@ -39,13 +39,6 @@ const db = mysql.createConnection({
     charset: 'utf8mb4',
     ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : undefined 
 });
-console.log("---------------------------------------");
-console.log("🔥 ĐANG KẾT NỐI DATABASE:");
-console.log("👉 HOST:", process.env.DB_HOST);
-console.log("👉 USER:", process.env.DB_USER);
-console.log("👉 TÊN DB:", process.env.DB_NAME); 
-console.log("---------------------------------------");
-
 db.connect(err => {
     if(err) console.log("Lỗi kết nối CSDL:", err);
     else console.log("Đã kết nối MySQL thành công!");
@@ -136,12 +129,6 @@ app.post('/login', (req, res) => {
         if(data.length > 0) {
             const user = data[0];
             const checkPass = bcrypt.compareSync(req.body.password, user.password);
-            console.log("Login Debug:", {
-                email: req.body.email,
-                inputPass: req.body.password,
-                dbHash: user.password,
-                isMatch: checkPass
-            });
             
             if (!checkPass) return res.json({ status: "Fail", message: "Sai mật khẩu" });
 
@@ -616,6 +603,21 @@ app.post('/api/chat', (req, res) => {
         } else {
             return res.json({ reply: "Dạ hiện tại em chưa tìm thấy sản phẩm này. Anh/chị thử tìm từ khóa ngắn gọn hơn như 'nồi', 'chảo' xem sao ạ?" });
         }
+    });
+});
+// --- ĐOẠN CODE KIỂM TRA DỮ LIỆU ---
+app.get('/check-db', (req, res) => {
+    const sql = "SELECT * FROM users";
+    db.query(sql, (err, data) => {
+        if (err) {
+            return res.json({ status: "Error", error: err });
+        }
+        return res.json({ 
+            status: "Success", 
+            message: "Đây là những gì Server nhìn thấy:",
+            total_users: data.length,
+            users: data 
+        });
     });
 });
 
