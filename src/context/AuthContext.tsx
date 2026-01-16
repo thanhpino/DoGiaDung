@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 1. Đăng ký
   const register = async (name: string, email: string, pass: string) => {
     try {
-      await axios.post('${import.meta.env.VITE_API_URL}/signup', { name, email, password: pass });
+      await axios.post(`${import.meta.env.VITE_API_URL}/signup`, { name, email, password: pass });
       toast.success('Đăng ký thành công! Hãy đăng nhập.');
       navigate('/');
     } catch (err: any) {
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 2. Đăng nhập
   const login = async (email: string, pass: string) => {
     try {
-      const res = await axios.post('${import.meta.env.VITE_API_URL}/login', { email, password: pass });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password: pass });
       
       if(res.data.status === "Success") {
         const userData = res.data.user;
