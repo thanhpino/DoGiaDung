@@ -39,6 +39,12 @@ const db = mysql.createConnection({
     charset: 'utf8mb4',
     ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : undefined 
 });
+console.log("---------------------------------------");
+console.log("🔥 ĐANG KẾT NỐI DATABASE:");
+console.log("👉 HOST:", process.env.DB_HOST);
+console.log("👉 USER:", process.env.DB_USER);
+console.log("👉 TÊN DB:", process.env.DB_NAME); 
+console.log("---------------------------------------");
 
 db.connect(err => {
     if(err) console.log("Lỗi kết nối CSDL:", err);
