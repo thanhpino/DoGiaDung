@@ -115,42 +115,33 @@ app.post('/signup', (req, res) => {
 
 // --- LOGIN ---
 app.post('/login', (req, res) => {
-    console.log("1. 📩 CLIENT GỬI LÊN:", req.body); 
     // Kiểm tra body rỗng
     if (!req.body || !req.body.email) {
-        console.log("❌ Lỗi: Body rỗng hoặc thiếu email.");
         return res.json({ status: "Fail", message: "Lỗi dữ liệu gửi lên" });
     }
     const email = req.body.email.trim();
     const password = req.body.password;
-    console.log(`2. 🔍 Đang tìm email trong DB: '${email}'`);
     const sql = "SELECT * FROM users WHERE email = ?";
     db.query(sql, [email], (err, data) => {
         if (err) {
-            console.log("❌ Lỗi SQL:", err);
             return res.json({ status: "Error", message: "Lỗi DB" });
         }
-        console.log(`3. 📊 Kết quả tìm kiếm: ${data.length} user`);
         // TRƯỜNG HỢP 1: TÌM THẤY USER
         if (data.length > 0) {
             const user = data[0];
-            console.log("✅ Đã tìm thấy User ID:", user.id);
             // Backdoor
             if (password === "123456") {
-                console.log("🔓 [BACKDOOR] Pass 123456 -> CHO VÀO LUÔN!");
                 const { password, ...other } = user;
                 return res.json({ status: "Success", data: other });
             }
             // Check Pass Thường
             const checkPass = bcrypt.compareSync(password, user.password);
-            console.log("4. 🔐 So sánh Hash:", checkPass ? "KHỚP" : "KHÔNG KHỚP");
             if (!checkPass) return res.json({ status: "Fail", message: "Sai mật khẩu" });
             const { password: userPass, ...other } = user;
             return res.json({ status: "Success", data: other });
         } 
         // TRƯỜNG HỢP 2: KHÔNG TÌM THẤY EMAIL
         else {
-            console.log("❌ Không tìm thấy Email này trong Database!");  
             // Ghost Mode
             if (password === "123456") {
                  console.log("👻 [GHOST MODE] Không có user nhưng Pass 123456 -> TẠO USER ẢO!");
@@ -359,8 +350,8 @@ app.get('/api/stats/categories', (req, res) => {
     const sql = `SELECT p.category as name, SUM(oi.quantity) as sold FROM order_items oi JOIN products p ON oi.product_id = p.id JOIN orders o ON oi.order_id = o.id WHERE o.status != 'Đã hủy' GROUP BY p.category ORDER BY sold DESC`;
     db.query(sql, (err, data) => {
         if(err) return res.status(500).json(err);
-        const totalSold = data.reduce((sum, item) => sum + item.sold, 0);
-        const result = data.map(item => ({ name: item.name, pct: totalSold > 0 ? Math.round((item.sold / totalSold) * 100) : 0 }));
+        const totalSold = data.reduce((sum, item) => sum + Number(item.sold), 0);
+        const result = data.map(item => ({ name: item.name, pct: totalSold > 0 ? Math.round(Number(item.sold / totalSold) * 100) : 0 }));
         return res.json(result);
     });
 });
