@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Banknote, QrCode, CreditCard, Trash2, Plus, Minus, Truck, FileText, X } from 'lucide-react';
 import { useCart } from '../context/CartContext'; 
-import { useAuth } from '../context/AuthContext'; // <--- Import Auth để lấy thông tin user mặc định
-import axios from 'axios'; // <--- Import Axios để gọi API trực tiếp
+import { useAuth } from '../context/AuthContext'; 
+import axios from 'axios'; 
 import { toast } from 'react-hot-toast';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
@@ -16,7 +16,7 @@ export const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showQR, setShowQR] = useState(false);
 
-  // --- STATE QUẢN LÝ FORM (QUAN TRỌNG) ---
+  // --- STATE QUẢN LÝ FORM  ---
   const [formData, setFormData] = useState({
       name: '',
       phone: '',
@@ -54,7 +54,7 @@ export const Checkout = () => {
       }
 
       try {
-          // 2. Tạo payload gửi đi (Lấy từ State formData chứ không phải User gốc)
+          // 2. Tạo payload gửi đi 
           const payload = {
               user_id: user?.id,
               customer_name: formData.name,       // <--- Lấy tên mới nhập
@@ -85,7 +85,7 @@ export const Checkout = () => {
 
       if (paymentMethod === 'cod') {
           setIsProcessing(true);
-          // Giả lập delay chút cho chuyên nghiệp
+          // Mô phỏng delay để hiển thị trạng thái xử lý
           setTimeout(() => {
               submitOrderToBackend('Tiền mặt (COD)');
           }, 1000);

@@ -30,6 +30,9 @@ import { CustomerManager } from './pages/admin/CustomerManager';
 import { Settings } from './pages/admin/Settings';
 import { InvoicePage } from './pages/admin/InvoicePage';
 
+// Main App Component
+import PageTitle from './components/PageTitle';
+
 function App() {
   return (
     <BrowserRouter>
@@ -43,7 +46,7 @@ function App() {
           },
         }}
       />
-      
+      <PageTitle />
       <AuthProvider>
         <CartProvider>
           <Routes>
