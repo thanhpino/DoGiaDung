@@ -1,0 +1,7 @@
+# Bỏ qua các thư mục không cần thiết khi build Frontend
+node_modules
+server
+mysql_data
+.git
+.vscode
+docker-compose.yml
