@@ -1,118 +1,141 @@
-# 🏠 Gia Dụng TMT - E-commerce Platform
+# 🏠 Gia Dụng TMT - Smart E-commerce Platform
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-B73C92?style=for-the-badge&logo=vite&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![VNPAY](https://img.shields.io/badge/Payment-VNPAY-blue?style=for-the-badge)
 
-> **Website thương mại điện tử chuyên cung cấp các thiết bị gia dụng thông minh, tích hợp quản lý Admin Dashboard, Chatbot AI và gửi Email tự động.**
+> **Hệ thống thương mại điện tử chuyên cung cấp thiết bị gia dụng thông minh. Tích hợp thanh toán Online, thông báo Real-time, Chatbot thông minh**
 
-## 🌐
-
-👉 **Live Website:** [https://dogiadung-vwp8.onrender.com/](https://dogiadung-vwp8.onrender.com/)  
-
----
-
-### 1. Trang Chủ (Home Page)
-Giao diện thân thiện, tìm kiếm và lọc sản phẩm dễ dàng.
-![Trang chủ](public/screenshots/home.png)
-
-
-### 2. Trang Quản Trị (Admin Dashboard)
-Biểu đồ thống kê doanh thu và quản lý đơn hàng trực quan.
-![Admin Dashboard](public/screenshots/admin.png)
-
-
-### 3. Lịch Sử & Giỏ Hàng
-Quản lý đơn hàng cá nhân và xem lại lịch sử mua sắm.
-![Lịch sử đơn hàng](public/screenshots/history.png)
-
+👉 **Live Website:** [https://dogiadung-vwp8.onrender.com/](https://dogiadung-vwp8.onrender.com/)
 
 ---
 
-## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
+## 📸 Screenshots
 
-### **Frontend (Client)**
+| Trang Chủ (Home) | Admin Dashboard (Real-time) |
+|:---:|:---:|
+| ![Home](public/screenshots/home.png) | ![Admin](public/screenshots/admin.png) |
+
+| Thanh Toán VNPAY | Lịch Sử Đơn Hàng |
+|:---:|:---:|
+| ![Payment](public/screenshots/vnpay.png) | ![History](public/screenshots/history.png) |
+
+---
+
+## 🛠️ Công Nghệ & Kỹ Thuật (Tech Stack)
+
+### **(Client)**
 * **Core:** ReactJS (Vite), TypeScript.
 * **Styling:** TailwindCSS, Lucide React (Icons).
+* **Real-time:** Socket.io-client.
 * **State Management:** React Context API.
-* **HTTP Client:** Axios.
-* **Features:** React Router DOM, React Hot Toast (Notifications).
+* **Notifications:** React Hot Toast (Custom UI).
 
-### **Backend (Server)**
-* **Runtime:** Node.js.
-* **Framework:** Express.js.
-* **Database:** MySQL (Aiven Cloud).
-* **Authentication:** JWT (JSON Web Tokens) / Custom Auth Session.
-* **Libraries:** * `bcryptjs` (Mã hóa mật khẩu).
-    * `nodemailer` (Gửi email xác nhận đơn hàng).
-    * `multer` (Upload hình ảnh sản phẩm).
+### **(Server)**
+* **Runtime:** Node.js, Express.js.
+* **Database:** MySQL 8.0.
+* **Real-time:** Socket.io Server.
+* **Payment Gateway:** Tích hợp **VNPAY**, Momo, Zalopay, PayPal.
+* **Testing:** **Jest** & **Supertest**.
+* **Security:** `bcryptjs`, Custom Auth Session.
+* **Features:** Nodemailer, Multer.
+
+### **DevOps & Deployment**
+* **Containerization:** Docker & Docker Compose.
+* **Cloud:** Render.
 
 ---
 
-## ✨ Key Features
+## ✨ Tính Năng Nổi Bật (Key Features)
 
 ### 👤 Dành cho Khách Hàng (User)
-- [x] **Đăng ký / Đăng nhập:** Bảo mật thông tin người dùng.
-- [x] **Tìm kiếm & Lọc:** Tìm sản phẩm theo tên, danh mục, mức giá.
-- [x] **Giỏ hàng thông minh:** Thêm/sửa/xóa sản phẩm, tính tổng tiền tự động.
-- [x] **Đặt hàng & Email:** Gửi email xác nhận đơn hàng tự động về hòm thư khách hàng.
-- [x] **Chatbot AI:** Hỗ trợ tư vấn, tìm kiếm sản phẩm theo từ khóa (nồi, chảo, giá rẻ...).
-- [x] **Đánh giá sản phẩm:** Cho phép upload ảnh review thực tế.
+- [x] **Smart Chatbot:** Hỗ trợ tìm kiếm theo ngữ cảnh (ví dụ: "tìm nồi giá rẻ", "phí ship thế nào?"), trả lời ngẫu nhiên tự nhiên.
+- [x] **Thanh toán Đa dạng:** Hỗ trợ COD (Tiền mặt) và **Thanh toán Online qua VNPAY**.
+- [x] **Giỏ hàng Real-time:** Cập nhật trạng thái, tính tổng tiền, gửi Email xác nhận đơn hàng tự động.
+- [x] **Tìm kiếm & Lọc:** Tìm theo tên, danh mục, khoảng giá.
+
 
 ### 🛡️ Dành cho Quản Trị Viên (Admin)
-- [x] **Dashboard Thống Kê:** Biểu đồ doanh thu tuần, top sản phẩm bán chạy, tổng đơn hàng (Real-time).
-- [x] **Quản lý Sản Phẩm:** Thêm, Sửa, Xóa hình ảnh và thông tin sản phẩm.
-- [x] **Quản lý Đơn Hàng:** Xem chi tiết đơn, cập nhật trạng thái (Đang giao, Đã hủy...).
-- [x] **Bảo mật:** Trang Admin được bảo vệ, chỉ tài khoản Role Admin mới truy cập được.
+- [x] **Thông báo Thời gian thực (Real-time):** Admin nhận thông báo **"Ting ting"** ngay lập tức khi có khách đặt hàng.
+- [x] **Dashboard Trực quan:** Biểu đồ doanh thu tuần, Top sản phẩm bán chạy.
+- [x] **Quản lý toàn diện:** Sản phẩm, Khách hàng, Đơn hàng (Cập nhật trạng thái giao hàng).
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt (Local Development)
+## 🚀 Hướng Dẫn Cài Đặt
 
-Nếu bạn muốn chạy dự án này trên máy cá nhân, hãy làm theo các bước sau:
+Bạn có thể chạy dự án theo 2 cách: **Docker ** hoặc **Thủ công**.
 
-### 1. Clone dự án
+### Cách 1: Chạy bằng Docker
+Yêu cầu: Đã cài Docker Desktop.
+
 ```bash
+# 1. Clone dự án
 git clone [https://github.com/username/dogiadung-main.git](https://github.com/username/dogiadung-main.git)
 cd dogiadung-main
 
-### 2. Cài đặt & Chạy Backend
-```bash
+# 2. Tạo file .env cho Server (trong thư mục server/)
+
+# 3. Khởi chạy toàn bộ hệ thống
+docker-compose up --build
+
+### Cách 2: Chạy Thủ công (Manual)
+1. Setup Backend:
 cd server
 npm install
-# Tạo file .env trong thư mục server (Xem mẫu bên dưới)
-node index.js
 
-### 3. Cài đặt & Chạy Frontend
-```bash
-# Mở terminal mới, quay lại thư mục gốc
-cd .. 
+# Cấu hình .env
+npm start
+
+# Hoặc chạy test: npm test
+2. Setup Frontend:
+cd ..
 npm install
-# Tạo file .env trong thư mục gốc (Xem mẫu bên dưới)
+
+# Cấu hình .env (VITE_API_URL=http://localhost:8081)
 npm run dev
+
 ###🔐 Cấu Hình Biến Môi Trường (.env)
-```bash
-### I. Backend (server/.env)
-PORT=8081
-DB_HOST=localhost (hoặc link Aiven Cloud)
+# --- DATABASE ---
+DB_HOST=localhost       
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=dogiadung_db
-### II. Frontend (/.env)
-VITE_API_URL=http://localhost:8081
+DB_PORT=3306            # (3306 nếu chạy thường, Docker sẽ map ra 3307)
 
-# Cấu hình gửi mail
+# --- SERVER ---
+PORT=8081
+CLIENT_URL=http://localhost:5173
+
+# --- EMAIL SERVICE ---
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
 
+# --- VNPAY PAYMENT  ---
+VNPAY_TMN_CODE=your_tmn_code
+VNPAY_HASH_SECRET=your_secret_key
+VNPAY_URL=[https://sandbox.vnpayment.vn/paymentv2/vpcpay.html](https://sandbox.vnpayment.vn/paymentv2/vpcpay.html)
+VNPAY_RETURN_URL=http://localhost:5173/vnpay-return
+
+
+### 🧪 Testing
+
+cd server
+npm test
+
+
 👨‍💻 Tác Giả
-Sinh viên: Trương Minh Thành
+Trương Minh Thành
 
 MSSV: 524H0032
 
 Trường: Ton Duc Thang University (TDTU)
 
-Ngành: Software Engineering
+Ngành: Kỹ thuật Phần mềm (Software Engineering)
+
+Project for educational purpose.
