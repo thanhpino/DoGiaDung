@@ -9,7 +9,7 @@
 
 > **Website thương mại điện tử chuyên cung cấp các thiết bị gia dụng thông minh, tích hợp quản lý Admin Dashboard, Chatbot AI và gửi Email tự động.**
 
-## 🌐 Demo Trực Tuyến
+## 🌐
 
 👉 **Live Website:** [https://dogiadung-vwp8.onrender.com/](https://dogiadung-vwp8.onrender.com/)  
 
