@@ -1,61 +1,67 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ShoppingBag, Users, Settings, LogOut, Package } from 'lucide-react';
-import { useEffect, useRef } from 'react'; 
-import axios from 'axios';
-import { Toaster, toast } from 'react-hot-toast'; // Dùng toast thông báo popup
+import { useEffect } from 'react'; 
+import { Toaster, toast } from 'react-hot-toast'; 
+import { io } from "socket.io-client";
 
 export const AdminLayout = () => {
-  const location = useLocation();
-  
-  // --- LOGIC THÔNG BÁO ĐƠN MỚI ---
-  const previousOrderCount = useRef<number>(0); // Lưu số lượng đơn cũ
-  const isFirstLoad = useRef<boolean>(true); // Check lần đầu load trang
+  const location = useLocation(); 
 
+  // --- LOGIC SOCKET.IO  ---
   useEffect(() => {
-    // Hàm kiểm tra đơn hàng
-    const checkNewOrders = async () => {
-        try {
-            // Gọi API thống kê để lấy tổng số đơn
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/stats`);
-            const currentCount = res.data.orders; // API stats trả về { revenue, orders, users }
+    // 1. Kết nối Socket
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:8081"; 
+    const socket = io(socketUrl);
 
-            if (isFirstLoad.current) {
-                // Lần đầu vào trang thì chỉ lưu lại số lượng, không báo gì cả
-                previousOrderCount.current = currentCount;
-                isFirstLoad.current = false;
-            } else {
-                // Nếu số đơn hiện tại > số đơn cũ -> CÓ ĐƠN MỚI!
-                if (currentCount > previousOrderCount.current) {
-                    // 1. Phát âm thanh
-                    const audio = new Audio('/ting.mp3'); 
-                    audio.play().catch(() => console.log("Trình duyệt chặn auto-play phát âm thanh, cần tương tác trước"));
-                    
-                    // 2. Hiện thông báo
-                    toast.success(`🔔 Có ${currentCount - previousOrderCount.current} đơn hàng mới!`, {
-                        duration: 5000,
-                        position: 'top-right',
-                        style: { border: '1px solid #ea580c', padding: '16px', color: '#ea580c' },
-                    });
+    socket.on("connect", () => {
+        console.log("🟢 Admin đã kết nối Socket để nhận đơn!");
+    });
 
-                    // 3. Cập nhật lại số lượng cũ
-                    previousOrderCount.current = currentCount;
-                }
-            }
-        } catch (error) {
-            console.error("Lỗi check đơn mới:", error);
-        }
+    // 2. Lắng nghe sự kiện "NEW_ORDER" từ Server
+    socket.on("NEW_ORDER", (data: any) => {
+        // A. Phát âm thanh Ting Ting
+        const audio = new Audio('/ting.mp3'); 
+        audio.play().catch(_e => console.log("Cần tương tác để phát âm thanh"));
+
+        // B. Hiện thông báo đẹp
+        toast.custom((t) => (
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-2xl rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 border-l-4 border-green-500`}>
+                <div className="flex-1 w-0 p-4">
+                    <div className="flex items-start">
+                        <div className="flex-shrink-0 pt-0.5">
+                            {/* Icon tiền bay */}
+                            <span className="text-3xl">💰</span>
+                        </div>
+                        <div className="ml-3 flex-1">
+                            <p className="text-sm font-bold text-gray-900">
+                                Ting ting! Đơn hàng mới #{data.orderId}
+                            </p>
+                            <p className="mt-1 text-sm text-gray-500">
+                                Khách: <span className="font-semibold text-green-700">{data.customer_name}</span>
+                            </p>
+                            <p className="mt-1 text-sm text-gray-500">
+                                Tổng tiền: <span className="font-bold text-orange-600">{new Intl.NumberFormat('vi-VN').format(data.total)} đ</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex border-l border-gray-200">
+                    <button 
+                        onClick={() => toast.dismiss(t.id)} 
+                        className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-gray-400 hover:text-gray-600 focus:outline-none"
+                    >
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        ), { duration: 6000, position: 'top-right' });
+    });
+
+    // 3. Dọn dẹp khi thoát trang Admin
+    return () => {
+        socket.disconnect();
     };
-
-    // Chạy ngay 1 cái lúc mới mount
-    checkNewOrders();
-
-    // Cài đặt lặp lại mỗi 15 giây (15000ms)
-    const intervalId = setInterval(checkNewOrders, 15000);
-
-    // Dọn dẹp khi thoát component
-    return () => clearInterval(intervalId);
   }, []);
-
   const menuItems = [
     { path: '/admin', icon: <LayoutDashboard size={20} />, label: 'Tổng Quan' },
     { path: '/admin/orders', icon: <ShoppingBag size={20} />, label: 'Đơn Hàng' },
@@ -66,7 +72,7 @@ export const AdminLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans">
-      <Toaster/> {/* Toaster để hiện thông báo */}
+      <Toaster/> 
       
       {/* SIDEBAR */}
       <aside className="w-64 bg-[#1a1c23] text-white flex flex-col fixed h-full z-10 shadow-xl">
