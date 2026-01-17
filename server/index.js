@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
 const nodemailer = require('nodemailer');
-
+const crypto = require('crypto');
 // 1. KHỞI TẠO APP 
 const app = express();
 
@@ -94,6 +94,14 @@ const sendOrderEmail = (toEmail, orderId, items, total, customerName) => {
     });
 };
 
+// --- CẤU HÌNH VNPAY ---
+const vnp_TmnCode = process.env.VNPAY_TMN_CODE;
+const vnp_HashSecret = process.env.VNPAY_HASH_SECRET;
+const vnp_Url = process.env.VNPAY_URL;
+const vnp_ReturnUrl = process.env.VNPAY_RETURN_URL;
+
+// const vnp_ReturnUrl = "https://dogiadungtmt.onrender.com/vnpay-return";
+
 // ==================== KHU VỰC API ============================
 
 // --- SIGNUP ---
@@ -104,7 +112,7 @@ app.post('/signup', (req, res) => {
     const sql = "INSERT INTO users (name, email, password, role) VALUES (?)";
     const values = [req.body.name, req.body.email, hashedPassword, 'customer'];
 
-    db.query(sql, [values], (err, data) => {
+    db.query(sql, [values], (err) => {
         if(err) {
             if (err.code === 'ER_DUP_ENTRY') return res.status(400).json("Email đã tồn tại");
             return res.status(500).json(err);
@@ -162,6 +170,66 @@ app.post('/login', (req, res) => {
 
 // --- CÁC API SẢN PHẨM & ORDER  ---
 
+app.post('/api/create_payment_url', (req, res) => {
+    try {
+        const date = new Date();
+        
+        const pad = (n) => n < 10 ? '0' + n : n;
+        const createDate = 
+            date.getFullYear() + 
+            pad(date.getMonth() + 1) + 
+            pad(date.getDate()) + 
+            pad(date.getHours()) + 
+            pad(date.getMinutes()) + 
+            pad(date.getSeconds());
+            
+        const orderId = Date.now().toString();
+        const amount = req.body.amount;
+        const bankCode = req.body.bankCode;
+        const orderInfo = req.body.orderDescription || `Thanh toan don hang ${orderId}`;
+        const locale = req.body.language || 'vn';
+        
+        let vnp_Params = {
+            'vnp_Version': '2.1.0',
+            'vnp_Command': 'pay',
+            'vnp_TmnCode': vnp_TmnCode,
+            'vnp_Locale': locale,
+            'vnp_CurrCode': 'VND',
+            'vnp_TxnRef': orderId,
+            'vnp_OrderInfo': orderInfo,
+            'vnp_OrderType': 'other',
+            'vnp_Amount': amount * 100,
+            'vnp_ReturnUrl': vnp_ReturnUrl,
+            'vnp_IpAddr': '127.0.0.1',
+            'vnp_CreateDate': createDate
+        };
+        if(bankCode) vnp_Params['vnp_BankCode'] = bankCode;
+        // 1. Sắp xếp
+        const sortedKeys = Object.keys(vnp_Params).sort();
+        const sortedParams = {};
+        sortedKeys.forEach(key => {
+            sortedParams[key] = vnp_Params[key];
+        });
+        // 2. Tạo signData
+        const signData = sortedKeys
+            .map(key => `${key}=${sortedParams[key]}`)
+            .join('&');
+        // 3. Tạo chữ ký 
+        const hmac = crypto.createHmac("sha512", vnp_HashSecret.trim()); // ← Thêm .trim()
+        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+        sortedParams['vnp_SecureHash'] = signed;
+        // 4. Tạo URL
+        const queryUrl = Object.keys(sortedParams)
+            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(sortedParams[key])}`)
+            .join('&');
+        const paymentUrl = vnp_Url + '?' + queryUrl;
+        res.json({ paymentUrl });
+    } catch (error) {
+        console.error("❌ Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/products', (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 8;
@@ -202,7 +270,7 @@ app.post('/api/products', (req, res) => {
     const { name, price, category, img, description } = req.body;
     const sql = "INSERT INTO products (name, price, category, image_url, description) VALUES (?)";
     const values = [name, price, category, img, description];
-    db.query(sql, [values], (err, data) => {
+    db.query(sql, [values], (err) => {
         if(err) return res.status(500).json(err);
         return res.json("Thêm sản phẩm thành công");
     });
@@ -212,7 +280,7 @@ app.put('/api/products/:id', (req, res) => {
     const { name, price, category, img, description } = req.body;
     const sql = "UPDATE products SET name=?, price=?, category=?, image_url=?, description=? WHERE id=?";
     const values = [name, price, category, img, description, req.params.id];
-    db.query(sql, values, (err, data) => {
+    db.query(sql, values, (err) => {
         if(err) return res.status(500).json(err);
         return res.json("Cập nhật thành công");
     });
@@ -220,7 +288,7 @@ app.put('/api/products/:id', (req, res) => {
 
 app.delete('/api/products/:id', (req, res) => {
     const sql = "DELETE FROM products WHERE id = ?";
-    db.query(sql, [req.params.id], (err, data) => {
+    db.query(sql, [req.params.id], (err) => {
         if(err) return res.status(500).json(err);
         return res.json("Xóa sản phẩm thành công");
     });
@@ -263,7 +331,7 @@ app.post('/api/orders', (req, res) => {
             const orderId = data.insertId;
             const sqlItems = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ?";
             const valuesItems = items.map(item => [orderId, item.id, item.quantity, item.price]);
-            db.query(sqlItems, [valuesItems], (err, data) => {
+            db.query(sqlItems, [valuesItems], (err) => {
                 if(err) return res.status(500).json("Lỗi lưu chi tiết");
                 if (userEmail) sendOrderEmail(userEmail, orderId, items, total_amount, customer_name);
                 return res.json({ status: "Success", orderId: orderId });
@@ -275,7 +343,7 @@ app.post('/api/orders', (req, res) => {
 app.put('/api/orders/:id', (req, res) => {
     const status = req.body.status;
     const sql = "UPDATE orders SET status = ? WHERE id = ?";
-    db.query(sql, [status, req.params.id], (err, data) => { if(err) return res.status(500).json(err); return res.json("Cập nhật thành công"); });
+    db.query(sql, [status, req.params.id], (err) => { if(err) return res.status(500).json(err); return res.json("Cập nhật thành công"); });
 });
 
 app.post('/api/reviews', upload.single('image'), (req, res) => {
@@ -283,7 +351,7 @@ app.post('/api/reviews', upload.single('image'), (req, res) => {
     const image_url = req.file ? `/uploads/${req.file.filename}` : null;
     const sql = "INSERT INTO reviews (product_id, user_id, rating, comment, image_url) VALUES (?)";
     const values = [product_id, user_id, rating, comment, image_url];
-    db.query(sql, [values], (err, data) => { if(err) return res.status(500).json(err); return res.json("Đánh giá thành công"); });
+    db.query(sql, [values], (err) => { if(err) return res.status(500).json(err); return res.json("Đánh giá thành công"); });
 });
 
 app.get('/api/reviews/:productId', (req, res) => {
@@ -321,7 +389,7 @@ app.get('/api/users/:id', (req, res) => {
 app.put('/api/users/:id', (req, res) => {
     const { name, phone, address } = req.body;
     const sql = "UPDATE users SET name = ?, phone = ?, address = ? WHERE id = ?";
-    db.query(sql, [name, phone, address, req.params.id], (err, data) => { if(err) return res.status(500).json(err); return res.json("Cập nhật thành công"); });
+    db.query(sql, [name, phone, address, req.params.id], (err) => { if(err) return res.status(500).json(err); return res.json("Cập nhật thành công"); });
 });
 
 app.put('/api/users/:id/password', (req, res) => {
@@ -337,7 +405,7 @@ app.put('/api/users/:id/password', (req, res) => {
         const salt = bcrypt.genSaltSync(10);
         const newHash = bcrypt.hashSync(newPassword, salt);
         const sqlUpdate = "UPDATE users SET password = ? WHERE id = ?";
-        db.query(sqlUpdate, [newHash, userId], (err, result) => { if(err) return res.status(500).json(err); return res.json({ status: "Success", message: "Đổi mật khẩu thành công" }); });
+        db.query(sqlUpdate, [newHash, userId], (err) => { if(err) return res.status(500).json(err); return res.json({ status: "Success", message: "Đổi mật khẩu thành công" }); });
     });
 });
 
@@ -430,6 +498,7 @@ app.post('/api/chat', (req, res) => {
     });
 });
 
+// 5. LẮNG NGHE PORT
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại port ${PORT}...`);

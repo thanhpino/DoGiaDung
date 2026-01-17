@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Banknote, QrCode, CreditCard, Trash2, Plus, Minus, Truck, FileText, X } from 'lucide-react';
+import { ShieldCheck, Banknote, QrCode, CreditCard, Trash2, Plus, Minus, Truck, FileText, X, Globe } from 'lucide-react'; // Thêm icon Globe
 import { useCart } from '../context/CartContext'; 
 import { useAuth } from '../context/AuthContext'; 
 import axios from 'axios'; 
@@ -9,14 +9,14 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export const Checkout = () => {
   const navigate = useNavigate();
-  const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart(); // Thêm clearCart
-  const { user } = useAuth(); // Lấy user đang đăng nhập
+  const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+  const { user } = useAuth();
 
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showQR, setShowQR] = useState(false);
 
-  // --- STATE QUẢN LÝ FORM  ---
+  // --- STATE QUẢN LÝ FORM ---
   const [formData, setFormData] = useState({
       name: '',
       phone: '',
@@ -24,7 +24,6 @@ export const Checkout = () => {
       note: ''
   });
 
-  // Tự động điền thông tin user vào form lúc mới vào trang
   useEffect(() => {
       if (user) {
           setFormData({
@@ -44,38 +43,55 @@ export const Checkout = () => {
   const totalAmount = getCartTotal() + shippingFee;
   const totalAmountUSD = (totalAmount / 26004).toFixed(2);
 
-  // --- HÀM GỬI ĐƠN HÀNG XUỐNG SERVER ---
+  // --- HÀM GỬI ĐƠN HÀNG ---
   const submitOrderToBackend = async (method: string) => {
-      // 1. Validate
+      // Validate
       if (!formData.name || !formData.phone || !formData.address) {
           toast.error("Vui lòng điền đầy đủ thông tin giao hàng!");
           setIsProcessing(false);
           return;
       }
 
-      try {
-          // 2. Tạo payload gửi đi 
-          const payload = {
-              user_id: user?.id,
-              customer_name: formData.name,       // <--- Lấy tên mới nhập
-              customer_phone: formData.phone,     // <--- Lấy SĐT mới nhập
-              customer_address: formData.address, // <--- Lấy địa chỉ mới nhập
-              total_amount: totalAmount,
-              payment_method: method,
-              note: formData.note,
-              items: cartItems
-          };
+      // Payload cơ bản
+      const orderPayload = {
+          user_id: user?.id,
+          customer_name: formData.name,
+          customer_phone: formData.phone,
+          customer_address: formData.address,
+          total_amount: totalAmount,
+          payment_method: method,
+          note: formData.note,
+          items: cartItems
+      };
 
-          // 3. Gọi API
-          await axios.post(`${import.meta.env.VITE_API_URL}/api/orders`, payload);
+      try {
+          // --- XỬ LÝ RIÊNG CHO VNPAY ---
+          if (method === 'vnpay') {
+            // Gọi API tạo URL thanh toán từ Backend
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/create_payment_url`, {
+                amount: totalAmount,
+                orderDescription: `Payment order ${Date.now()}`, // ← Đổi sang tiếng Anh không dấu
+                language: 'vn'
+            });
+            
+            // Lưu tạm thông tin đơn hàng vào localStorage để khi quay về thì lưu vào DB
+            localStorage.setItem('pendingOrder', JSON.stringify(orderPayload));
+            
+            // Chuyển hướng sang VNPAY
+            window.location.href = res.data.paymentUrl;
+            return;
+          }
+
+          // --- XỬ LÝ CÁC PHƯƠNG THỨC KHÁC  ---
+          await axios.post(`${import.meta.env.VITE_API_URL}/api/orders`, orderPayload);
           
           toast.success("Đặt hàng thành công! 🎉");
-          clearCart(); // Xóa giỏ hàng
+          clearCart(); 
           navigate('/thank-you'); 
 
       } catch (error) {
           console.error(error);
-          toast.error("Lỗi khi đặt hàng, vui lòng thử lại.");
+          toast.error("Lỗi khi xử lý đơn hàng, vui lòng thử lại.");
           setIsProcessing(false);
       }
   };
@@ -85,16 +101,15 @@ export const Checkout = () => {
 
       if (paymentMethod === 'cod') {
           setIsProcessing(true);
-          // Mô phỏng delay để hiển thị trạng thái xử lý
-          setTimeout(() => {
-              submitOrderToBackend('Tiền mặt (COD)');
-          }, 1000);
+          setTimeout(() => submitOrderToBackend('Tiền mặt (COD)'), 1000);
       } 
       else if (paymentMethod === 'qr') {
-          if (!formData.name || !formData.phone || !formData.address) {
-             return toast.error("Vui lòng điền thông tin giao hàng trước!");
-          }
+          if (!formData.name || !formData.phone || !formData.address) return toast.error("Vui lòng điền thông tin giao hàng trước!");
           setShowQR(true);
+      }
+      else if (paymentMethod === 'vnpay') {
+           setIsProcessing(true);
+           submitOrderToBackend('vnpay');
       }
   };
 
@@ -107,7 +122,7 @@ export const Checkout = () => {
     <PayPalScriptProvider options={{ "clientId": "AU-h8a9Gg74tcWPBGoLNSg7e2L5NjQVwykNNgjJH35iheuv9eJwq9m60Er0_ovG30ZO54IoBgcZz5V7e", currency: "USD" }}>
         <div className="min-h-screen bg-[#FDF8F3] font-sans text-gray-800 p-4 lg:p-8 relative">
         
-        {/* --- MODAL QR CODE --- */}
+        {/* QR CODE */}
         {showQR && (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-fade-in relative">
@@ -142,49 +157,21 @@ export const Checkout = () => {
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* CỘT TRÁI */}
+            {/* CỘT TRÁI - FORM & CART */}
             <div className="lg:col-span-2 space-y-6">
-            {/* FORM THÔNG TIN (ĐÃ SỬA: Dùng value + onChange) */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Truck className="text-orange-600"/> Thông tin giao hàng</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input 
-                        type="text" 
-                        placeholder="Họ tên người nhận" 
-                        className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none" 
-                        value={formData.name}
-                        onChange={e => setFormData({...formData, name: e.target.value})}
-                    />
-                    <input 
-                        type="text" 
-                        placeholder="Số điện thoại" 
-                        className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none" 
-                        value={formData.phone}
-                        onChange={e => setFormData({...formData, phone: e.target.value})}
-                    />
-                    <input 
-                        type="text" 
-                        placeholder="Địa chỉ chi tiết (Số nhà, Đường, Quận/Huyện...)" 
-                        className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none md:col-span-2" 
-                        value={formData.address}
-                        onChange={e => setFormData({...formData, address: e.target.value})}
-                    />
-                    
+                    <input type="text" placeholder="Họ tên người nhận" className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                    <input type="text" placeholder="Số điện thoại" className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                    <input type="text" placeholder="Địa chỉ chi tiết" className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none md:col-span-2" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
                     <div className="md:col-span-2 mt-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                            <FileText size={16}/> Ghi chú đơn hàng (Tùy chọn)
-                        </label>
-                        <textarea 
-                            value={formData.note}
-                            onChange={(e) => setFormData({...formData, note: e.target.value})}
-                            placeholder="Ví dụ: Giao giờ hành chính..." 
-                            className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none h-24 resize-none"
-                        ></textarea>
+                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1"><FileText size={16}/> Ghi chú (Tùy chọn)</label>
+                        <textarea value={formData.note} onChange={(e) => setFormData({...formData, note: e.target.value})} placeholder="Ví dụ: Giao giờ hành chính..." className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none h-24 resize-none"></textarea>
                     </div>
                 </div>
             </div>
 
-            {/* List sản phẩm */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
                 <h2 className="text-xl font-bold mb-4">Giỏ hàng ({cartItems.length})</h2>
                 <div className="space-y-4">
@@ -207,7 +194,7 @@ export const Checkout = () => {
             </div>
             </div>
 
-            {/* CỘT PHẢI (Thanh toán) */}
+            {/* CỘT PHẢI - THANH TOÁN */}
             <div className="lg:col-span-1">
                 <div className="bg-white p-6 rounded-2xl shadow-lg border border-orange-100 sticky top-24">
                 <h2 className="text-xl font-bold mb-6">Thanh toán</h2>
@@ -226,12 +213,20 @@ export const Checkout = () => {
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'qr' ? 'border-blue-500' : 'border-gray-300'}`}>
                             {paymentMethod === 'qr' && <div className="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>}
                         </div>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 font-bold text-sm text-blue-700"><QrCode size={16}/> Chuyển khoản QR</div>
+                        <div className="flex items-center gap-2 font-bold text-sm text-blue-700"><QrCode size={16}/> Chuyển khoản QR</div>
+                    </div>
+
+                    {/* 3. VNPAY  */}
+                    <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'vnpay' ? 'border-red-500 bg-red-50' : 'hover:bg-gray-50'}`} onClick={() => setPaymentMethod('vnpay')}>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'vnpay' ? 'border-red-500' : 'border-gray-300'}`}>
+                            {paymentMethod === 'vnpay' && <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>}
+                        </div>
+                        <div className="flex items-center gap-2 font-bold text-sm text-red-700">
+                             <Globe size={16}/> VNPAY / ATM
                         </div>
                     </div>
 
-                    {/* 3. PAYPAL */}
+                    {/* 4. PAYPAL */}
                     <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'paypal' ? 'border-indigo-500 bg-indigo-50' : 'hover:bg-gray-50'}`} onClick={() => setPaymentMethod('paypal')}>
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'paypal' ? 'border-indigo-500' : 'border-gray-300'}`}>
                             {paymentMethod === 'paypal' && <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></div>}
@@ -249,13 +244,11 @@ export const Checkout = () => {
                     </div>
                 </div>
 
-                {/* NÚT THANH TOÁN */}
                 {paymentMethod === 'paypal' ? (
                     <div className="w-full">
                         <PayPalButtons 
                             style={{ layout: "vertical" }}
                             createOrder={(_data, actions) => {
-                                // Kiểm tra form trước khi mở popup Paypal
                                 if (!formData.name || !formData.phone || !formData.address) {
                                     toast.error("Vui lòng điền thông tin giao hàng!");
                                     return Promise.reject();
@@ -269,7 +262,6 @@ export const Checkout = () => {
                             }}
                             onApprove={(_data, actions) => {
                                 return actions.order!.capture().then((details) => {
-                                    // Khi thanh toán xong, gọi hàm submitOrderToBackend
                                     submitOrderToBackend('PayPal: ' + details.payer?.name?.given_name);
                                 });
                             }}
@@ -281,7 +273,7 @@ export const Checkout = () => {
                         disabled={isProcessing}
                         className={`w-full py-4 rounded-xl font-bold text-lg text-white shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-95 ${isProcessing ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700 shadow-orange-200'}`}
                     >
-                        {isProcessing ? 'Đang xử lý...' : <>Đặt Hàng Ngay <ShieldCheck size={20}/></>}
+                        {isProcessing ? 'Đang xử lý...' : <>Thanh Toán Ngay <ShieldCheck size={20}/></>}
                     </button>
                 )}
                 
