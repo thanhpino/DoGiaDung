@@ -63,7 +63,7 @@ export const UserProfile = () => {
             savedUser.name = info.name;
             localStorage.setItem('user', JSON.stringify(savedUser));
             
-            // Reload nhẹ trang để AuthContext cập nhật lại (hoặc dùng window.location.reload())
+            // Reload nhẹ trang để AuthContext cập nhật lại
             setTimeout(() => window.location.reload(), 1000);
 
         } catch (error) {

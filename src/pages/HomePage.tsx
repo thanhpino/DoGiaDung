@@ -5,7 +5,7 @@ import axios from 'axios';
 
 export const HomePage = () => {
   const navigate = useNavigate();
-  // Không cần useAuth ở đây nữa vì Header chính sẽ lo việc hiển thị User
+  // Header chính lo việc hiển thị User
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

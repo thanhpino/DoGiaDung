@@ -5,7 +5,7 @@ import { ShieldCheck, RefreshCw, FileText, HelpCircle, ArrowLeft } from 'lucide-
 export const PolicyPage = () => {
   const { slug } = useParams(); // Lấy tham số từ URL
 
-  // Cấu hình nội dung giả
+  // Cấu hình nội dung demo
   const contentMap: any = {
     'trung-tam-tro-giup': { 
       title: 'Trung Tâm Trợ Giúp', 

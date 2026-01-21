@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '../ui/input'; 
 import { Button } from '../ui/Button';
-import { useAuth } from '../context/AuthContext'; // Import hook 
+import { useAuth } from '../context/AuthContext';
 
 export const SignupForm: React.FC = () => {
   const { register } = useAuth(); 

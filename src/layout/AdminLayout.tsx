@@ -23,13 +23,13 @@ export const AdminLayout = () => {
         const audio = new Audio('/ting.mp3'); 
         audio.play().catch(_e => console.log("Cần tương tác để phát âm thanh"));
 
-        // B. Hiện thông báo đẹp
+        // B. Hiện thông báo
         toast.custom((t) => (
             <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-2xl rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 border-l-4 border-green-500`}>
                 <div className="flex-1 w-0 p-4">
                     <div className="flex items-start">
                         <div className="flex-shrink-0 pt-0.5">
-                            {/* Icon tiền bay */}
+                            {/* Icon tiền bay :3 */}
                             <span className="text-3xl">💰</span>
                         </div>
                         <div className="ml-3 flex-1">
@@ -57,7 +57,6 @@ export const AdminLayout = () => {
         ), { duration: 6000, position: 'top-right' });
     });
 
-    // 3. Dọn dẹp khi thoát trang Admin
     return () => {
         socket.disconnect();
     };

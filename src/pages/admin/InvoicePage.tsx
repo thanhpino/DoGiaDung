@@ -22,7 +22,7 @@ export const InvoicePage = () => {
                 setItems(itemsRes.data);
                 setLoading(false);
 
-                // Tự động mở hộp thoại in sau khi tải xong dữ liệu (delay 500ms để render kịp)
+                // Tự động mở hộp thoại in sau khi tải xong dữ liệu
                 setTimeout(() => {
                     window.print();
                 }, 500);
@@ -114,7 +114,7 @@ export const InvoicePage = () => {
             {/* --- TỔNG KẾT --- */}
             <div className="flex justify-end">
                 <div className="w-1/2 space-y-2">
-                    {/* Nếu bro có lưu phí ship vào DB thì hiện ở đây, tạm thời mình để 30k hoặc 0 */}
+                    {/* Phí vận chuyển */}
                     <div className="flex justify-between text-sm text-gray-500">
                         <span>Phí vận chuyển:</span>
                         <span>30.000 ₫</span>
@@ -134,12 +134,12 @@ export const InvoicePage = () => {
                     <p>Mọi thắc mắc xin liên hệ hotline hoặc website dogiadungtmt.com</p>
                 </div>
                 <div className="pt-4">
-                    {/* Bro có thể tạo QR code dẫn về web hoặc check đơn hàng ở đây nếu thích */}
+                    {/* QR code back to Web or cái gì đó :3*/}
                     <p className="font-mono text-[10px] text-gray-400">INVOICE ID: {order.id} | PRINTED: {new Date().toLocaleString()}</p>
                 </div>
             </div>
             
-            {/* CSS ĐỂ ẨN CÁC PHẦN KHÔNG CẦN KHI IN */}
+            {/* CSS Ẩn */}
             <style>{`
                 @media print {
                     @page { margin: 0; size: auto; }

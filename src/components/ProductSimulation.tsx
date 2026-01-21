@@ -173,7 +173,7 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
         );
     }
 
-    // 4. MẶC ĐỊNH (Cho các món khác)
+    // 4. MẶC ĐỊNH (Cho các đồ khác)
     return (
         <div className="bg-gray-50 rounded-2xl p-8 h-full flex flex-col items-center justify-center text-center border border-gray-100">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
