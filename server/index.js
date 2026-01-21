@@ -28,6 +28,7 @@ const { setSocketIO } = require('./controllers/orderController');
 
 // 1. KHỞI TẠO APP
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 
 // CẤU HÌNH CORS
