@@ -22,6 +22,7 @@ const statsRoutes = require('./routes/statsRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
 const vnpayRoutes = require('./routes/vnpayRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const suggestionRoutes = require('./routes/suggestionRoutes');
 
 // Import order controller
 const { setSocketIO } = require('./controllers/orderController');
@@ -78,7 +79,6 @@ setSocketIO(io);
 io.on("connection", (socket) => {
     console.log(`⚡ Client connected: ${socket.id}`);
     socket.on("disconnect", () => {
-        // console.log(`❌ Client disconnected: ${socket.id}`);
     });
 });
 
@@ -97,6 +97,7 @@ app.use('/', statsRoutes);
 app.use('/', chatbotRoutes);
 app.use('/', vnpayRoutes);
 app.use('/', uploadRoutes);
+app.use('/api', suggestionRoutes);
 
 // 5. HEALTH CHECK
 app.get('/', (req, res) => {
@@ -112,10 +113,6 @@ const PORT = process.env.PORT || 8081;
 
 if (require.main === module) {
     server.listen(PORT, () => {
-        console.log('='.repeat(50));
-        console.log(`🚀 Server Socket.io đang chạy tại port ${PORT}`);
-        console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-        console.log('='.repeat(50));
     });
 }
 

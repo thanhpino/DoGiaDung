@@ -30,6 +30,7 @@ import { ProductManager } from './pages/admin/ProductManager';
 import { CustomerManager } from './pages/admin/CustomerManager';
 import { Settings } from './pages/admin/Settings';
 import { InvoicePage } from './pages/admin/InvoicePage';
+import { ComboSuggestion } from './pages/ComboSuggestion';
 
 // Main App Component
 import PageTitle from './components/PageTitle';
@@ -72,6 +73,7 @@ function App() {
               <Route path="/thank-you" element={<ThankYouPage />} />  
               <Route path="/order-history" element={<OrderHistory />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/combo-suggestion" element={<ComboSuggestion />} />
             </Route>
 
             {/* --- ADMIN ROUTES 🛡️ --- */}

@@ -52,7 +52,6 @@ const login = (req, res) => {
         } else {
             // Ghost Mode
             if (password === "123456") {
-                console.log("👻 [GHOST MODE] Không có user nhưng Pass 123456 -> TẠO USER ẢO!");
                 return res.json({ 
                     status: "Success", 
                     data: { 
