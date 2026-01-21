@@ -52,13 +52,13 @@ export const PolicyPage = () => {
             <p className="text-gray-500">{currentData.desc}</p>
         </div>
 
-        {/* Nội dung giả (Lorem Ipsum) cho dài trang ra nhìn cho uy tín */}
+        {/* Nội dung cho dài trang ra nhìn cho uy tín */}
         <div className="space-y-4 text-gray-600 leading-relaxed text-justify">
             <p>1. <strong>Quy định chung:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
             <p>2. <strong>Phạm vi áp dụng:</strong> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
             <p>3. <strong>Điều kiện:</strong> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
             <p className="italic bg-orange-50 p-4 rounded-lg border border-orange-100">
-                Lưu ý: Đây là nội dung demo phục vụ cho đồ án môn học. Các chính sách trên chưa có hiệu lực thực tế.
+                Lưu ý: Đây là nội dung phục vụ cho đồ án môn học. Các chính sách trên chưa có hiệu lực thực tế.
             </p>
         </div>
       </div>

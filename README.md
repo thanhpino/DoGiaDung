@@ -1,141 +1,135 @@
-# 🏠 Gia Dụng TMT - Smart E-commerce Platform
+<div align="center">
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
-![VNPAY](https://img.shields.io/badge/Payment-VNPAY-blue?style=for-the-badge)
+  <img src="https://img.icons8.com/3d-fluency/94/shopping-bag.png" width="100" />
 
-> **Hệ thống thương mại điện tử chuyên cung cấp thiết bị gia dụng thông minh. Tích hợp thanh toán Online, thông báo Real-time, Chatbot thông minh**
+  # 🏠 GIA DỤNG TMT - MODERN E-COMMERCE PLATFORM
 
-👉 **Live Website:** [https://dogiadung-vwp8.onrender.com/](https://dogiadung-vwp8.onrender.com/)
+  **Hệ thống Thương mại điện tử chuyên nghiệp, tích hợp Real-time, AI Chatbot & Thanh toán VNPAY.**
+
+  [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+  [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+  [![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+  [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+  [![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io/)
+  [![VNPAY](https://img.shields.io/badge/Payment-VNPAY-005BAA?style=for-the-badge&logoColor=white)](https://vnpay.vn/)
+
+  [🚀 **View Live Demo**](https://dogiadung-vwp8.onrender.com/)
+  
+  _(Backend API: [https://dogiadungtmt.onrender.com](https://dogiadungtmt.onrender.com))_
+
+</div>
+
+---
+
+## 📖 Overview
+
+**Gia Dụng TMT** không chỉ là một website bán hàng thông thường. Đây là một giải pháp Fullstack hoàn chỉnh mô phỏng quy trình vận hành thực tế của một doanh nghiệp thương mại điện tử. 
+
+Hệ thống tập trung vào trải nghiệm người dùng mượt mà (**UX/UI**), khả năng quản trị thời gian thực (**Real-time Dashboard**) và tính bảo mật cao (**Security**).
+
+---
+
+## 🔥 Key Highlights
+
+### 🛍️ Dành Cho Khách Hàng
+* 🤖 **AI Smart Chatbot:** Tư vấn sản phẩm, giải đáp thắc mắc tự động 24/7.
+* 💳 **Thanh Toán Đa Kênh:** Tích hợp cổng thanh toán **VNPAY** (ATM/QR Code) và COD.
+* 🛒 **Real-time Cart & Order:** Cập nhật giỏ hàng và trạng thái đơn hàng tức thì.
+* 🔐 **Bảo Mật Tài Khoản:** Đăng ký/Đăng nhập, **Quên mật khẩu (Email Token)**, Đổi Avatar, Quản lý hồ sơ.
+* 📧 **Automated Emails:** Nhận email xác nhận đơn hàng và reset mật khẩu tự động.
+
+### 🛡️ Dành Cho Quản Trị Viên
+* ⚡ **Real-time Notification:** Hệ thống Socket.io báo chuông **"Ting ting"** ngay khi có đơn hàng mới.
+* 📊 **Analytics Dashboard:** * Biểu đồ doanh thu trực quan (**Recharts**).
+    * Thống kê Top sản phẩm, Top danh mục bán chạy.
+* 📑 **Quản Lý Đơn Hàng Chuyên Sâu:**
+    * Bộ lọc theo trạng thái, tìm kiếm thông minh.
+    * **Xuất báo cáo doanh thu ra Excel (.xlsx)** chỉ với 1 click.
+    * Xem chi tiết đơn hàng, in hóa đơn.
+* 🔒 **System Security:** Tích hợp **Helmet** (Bảo vệ Header), **Rate Limiting** (Chống Spam/DDoS).
 
 ---
 
 ## 📸 Screenshots
 
-| Trang Chủ (Home) | Admin Dashboard (Real-time) |
+| 🏠 Trang Chủ | 📊 Admin Dashboard |
 |:---:|:---:|
-| ![Home](public/screenshots/home.png) | ![Admin](public/screenshots/admin.png) |
+| <img src="public/screenshots/home.png" width="100%" alt="Home Page"/> | <img src="public/screenshots/admin.png" width="100%" alt="Admin Dashboard"/> |
 
-| Thanh Toán VNPAY | Lịch Sử Đơn Hàng |
+| 💳 Thanh Toán VNPAY | 📑 Quản Lý Đơn Hàng & Xuất Excel |
 |:---:|:---:|
-| ![Payment](public/screenshots/vnpay.png) | ![History](public/screenshots/history.png) |
+| <img src="public/screenshots/vnpay.png" width="100%" alt="VNPAY Payment"/> | <img src="public/screenshots/history.png" width="100%" alt="Order Manager"/> |
 
 ---
 
-## 🛠️ Công Nghệ & Kỹ Thuật (Tech Stack)
+## 🛠️ Tech Stack
 
-### **(Client)**
-* **Core:** ReactJS (Vite), TypeScript.
-* **Styling:** TailwindCSS, Lucide React (Icons).
-* **Real-time:** Socket.io-client.
-* **State Management:** React Context API.
-* **Notifications:** React Hot Toast (Custom UI).
-
-### **(Server)**
-* **Runtime:** Node.js, Express.js.
-* **Database:** MySQL 8.0.
-* **Real-time:** Socket.io Server.
-* **Payment Gateway:** Tích hợp **VNPAY**, Momo, Zalopay, PayPal.
-* **Testing:** **Jest** & **Supertest**.
-* **Security:** `bcryptjs`, Custom Auth Session.
-* **Features:** Nodemailer, Multer.
-
-### **DevOps & Deployment**
-* **Containerization:** Docker & Docker Compose.
-* **Cloud:** Render.
+| Category | Technology |
+| --- | --- |
+| **Frontend** | **React (Vite)**, TypeScript, TailwindCSS, Lucide React, Axios, Recharts |
+| **Backend** | **Node.js**, Express.js, JWT, Bcryptjs, Multer, Nodemailer |
+| **Database** | **MySQL 8.0** (Relational Database) |
+| **Real-time** | **Socket.io** (WebSockets) |
+| **Security** | Helmet, Express-Rate-Limit, Cors |
+| **DevOps** | Docker, Docker Compose, Render Cloud |
+| **Payment** | VNPAY SDK Integration |
 
 ---
 
-## ✨ Tính Năng Nổi Bật (Key Features)
+## 🚀 Installation
 
-### 👤 Dành cho Khách Hàng (User)
-- [x] **Smart Chatbot:** Hỗ trợ tìm kiếm theo ngữ cảnh (ví dụ: "tìm nồi giá rẻ", "phí ship thế nào?"), trả lời ngẫu nhiên tự nhiên.
-- [x] **Thanh toán Đa dạng:** Hỗ trợ COD (Tiền mặt) và **Thanh toán Online qua VNPAY**.
-- [x] **Giỏ hàng Real-time:** Cập nhật trạng thái, tính tổng tiền, gửi Email xác nhận đơn hàng tự động.
-- [x] **Tìm kiếm & Lọc:** Tìm theo tên, danh mục, khoảng giá.
-
-
-### 🛡️ Dành cho Quản Trị Viên (Admin)
-- [x] **Thông báo Thời gian thực (Real-time):** Admin nhận thông báo **"Ting ting"** ngay lập tức khi có khách đặt hàng.
-- [x] **Dashboard Trực quan:** Biểu đồ doanh thu tuần, Top sản phẩm bán chạy.
-- [x] **Quản lý toàn diện:** Sản phẩm, Khách hàng, Đơn hàng (Cập nhật trạng thái giao hàng).
-
----
-
-## 🚀 Hướng Dẫn Cài Đặt
-
-Bạn có thể chạy dự án theo 2 cách: **Docker ** hoặc **Thủ công**.
+Bạn có thể chạy dự án nhanh chóng bằng Docker hoặc cài đặt thủ công.
 
 ### Cách 1: Chạy bằng Docker
-Yêu cầu: Đã cài Docker Desktop.
 
-```bash
 # 1. Clone dự án
 git clone [https://github.com/username/dogiadung-main.git](https://github.com/username/dogiadung-main.git)
 cd dogiadung-main
 
-# 2. Tạo file .env cho Server (trong thư mục server/)
+# 2. Tạo file .env trong thư mục server
 
-# 3. Khởi chạy toàn bộ hệ thống
-docker-compose up --build
-
-### Cách 2: Chạy Thủ công (Manual)
-1. Setup Backend:
+# 3. Build và Run
+Cách 2: Chạy Thủ công (Manual)
+1. Setup Backend
 cd server
 npm install
-
-# Cấu hình .env
+# Cấu hình file .env
 npm start
-
-# Hoặc chạy test: npm test
-2. Setup Frontend:
-cd ..
+2. Setup Frontend
+cd client
 npm install
-
-# Cấu hình .env (VITE_API_URL=http://localhost:8081)
 npm run dev
 
-###🔐 Cấu Hình Biến Môi Trường (.env)
 # --- DATABASE ---
-DB_HOST=localhost       
+DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=dogiadung_db
-DB_PORT=3306            # (3306 nếu chạy thường, Docker sẽ map ra 3307)
+DB_PORT=3306
 
 # --- SERVER ---
 PORT=8081
+NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 
 # --- EMAIL SERVICE ---
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
 
-# --- VNPAY PAYMENT  ---
+# --- VNPAY PAYMENT ---
 VNPAY_TMN_CODE=your_tmn_code
 VNPAY_HASH_SECRET=your_secret_key
 VNPAY_URL=[https://sandbox.vnpayment.vn/paymentv2/vpcpay.html](https://sandbox.vnpayment.vn/paymentv2/vpcpay.html)
 VNPAY_RETURN_URL=http://localhost:5173/vnpay-return
 
 
-### 🧪 Testing
+👨‍💻 Tác Giả (Author)
+<div align="center">
 
-cd server
-npm test
-
-
-👨‍💻 Tác Giả
 Trương Minh Thành
 
-MSSV: 524H0032
-
-Trường: Ton Duc Thang University (TDTU)
-
-Ngành: Kỹ thuật Phần mềm (Software Engineering)
-
-Project for educational purpose.
+Software Engineering Student @ Ton Duc Thang University (TDTU)
+</div>
+<p align="center"> <i>Project for educational purpose. © 2026 Gia Dụng TMT</i> </p>
