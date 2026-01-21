@@ -20,7 +20,6 @@ export const Footer: React.FC = () => {
               Chuyên cung cấp đồ gia dụng thông minh, chính hãng với giá tốt nhất thị trường. Mang tiện nghi đến mọi nhà.
             </p>
             <div className="flex gap-4 pt-2">
-               {/* 👇 THAY LINK FACEBOOK CỦA BRO VÀO ĐÂY */}
                <a href="https://www.facebook.com/tuyen.tu.12979431/?locale=vi_VN" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#1877F2] transition">
                  <Facebook size={18}/>
                </a>

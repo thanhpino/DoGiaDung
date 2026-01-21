@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 export const ProductsPage = () => {
   const navigate = useNavigate();
   
-  // State dữ liệu & Phân trang
+  // state Dữ liệu & Phân trang
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -17,7 +17,7 @@ export const ProductsPage = () => {
       totalPages: 1
   });
 
-  // 👇 State lưu danh sách ID yêu thích
+  // Lưu danh sách ID yêu thích
   const [favorites, setFavorites] = useState<number[]>([]);
 
   // State Bộ lọc & Tìm kiếm
