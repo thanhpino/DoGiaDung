@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShieldCheck, RefreshCw, FileText, HelpCircle, ArrowLeft } from 'lucide-react';
 
