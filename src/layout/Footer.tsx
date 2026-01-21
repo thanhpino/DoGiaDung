@@ -20,9 +20,18 @@ export const Footer: React.FC = () => {
               Chuyên cung cấp đồ gia dụng thông minh, chính hãng với giá tốt nhất thị trường. Mang tiện nghi đến mọi nhà.
             </p>
             <div className="flex gap-4 pt-2">
-               <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ea8d35] transition"><Facebook size={18}/></a>
-               <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ea8d35] transition"><Instagram size={18}/></a>
-               <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#ea8d35] transition"><Youtube size={18}/></a>
+               {/* 👇 THAY LINK FACEBOOK CỦA BRO VÀO ĐÂY */}
+               <a href="https://www.facebook.com/tuyen.tu.12979431/?locale=vi_VN" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#1877F2] transition">
+                 <Facebook size={18}/>
+               </a>
+               
+               <a href="https://www.instagram.com/tuyen.tu.12979431/" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E4405F] transition">
+                 <Instagram size={18}/>
+               </a>
+               
+               <a href="https://www.youtube.com/@thanh-q4w" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#FF0000] transition">
+                 <Youtube size={18}/>
+               </a>
             </div>
           </div>
 
@@ -41,26 +50,10 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-lg mb-6 text-[#ea8d35]">Hỗ Trợ</h3>
             <ul className="space-y-3 text-gray-400 text-sm">
-               <li>
-                     <Link to="/policy/trung-tam-tro-giup" className="hover:text-[#ea8d35] transition">
-                        Trung tâm trợ giúp
-                     </Link>
-               </li>
-               <li>
-                     <Link to="/policy/chinh-sach-bao-hanh" className="hover:text-[#ea8d35] transition">
-                        Chính sách bảo hành
-                     </Link>
-               </li>
-               <li>
-                     <Link to="/policy/chinh-sach-doi-tra" className="hover:text-[#ea8d35] transition">
-                        Chính sách đổi trả
-                     </Link>
-               </li>
-               <li>
-                     <Link to="/policy/chinh-sach-bao-mat" className="hover:text-[#ea8d35] transition">
-                        Chính sách bảo mật
-                     </Link>
-               </li>
+               <li><Link to="/policy/trung-tam-tro-giup" className="hover:text-[#ea8d35] transition">Trung tâm trợ giúp</Link></li>
+               <li><Link to="/policy/chinh-sach-bao-hanh" className="hover:text-[#ea8d35] transition">Chính sách bảo hành</Link></li>
+               <li><Link to="/policy/chinh-sach-doi-tra" className="hover:text-[#ea8d35] transition">Chính sách đổi trả</Link></li>
+               <li><Link to="/policy/chinh-sach-bao-mat" className="hover:text-[#ea8d35] transition">Chính sách bảo mật</Link></li>
             </ul>
          </div>
 

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ShoppingBag, Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { ShoppingBag, Search, ChevronLeft, ChevronRight, Filter, Heart } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export const ProductsPage = () => {
   const navigate = useNavigate();
@@ -16,10 +17,12 @@ export const ProductsPage = () => {
       totalPages: 1
   });
 
+  // 👇 State lưu danh sách ID yêu thích
+  const [favorites, setFavorites] = useState<number[]>([]);
+
   // State Bộ lọc & Tìm kiếm
   const [filter, setFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
-  // Debounce search: đợi user gõ xong mới tìm 
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const categories = ['All', 'Kitchen', 'Cleaning', 'Cooling', 'Health', 'SmartHome', 'Beauty', 'Lighting'];
@@ -28,7 +31,7 @@ export const ProductsPage = () => {
   useEffect(() => {
       const timer = setTimeout(() => {
           setDebouncedSearch(searchTerm);
-          setPagination(prev => ({ ...prev, page: 1 })); // Reset về trang 1 khi tìm kiếm
+          setPagination(prev => ({ ...prev, page: 1 })); 
       }, 500);
       return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -36,7 +39,6 @@ export const ProductsPage = () => {
   // GỌI API LẤY SẢN PHẨM
   useEffect(() => {
     setLoading(true);
-    // Tạo query string
     const query = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
@@ -46,7 +48,7 @@ export const ProductsPage = () => {
 
     axios.get(`${import.meta.env.VITE_API_URL}/products?${query}`)
          .then(res => {
-             setProducts(res.data.data); // Cập nhật danh sách sản phẩm
+             setProducts(res.data.data);
              setPagination(res.data.pagination);
              setLoading(false);
          })
@@ -56,10 +58,25 @@ export const ProductsPage = () => {
          });
   }, [filter, debouncedSearch, pagination.page]); 
 
+  // Hàm xử lý bấm trái tim
+  const toggleFavorite = (e: React.MouseEvent, productId: number) => {
+      e.stopPropagation();
+      
+      setFavorites(prev => {
+          if (prev.includes(productId)) {
+              toast.success("Đã xóa khỏi yêu thích");
+              return prev.filter(id => id !== productId);
+          } else {
+              toast.success("Đã thêm vào yêu thích ❤️");
+              return [...prev, productId];
+          }
+      });
+  };
+
   const handlePageChange = (newPage: number) => {
       if (newPage >= 1 && newPage <= pagination.totalPages) {
           setPagination(prev => ({ ...prev, page: newPage }));
-          window.scrollTo(0, 0); // Cuộn lên đầu trang
+          window.scrollTo(0, 0);
       }
   };
 
@@ -138,13 +155,27 @@ export const ProductsPage = () => {
                     {products.map((product) => (
                         <div 
                         key={product.id} 
-                        className="bg-white p-4 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col" 
+                        className="bg-white p-4 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col relative" 
                         onClick={() => navigate(`/product/${product.id}`)}
                         >
+                        {/* ẢNH SẢN PHẨM */}
                         <div className="relative mb-4 overflow-hidden rounded-xl h-48 bg-gray-50 flex items-center justify-center p-4">
+                            {/* Nút giảm giá */}
                             {product.discount && (
                             <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-sm">{product.discount}</span>
                             )}
+                            
+                            {/* NÚT TRÁI TIM YÊU THÍCH */}
+                            <button 
+                                onClick={(e) => toggleFavorite(e, product.id)}
+                                className="absolute top-2 left-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm z-10 transition hover:scale-110"
+                            >
+                                <Heart 
+                                    size={18} 
+                                    className={`transition-colors ${favorites.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
+                                />
+                            </button>
+
                             <img src={product.image_url || product.img} alt={product.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition duration-500" />
                         </div>
                         
@@ -189,7 +220,6 @@ export const ProductsPage = () => {
                         <div className="flex items-center gap-2">
                             {[...Array(pagination.totalPages)].map((_, i) => {
                                 const pageNum = i + 1;
-                                // Chỉ hiện trang đầu, cuối, và trang xung quanh trang hiện tại 
                                 if (pageNum === 1 || pageNum === pagination.totalPages || (pageNum >= pagination.page - 1 && pageNum <= pagination.page + 1)) {
                                     return (
                                         <button
