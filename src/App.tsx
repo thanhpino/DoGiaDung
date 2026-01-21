@@ -21,6 +21,7 @@ import { ForgotPassword } from './pages/ForgotPassword';
 import { OrderHistory } from './pages/OrderHistory';
 import { ThankYouPage } from './pages/ThankYouPage';
 import { UserProfile } from './pages/UserProfile';
+import { ResetPassword } from './pages/ResetPassword';
 
 // Pages - Admin
 import { AdminDashboard } from './pages/admin/Dashboard';
@@ -32,6 +33,9 @@ import { InvoicePage } from './pages/admin/InvoicePage';
 
 // Main App Component
 import PageTitle from './components/PageTitle';
+
+//Policy Page
+import { PolicyPage } from './pages/PolicyPage';  
 
 function App() {
   return (
@@ -55,6 +59,7 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* --- CLIENT ROUTES  --- */}
             <Route element={<MainLayout />}>
@@ -97,6 +102,8 @@ function App() {
 
             {/* Route 404 - Bắt link sai */}
             <Route path="*" element={<Navigate to="/home" replace />} />
+            {/* --- POLICY PAGES --- */}
+            <Route path="/policy/:slug" element={<PolicyPage />} />
           </Routes>
         </CartProvider>
       </AuthProvider>

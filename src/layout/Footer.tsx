@@ -39,14 +39,30 @@ export const Footer: React.FC = () => {
 
           {/* CỘT 3: HỖ TRỢ */}
           <div>
-             <h3 className="font-bold text-lg mb-6 text-[#ea8d35]">Hỗ Trợ</h3>
-             <ul className="space-y-3 text-gray-400 text-sm">
-                <li><a href="#" className="hover:text-[#ea8d35] transition">Trung tâm trợ giúp</a></li>
-                <li><a href="#" className="hover:text-[#ea8d35] transition">Chính sách bảo hành</a></li>
-                <li><a href="#" className="hover:text-[#ea8d35] transition">Chính sách đổi trả</a></li>
-                <li><a href="#" className="hover:text-[#ea8d35] transition">Chính sách bảo mật</a></li>
-             </ul>
-          </div>
+            <h3 className="font-bold text-lg mb-6 text-[#ea8d35]">Hỗ Trợ</h3>
+            <ul className="space-y-3 text-gray-400 text-sm">
+               <li>
+                     <Link to="/policy/trung-tam-tro-giup" className="hover:text-[#ea8d35] transition">
+                        Trung tâm trợ giúp
+                     </Link>
+               </li>
+               <li>
+                     <Link to="/policy/chinh-sach-bao-hanh" className="hover:text-[#ea8d35] transition">
+                        Chính sách bảo hành
+                     </Link>
+               </li>
+               <li>
+                     <Link to="/policy/chinh-sach-doi-tra" className="hover:text-[#ea8d35] transition">
+                        Chính sách đổi trả
+                     </Link>
+               </li>
+               <li>
+                     <Link to="/policy/chinh-sach-bao-mat" className="hover:text-[#ea8d35] transition">
+                        Chính sách bảo mật
+                     </Link>
+               </li>
+            </ul>
+         </div>
 
           {/* CỘT 4: LIÊN HỆ */}
           <div>
