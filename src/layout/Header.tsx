@@ -25,7 +25,7 @@ export const Header: React.FC = () => {
     if (budgetSearch.trim()) {
         // Điều hướng sang trang gợi ý kèm budget
         navigate(`/combo-suggestion?budget=${budgetSearch}`);
-        setBudgetSearch(''); // Reset ô nhập
+        setBudgetSearch('');
     }
   };
 

@@ -9,7 +9,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: string; // Thêm role vào interface
+  role: string;
 }
 
 interface AuthContextType {
@@ -51,15 +51,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if(res.data.status === "Success") {
         const userData = res.data.data;
         setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData)); // Lưu vào Storage
+        localStorage.setItem('user', JSON.stringify(userData));
         
         toast.success(`Chào mừng ${userData.name}!`);
         
         // --- CHUYỂN HƯỚNG THEO ROLE ---
         if (userData.role === 'admin') {
-            navigate('/admin'); // Admin vào trang quản trị
+            navigate('/admin');
         } else {
-            navigate('/home');  // Khách về trang chủ
+            navigate('/home');
         }
         
       } else {
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 3. Đăng xuất
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user'); // Xóa khỏi Storage
+    localStorage.removeItem('user');
     toast('Đã đăng xuất', { icon: '👋' });
     navigate('/');
   };

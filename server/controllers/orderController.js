@@ -2,7 +2,7 @@
 const db = require('../config/database');
 const { sendOrderEmail } = require('../utils/emailService');
 
-let io; // Biến toàn cục để lưu socket.io instance
+let io;
 
 const setSocketIO = (socketInstance) => {
     io = socketInstance;

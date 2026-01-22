@@ -13,7 +13,7 @@ RUN npm install
 # 5. Copy toàn bộ code còn lại vào container
 COPY . .
 
-# 6. Mở cổng 8081 (Cổng server của bro)
+# 6. Mở cổng 8081
 EXPOSE 8081
 
 # 7. Lệnh chạy server

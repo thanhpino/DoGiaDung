@@ -77,7 +77,7 @@ const forgotPassword = (req, res) => {
 
         // Tạo token ngẫu nhiên
         const token = crypto.randomBytes(20).toString('hex');
-        const expires = Date.now() + 3600000; // Hết hạn sau 1 giờ (1h * 60p * 60s * 1000ms)
+        const expires = Date.now() + 3600000;
 
         // Lưu token vào DB
         db.query("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?", [token, expires, email], (err) => {

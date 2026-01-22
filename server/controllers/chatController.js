@@ -45,7 +45,7 @@ const handleChat = (req, res) => {
         return;
     }
     
-    // C. Tìm theo giá (Rẻ / Dưới 500k)
+    // C. Tìm theo giá
     if (msg.includes('dưới 500k') || msg.includes('rẻ') || msg.includes('sinh viên') || msg.includes('tiết kiệm')) {
         let sql = "SELECT * FROM products WHERE price < 500000 LIMIT 3";
         db.query(sql, (err, data) => {
@@ -63,7 +63,7 @@ const handleChat = (req, res) => {
         return;
     }
     
-    // D. Tìm theo giá (Đắt / Cao cấp)
+    // D. Tìm theo giá
     if (msg.includes('đắt nhất') || msg.includes('giá cao') || msg.includes('xịn') || msg.includes('cao cấp')) {
         let sql = "SELECT * FROM products ORDER BY price DESC LIMIT 3";
         db.query(sql, (err, data) => {

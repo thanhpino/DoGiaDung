@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ShieldCheck, RefreshCw, FileText, HelpCircle, ArrowLeft } from 'lucide-react';
 
 export const PolicyPage = () => {
-  const { slug } = useParams(); // Lấy tham số từ URL
+  const { slug } = useParams();
 
   // Cấu hình nội dung demo
   const contentMap: any = {

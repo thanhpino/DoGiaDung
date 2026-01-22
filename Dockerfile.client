@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-# Lệnh build của Vite (tạo ra thư mục dist)
+# Lệnh build của Vite
 RUN npm run build
 
 # --- GIAI ĐOẠN 2: RUN VỚI NGINX ---

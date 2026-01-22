@@ -18,7 +18,7 @@ export const HomePage = () => {
              if (res.data && res.data.data) {
                  setProducts(res.data.data);
              } else {
-                 setProducts([]); // Fallback
+                 setProducts([]);
              }
              setLoading(false);
          })

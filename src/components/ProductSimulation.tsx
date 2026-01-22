@@ -9,7 +9,7 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
     const [isRunning, setIsRunning] = useState(false);
     const [progress, setProgress] = useState(0);
     const [status, setStatus] = useState("Sẵn sàng");
-    const [temp, setTemp] = useState(25); // Nhiệt độ cho ấm đun
+    const [temp, setTemp] = useState(25);
 
     // Reset khi đổi sản phẩm
     useEffect(() => {
@@ -34,7 +34,7 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
                     if (isKettle) setTemp(t => Math.min(100, t + 1.5));
                     return prev + 1;
                 });
-            }, 50); // Tốc độ chạy
+            }, 50);
         }
         return () => clearInterval(interval);
     }, [isRunning, progress]);
@@ -173,7 +173,7 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
         );
     }
 
-    // 4. MẶC ĐỊNH (Cho các đồ khác)
+    // 4. MẶC ĐỊNH
     return (
         <div className="bg-gray-50 rounded-2xl p-8 h-full flex flex-col items-center justify-center text-center border border-gray-100">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">

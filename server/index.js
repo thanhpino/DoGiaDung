@@ -40,7 +40,7 @@ app.use(cors({
         process.env.CLIENT_URL
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true // Cho phép gửi cookie nếu cần
+    credentials: true
 }));
 
 // 🛡️ BẢO MẬT & LOGGING

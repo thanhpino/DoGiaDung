@@ -1,7 +1,6 @@
 const request = require('supertest');
 const app = require('../index');
 
-// Tắt log console trong quá trình test để đỡ rối mắt
 beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -50,23 +49,20 @@ describe('KIỂM TRA API BACKEND', () => {
         expect(res.body.reply).toContain("30k"); // Check keyword quan trọng
     });
     
-    // --- TEST 3: CHATBOT THÔNG MINH  ---
+    // --- TEST 3: CHATBO  ---
     test('POST /api/chat - Bot KHÔNG được nhầm "phi ship" là "hi"', async () => {
         const res = await request(app)
             .post('/api/chat')
             .send({ message: 'Phi ship ha noi' }); 
 
         expect(res.statusCode).toEqual(200);
-        // Nếu bot trả lời "Gia Dụng TMT xin chào" là SAI (Bug)
         // Nó phải trả lời về phí ship
         expect(res.body.reply).not.toContain("Gia Dụng TMT xin chào");
         expect(res.body.reply).toContain("30k");
     });
 });
 
-// Đóng kết nối DB sau khi test xong (để Jest không bị treo)
+// Đóng kết nối DB sau khi test xong
 afterAll(async () => {
-    // Vì bro dùng connection pool bình thường, Jest sẽ tự exit. 
-    // Nếu dùng pool.end() thì thêm vào đây.
-    await new Promise(resolve => setTimeout(() => resolve(), 500)); // Đợi xíu cho chắc
+    await new Promise(resolve => setTimeout(() => resolve(), 500));
 });

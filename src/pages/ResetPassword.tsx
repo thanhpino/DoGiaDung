@@ -7,7 +7,7 @@ export const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get('token'); // Lấy token trên URL
+  const token = searchParams.get('token');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ export const ResetPassword = () => {
 
       if (res.data.status === "Success") {
         toast.success(res.data.message);
-        navigate('/login'); // Chuyển về trang login
+        navigate('/login');
       } else {
         toast.error(res.data.message);
       }
