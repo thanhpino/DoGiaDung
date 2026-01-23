@@ -67,7 +67,7 @@ export const ComboSuggestion = () => {
 
     const handleFindCombo = async () => {
         if (selectedCats.length === 0) return toast.error("Vui lòng chọn ít nhất 1 loại sản phẩm!");
-        if (budget < 100000) return toast.error("Ngân sách thấp quá ạ, khó tìm combo lắm ạ!");
+        if (budget < 100000) return toast.error("Ngân sách đang thấp quá ạ, vui lòng nhập ngân sách cao hơn!");
 
         setLoading(true);
         setSearched(true);
@@ -119,7 +119,7 @@ export const ComboSuggestion = () => {
                 category: item.category
             });
         });
-        toast.success("✅ Đã thêm trọn bộ Combo vào giỏ hàng! 🎁");
+        toast.success("✅ Đã thêm Combo vào giỏ hàng! 🎁");
         navigate('/checkout');
     };
 
@@ -244,7 +244,7 @@ export const ComboSuggestion = () => {
                                     <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-orange-500" size={24}/>
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mt-6">TMT Bot đang phân tích...</h3>
-                                <p className="text-gray-400 text-sm mt-2">Đang duyệt hàng ngàn sản phẩm để tìm combo tốt nhất.</p>
+                                <p className="text-gray-400 text-sm mt-2">Đang duyệt ngân hàng sản phẩm để tìm combo tốt nhất.</p>
                             </div>
                         ) : solutions.length > 0 ? (
                             <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -307,7 +307,7 @@ export const ComboSuggestion = () => {
                                 <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-4">
                                     <AlertCircle className="text-red-500" size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-800">Không tìm thấy Combo nào!</h3>
+                                <h3 className="text-xl font-bold text-gray-800">Không tìm thấy Combo nào! phù hợp với ngân sách của bạn</h3>
                                 <p className="text-gray-400 text-sm mt-2 text-center max-w-xs">
                                     Hic, TMT đã cố gắng nhưng không tìm được. <br/>Bạn thử tăng ngân sách một chút nhé?
                                 </p>

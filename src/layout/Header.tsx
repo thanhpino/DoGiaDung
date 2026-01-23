@@ -59,14 +59,14 @@ export const Header: React.FC = () => {
                     {/* Tooltip gợi ý khi hover */}
                     <div className="absolute top-full left-0 mt-2 w-full bg-white p-3 rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 transform translate-y-2 group-hover:translate-y-0">
                         <p className="text-xs font-bold text-gray-700 flex items-center gap-1">
-                            <Sparkles size={12} className="text-orange-500"/> Gợi ý Combo AI (CSP):
+                            <Sparkles size={12} className="text-orange-500"/> Gợi ý Combo của TMT Bot:
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">Nhập số tiền bạn có, hệ thống sẽ tự động tìm trọn bộ sản phẩm tối ưu nhất.</p>
+                        <p className="text-xs text-gray-500 mt-1">Nhập số tiền bạn có, TMT Bot sẽ tự động tìm trọn bộ sản phẩm tối ưu nhất.</p>
                     </div>
                 </form>
             </div>
 
-            {/* 3. MENU LINK (Vẫn giữ lại) */}
+            {/* 3. MENU LINK */}
             <div className="hidden lg:flex items-center gap-6 font-bold text-gray-500 text-sm shrink-0">
                  <Link to="/home" className="hover:text-orange-600 transition">Trang chủ</Link>
                  <Link to="/products" className="hover:text-orange-600 transition">Sản phẩm</Link>
