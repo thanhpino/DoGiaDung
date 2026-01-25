@@ -151,7 +151,7 @@ export const ComboSuggestion = () => {
                     
                     {/* LEFT SIDE: CONFIGURATION */}
                     <div className="lg:col-span-4 space-y-6">
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border border-orange-100 sticky top-24">
+                        <div className="bg-white p-6 rounded-3xl shadow-lg border border-orange-100 relative lg:sticky lg:top-24 z-0">
                             
                             {/* Ngân sách Input */}
                             <div className="mb-8">
