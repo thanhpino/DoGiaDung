@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/signup`, { name, email, password: pass });
       toast.success('Đăng ký thành công! Hãy đăng nhập.');
-      navigate('/');
+      navigate('/login');
     } catch (err: any) {
       // Chỉ lấy message hoặc ép kiểu về chuỗi
       const msg = err.response?.data?.message || err.response?.data || "Đăng ký thất bại";
