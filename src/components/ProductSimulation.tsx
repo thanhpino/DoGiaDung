@@ -55,10 +55,13 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
 
     // --- PHÂN LOẠI SẢN PHẨM ---
     const name = product.name.toLowerCase();
-    const isRobot = name.includes('robot') || name.includes('hút bụi');
-    const isCooker = name.includes('nồi') || name.includes('chiên') || name.includes('bếp');
-    const isKettle = name.includes('ấm') || name.includes('siêu tốc') || name.includes('bình');
-    const isFan = name.includes('quạt') || name.includes('máy lọc') || name.includes('xay');
+    const cat = product.category || "";
+    const isRobot = (cat === 'Cleaning' || cat === 'Gadget') && (name.includes('robot') || name.includes('hút bụi'));
+    const isCooker = cat === 'Kitchen' && (name.includes('nồi') || name.includes('chiên') || name.includes('bếp') || name.includes('lò'));
+    const isKettle = (cat === 'Kitchen' || cat === 'Personal') && (
+        name.includes('ấm ') || name.includes('siêu tốc') || name.includes('bình giữ nhiệt') || name.includes('bình đun')
+    );
+    const isFan = (cat === 'Cooling' || cat === 'Health' || cat === 'Gadget') && (name.includes('quạt') || name.includes('máy lọc') || name.includes('máy xay'));
 
     // 1. GIAO DIỆN ROBOT DỌN DẸP
     if (isRobot) {
