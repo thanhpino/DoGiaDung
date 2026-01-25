@@ -25,7 +25,7 @@ export const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  const categories = ['All', 'Kitchen', 'Cleaning', 'Cooling', 'Health', 'SmartHome', 'Beauty', 'Lighting'];
+  const categories = ['All', 'Kitchen', 'Cleaning', 'Cooling', 'Health', 'SmartHome', 'Beauty', 'Lighting', "Decor", "Bedroom", "Bathroom", "Gadget", "Utility"];
 
   // Xử lý Debounce cho Search
   useEffect(() => {
