@@ -61,7 +61,7 @@ export const Header: React.FC = () => {
                         <p className="text-xs font-bold text-gray-700 flex items-center gap-1">
                             <Sparkles size={12} className="text-orange-500"/> Gợi ý Combo của TMT Bot:
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">Nhập số tiền bạn có, TMT Bot sẽ tự động tìm trọn bộ sản phẩm tối ưu nhất.</p>
+                        <p className="text-xs text-gray-500 mt-1">Nhập số tiền bạn có, TMT Bot sẽ tự động tìm cho bạn bộ sản phẩm tối ưu nhất.</p>
                     </div>
                 </form>
             </div>

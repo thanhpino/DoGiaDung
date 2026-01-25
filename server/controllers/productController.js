@@ -8,7 +8,7 @@ const getProducts = (req, res) => {
     const category = req.query.category || 'All';
     const offset = (page - 1) * limit;
 
-    let whereSql = "WHERE 1=1";
+    let whereSql = "WHERE is_deleted = 0";
     const params = [];
 
     if (search) { 
@@ -72,10 +72,13 @@ const updateProduct = (req, res) => {
 };
 
 const deleteProduct = (req, res) => {
-    const sql = "DELETE FROM products WHERE id = ?";
-    db.query(sql, [req.params.id], (err) => {
+    const sql = "UPDATE products SET is_deleted = 1 WHERE id = ?";
+    db.query(sql, [req.params.id], (err, result) => {
         if(err) return res.status(500).json(err);
-        return res.json("Xóa sản phẩm thành công");
+        if (result.affectedRows === 0) {
+            return res.status(404).json("Không tìm thấy sản phẩm");
+        }
+        return res.json("Đã xóa sản phẩm thành công");
     });
 };
 
