@@ -80,8 +80,10 @@ export const HomePage = () => {
                 
                 {/* Vùng Ảnh */}
                 <div className="relative mb-4 overflow-hidden rounded-xl h-56 bg-gray-50 flex items-center justify-center p-4">
-                    {product.discount && (
-                       <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">-{product.discount}</span>
+                    {product.old_price && product.old_price > product.price && (
+                       <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+                            -{Math.round(((product.old_price - product.price) / product.old_price) * 100)}%
+                        </span>
                     )}
                     <img src={product.image_url || product.img} alt={product.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition duration-500" />
                 </div>
@@ -96,7 +98,7 @@ export const HomePage = () => {
                             <div className="flex items-center gap-2">
                                 <span className="text-red-600 font-bold text-xl">{formatCurrency(product.price)}</span>
                             </div>
-                            {product.old_price && (
+                            {product.old_price && product.old_price > product.price && (
                                 <div className="text-gray-400 text-sm line-through decoration-gray-300">{formatCurrency(product.old_price)}</div>
                             )}
                         </div>

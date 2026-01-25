@@ -144,7 +144,14 @@ export const ProductDetail = () => {
                     <h1 className="text-3xl font-extrabold text-gray-900 leading-tight mb-4">{product.name}</h1>
                     <div className="flex items-end gap-3 pb-6 border-b border-gray-100">
                         <span className="text-4xl font-extrabold text-orange-600">{formatCurrency(product.price)}</span>
-                        {product.oldPrice && <span className="text-lg text-gray-400 line-through mb-1.5">{formatCurrency(product.oldPrice)}</span>}
+                        {product.oldPrice && product.oldPrice > product.price && (
+                            <>
+                                <span className="text-lg text-gray-400 line-through mb-1.5">{formatCurrency(product.oldPrice)}</span>
+                                <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold mb-2 ml-2">
+                                    Giảm {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
+                                </span>
+                            </>
+                        )}
                     </div>
                 </div>
 

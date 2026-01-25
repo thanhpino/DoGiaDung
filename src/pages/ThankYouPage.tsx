@@ -11,7 +11,7 @@ export const ThankYouPage = () => {
         
         <h1 className="text-3xl font-extrabold text-gray-800 mb-4">Cảm ơn bạn!</h1>
         <p className="text-gray-600 text-lg mb-8">
-          Đơn hàng của bạn đã được tiếp nhận và đang xử lý. Chúng tôi sẽ sớm liên hệ để giao hàng.
+          Đơn hàng của bạn đã được tiếp nhận và đang xử lý. TMT sẽ sớm liên hệ để giao hàng.
         </p>
 
         <div className="space-y-3">

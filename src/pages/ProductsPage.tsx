@@ -192,7 +192,7 @@ export const ProductsPage = () => {
                             <div className="flex items-end justify-between mt-3 pt-3 border-t border-gray-50">
                                 <div>
                                     <div className="text-red-600 font-bold text-xl">{formatCurrency(product.price)}</div>
-                                    {product.old_price && (
+                                    {product.old_price && product.old_price > product.price && (
                                         <div className="text-gray-400 text-sm line-through">{formatCurrency(product.old_price)}</div>
                                     )}
                                 </div>

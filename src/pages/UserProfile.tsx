@@ -63,14 +63,13 @@ export const UserProfile = () => {
             savedUser.name = info.name;
             localStorage.setItem('user', JSON.stringify(savedUser));
             
-            // Reload nhẹ trang để AuthContext cập nhật lại
+            // Reload để AuthContext cập nhật lại
             setTimeout(() => window.location.reload(), 1000);
 
         } catch (error) {
             toast.error("Lỗi cập nhật thông tin");
         }
     };
-
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
