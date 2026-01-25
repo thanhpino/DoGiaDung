@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Sparkles, ShoppingBag, ArrowLeft, CheckCircle, AlertCircle, Zap, TrendingUp, Utensils, Wind, Home, Smile, Eraser, Lightbulb, HeartPulse, Search } from 'lucide-react';
+import { Sparkles, ShoppingBag, ArrowLeft, CheckCircle, AlertCircle, Zap, TrendingUp, Utensils, Wind, Home, Smile, Eraser, Lightbulb, HeartPulse, Search, BedDouble, Bath, Palette, Gamepad2 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
@@ -52,10 +52,14 @@ export const ComboSuggestion = () => {
     const availableCategories = [
         { id: 'Kitchen', label: 'Nhà bếp', desc: 'Nồi, Chảo, Bếp...', icon: <Utensils size={24}/>, color: 'bg-orange-100 text-orange-600' },
         { id: 'Cooling', label: 'Điện máy', desc: 'Quạt, Máy lạnh...', icon: <Wind size={24}/>, color: 'bg-blue-100 text-blue-600' },
-        { id: 'SmartHome', label: 'Smarthome', desc: 'Khóa, Cam...', icon: <Home size={24}/>, color: 'bg-indigo-100 text-indigo-600' },
         { id: 'Cleaning', label: 'Dọn dẹp', desc: 'Hút bụi, Lau sàn...', icon: <Eraser size={24}/>, color: 'bg-teal-100 text-teal-600' },
-        { id: 'Lighting', label: 'Chiếu sáng', desc: 'Đèn bàn, Ngủ...', icon: <Lightbulb size={24}/>, color: 'bg-yellow-100 text-yellow-600' },
-        { id: 'Health', label: 'Sức khỏe', desc: 'Lọc khí, Massage...', icon: <HeartPulse size={24}/>, color: 'bg-green-100 text-green-600' },
+        { id: 'SmartHome', label: 'Smarthome', desc: 'Khóa, Cam...', icon: <Home size={24}/>, color: 'bg-indigo-100 text-indigo-600' },
+        { id: 'Bedroom', label: 'Phòng ngủ', desc: 'Chăn ga, Đèn ngủ...', icon: <BedDouble size={24}/>, color: 'bg-purple-100 text-purple-600' },
+        { id: 'Bathroom', label: 'Phòng tắm', desc: 'Kệ, Thảm, Vòi...', icon: <Bath size={24}/>, color: 'bg-cyan-100 text-cyan-600' },
+        { id: 'Decor', label: 'Decor', desc: 'Tranh, Hoa, Gương...', icon: <Palette size={24}/>, color: 'bg-rose-100 text-rose-600' },
+        { id: 'Gadget', label: 'Công nghệ', desc: 'Loa, Phụ kiện...', icon: <Gamepad2 size={24}/>, color: 'bg-slate-100 text-slate-600' },
+        { id: 'Lighting', label: 'Chiếu sáng', desc: 'Đèn bàn, Led...', icon: <Lightbulb size={24}/>, color: 'bg-yellow-100 text-yellow-600' },
+        { id: 'Health', label: 'Sức khỏe', desc: 'Massage, Yoga...', icon: <HeartPulse size={24}/>, color: 'bg-green-100 text-green-600' },
         { id: 'Beauty', label: 'Làm đẹp', desc: 'Máy sấy, Kẹp tóc...', icon: <Smile size={24}/>, color: 'bg-pink-100 text-pink-600' }
     ];
 
