@@ -15,9 +15,7 @@ const CATEGORIES = [
   { id: 'Decor', label: 'Trang Trí (Decor)' },
   { id: 'Gadget', label: 'Công Nghệ & Phụ Kiện' },
   { id: 'Health', label: 'Sức Khỏe & Thể Thao' },
-  { id: 'Beauty', label: 'Làm Đẹp' },
-  { id: 'Utility', label: 'Tiện Ích Đời Sống' },
-  { id: 'Personal', label: 'Đồ Dùng Cá Nhân' }
+  { id: 'Beauty', label: 'Làm Đẹp' }
 ];
 
 export const ProductManager = () => {
