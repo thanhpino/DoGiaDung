@@ -160,9 +160,10 @@ export const ProductsPage = () => {
                         >
                         {/* ẢNH SẢN PHẨM */}
                         <div className="relative mb-4 overflow-hidden rounded-xl h-48 bg-gray-50 flex items-center justify-center p-4">
-                            {/* Nút giảm giá */}
-                            {product.discount && (
-                            <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-sm">{product.discount}</span>
+                            {product.old_price && product.old_price > product.price && (
+                                <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-sm">
+                                    -{Math.round(((product.old_price - product.price) / product.old_price) * 100)}%
+                                </span>
                             )}
                             
                             {/* NÚT TRÁI TIM YÊU THÍCH */}

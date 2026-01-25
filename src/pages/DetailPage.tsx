@@ -20,24 +20,24 @@ export const ProductDetail = () => {
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/api/products/${id}`)
-         .then(res => {
-             const data = res.data;
-             if (data.image_url) data.img = data.image_url;
-             if (data.old_price) data.oldPrice = data.old_price;
-             if (data.review_count) data.reviewCount = data.review_count;
-             
-             setProduct(data);
-             setLoading(false);
-         })
-         .catch(err => {
-             console.error("Lỗi lấy chi tiết:", err);
-             setLoading(false);
-         });
+          .then(res => {
+              const data = res.data;
+              // Map dữ liệu để dùng chung logic camelCase
+              if (data.image_url) data.img = data.image_url;
+              if (data.old_price) data.oldPrice = data.old_price; 
+              if (data.review_count) data.reviewCount = data.review_count;
+              
+              setProduct(data);
+              setLoading(false);
+          })
+          .catch(err => {
+              console.error("Lỗi lấy chi tiết:", err);
+              setLoading(false);
+          });
   }, [id]);
 
   const handleAddToCart = () => {
     if (product) {
-      // Thêm sản phẩm vào giỏ hàng
       addToCart({ ...product, img: product.image_url || product.img });
       
       toast.custom((t) => (
@@ -111,15 +111,16 @@ export const ProductDetail = () => {
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
                     <button className="p-3 bg-white rounded-full shadow-md text-gray-400 hover:text-red-500 transition hover:shadow-lg"><Heart size={20}/></button>
                 </div>
-                {product.discount && (
-                    <span className="absolute top-6 left-6 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-red-200 shadow-lg">
-                        Giảm {product.discount}
+                
+                {/* LOGIC : Chỉ hiện Badge góc trái khi có giảm giá */}
+                {product.oldPrice && product.oldPrice > product.price && (
+                    <span className="absolute top-6 left-6 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-red-200 shadow-lg z-10">
+                        -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
                     </span>
                 )}
             </div>
 
             {/* --- KHU VỰC TRẢI NGHIỆM ẢO  --- */}
-            {/* Component này tự động nhận diện loại sản phẩm để hiển thị giao diện phù hợp */}
             <div className="h-[320px] w-full rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 bg-white">
                <ProductSimulation product={product} />
             </div>
@@ -142,6 +143,8 @@ export const ProductDetail = () => {
                         </div>
                     </div>
                     <h1 className="text-3xl font-extrabold text-gray-900 leading-tight mb-4">{product.name}</h1>
+                    
+                    {/* Hiển thị giá giảm và chưa giảm*/}
                     <div className="flex items-end gap-3 pb-6 border-b border-gray-100">
                         <span className="text-4xl font-extrabold text-orange-600">{formatCurrency(product.price)}</span>
                         {product.oldPrice && product.oldPrice > product.price && (
