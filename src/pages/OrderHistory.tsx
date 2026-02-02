@@ -4,6 +4,7 @@ import { Package, Truck, ChevronDown, ChevronUp, Star } from 'lucide-react'; // 
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { ReviewModal } from '../components/ReviewModal';
+import { formatCurrency } from '../utils/format';
 
 export const OrderHistory = () => {
     const { user } = useAuth();
@@ -16,7 +17,6 @@ export const OrderHistory = () => {
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
-    const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
     useEffect(() => {
         if (user) {

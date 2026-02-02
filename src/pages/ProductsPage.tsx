@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ShoppingBag, Search, ChevronLeft, ChevronRight, Filter, Heart } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { formatCurrency } from '../utils/format';
 
 export const ProductsPage = () => {
   const navigate = useNavigate();
@@ -78,10 +79,6 @@ export const ProductsPage = () => {
           setPagination(prev => ({ ...prev, page: newPage }));
           window.scrollTo(0, 0);
       }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
 
   return (

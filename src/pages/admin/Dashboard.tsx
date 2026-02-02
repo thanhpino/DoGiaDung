@@ -5,6 +5,7 @@ import {
   AreaChart, Area 
 } from 'recharts';
 import { DollarSign, ShoppingCart, Users, TrendingUp, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 export const AdminDashboard = () => {
   const [stats, setStats] = useState({ revenue: 0, orders: 0, users: 0 });
@@ -47,8 +48,6 @@ export const AdminDashboard = () => {
 
     } catch (err) { console.error("Lỗi tải dashboard:", err); }
   };
-
-  const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
   return (
     <div className="space-y-8 animate-fade-in">

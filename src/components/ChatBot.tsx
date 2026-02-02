@@ -3,6 +3,7 @@ import { Send, X, Plus, Bot, User, RefreshCw, Zap } from 'lucide-react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-hot-toast';
+import { formatCurrency } from '../utils/format';
 
 export const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,9 +57,7 @@ export const ChatBot = () => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleSend();
   }
-
-  const formatCurrency = (val: number) => new Intl.NumberFormat('vi-VN').format(val) + '₫';
-
+  
   const handleReset = () => {
       setMessages([{ text: "Xin chào! HomeBot TMT sẵn sàng phục vụ. Bạn cần tìm món đồ gia dụng nào?", isUser: false }]);
   };

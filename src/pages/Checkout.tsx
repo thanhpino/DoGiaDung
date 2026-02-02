@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios'; 
 import { toast } from 'react-hot-toast';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { formatCurrency } from '../utils/format';
 
 export const Checkout = () => {
   const navigate = useNavigate();
@@ -34,11 +35,7 @@ export const Checkout = () => {
           });
       }
   }, [user]);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
-
+  
   const shippingFee = cartItems.length > 0 ? 30000 : 0;
   const totalAmount = getCartTotal() + shippingFee;
   const totalAmountUSD = (totalAmount / 26004).toFixed(2);

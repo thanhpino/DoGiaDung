@@ -4,6 +4,7 @@ import { Sparkles, ShoppingBag, ArrowLeft, CheckCircle, AlertCircle, Zap, Trendi
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
+import { formatCurrency } from '../utils/format';
 
 interface Product {
     id: number;
@@ -109,9 +110,6 @@ export const ComboSuggestion = () => {
     useEffect(() => {
         if (searchParams.get('budget')) handleFindCombo();
     }, []);
-
-    const formatCurrency = (amount: number) => 
-        new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
     const handleAddComboToCart = (items: Product[]) => {
         items.forEach(item => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, ArrowRight } from 'lucide-react';
 import axios from 'axios';
+import { formatCurrency } from '../utils/format';
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -27,10 +28,6 @@ export const HomePage = () => {
              setLoading(false);
          });
   }, []);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
 
   return (
     <div className="min-h-screen bg-[#FFFBF7] font-sans text-gray-800">

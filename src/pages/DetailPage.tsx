@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-hot-toast'; 
 import { ProductSimulation } from '../components/ProductSimulation';
+import { formatCurrency } from '../utils/format';
 
 export const ProductDetail = () => {
   const navigate = useNavigate();
@@ -13,10 +14,6 @@ export const ProductDetail = () => {
   
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/api/products/${id}`)
