@@ -1,5 +1,6 @@
 // config/database.js
-require('dotenv').config();
+// Chỉ load dotenv nếu chạy standalone (không load từ server/)
+if (!process.env.DB_HOST) require('dotenv').config();
 const mysql = require('mysql2');
 
 const pool = mysql.createPool({

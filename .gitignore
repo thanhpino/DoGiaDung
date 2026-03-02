@@ -11,6 +11,7 @@ lerna-debug.log*
 # Thư viện nặng
 node_modules/
 server/node_modules/
+chatbot-service/node_modules/
 
 # Build files
 dist/
