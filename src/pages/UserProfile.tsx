@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { User, Lock, Save, ArrowLeft } from 'lucide-react';
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 export const UserProfile = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    
+
     const [info, setInfo] = useState({
         name: '',
         email: '',
@@ -27,7 +27,7 @@ export const UserProfile = () => {
     // Load dữ liệu
     useEffect(() => {
         if (user) {
-            axios.get(`${import.meta.env.VITE_API_URL}/api/users/${user.id}`)
+            api.get(`/api/users/${user.id}`)
                 .then(res => {
                     // Cập nhật state với dữ liệu từ DB, nếu null thì để chuỗi rỗng
                     setInfo({
@@ -51,18 +51,18 @@ export const UserProfile = () => {
         if (!user) return;
 
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${user.id}`, {
+            await api.put(`/api/users/${user.id}`, {
                 name: info.name,
                 phone: info.phone,
                 address: info.address
             });
             toast.success("Cập nhật thông tin thành công!");
-            
+
             // Cập nhật localStorage để Header đổi tên ngay lập tức
             const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
             savedUser.name = info.name;
             localStorage.setItem('user', JSON.stringify(savedUser));
-            
+
             // Reload để AuthContext cập nhật lại
             setTimeout(() => window.location.reload(), 1000);
 
@@ -73,7 +73,7 @@ export const UserProfile = () => {
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
-        
+
         if (pass.newPassword !== pass.confirmPassword) {
             toast.error("Mật khẩu xác nhận không khớp!");
             return;
@@ -85,7 +85,7 @@ export const UserProfile = () => {
         }
 
         try {
-            const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${user.id}/password`, {
+            const res = await api.put(`/api/users/${user.id}/password`, {
                 oldPassword: pass.oldPassword,
                 newPassword: pass.newPassword
             });
@@ -108,39 +108,39 @@ export const UserProfile = () => {
         <div className="min-h-screen bg-[#FFFBF7] p-6 font-sans">
             <div className="max-w-5xl mx-auto">
                 <button onClick={() => navigate('/home')} className="flex items-center gap-2 text-gray-600 hover:text-orange-600 mb-6 font-medium transition">
-                    <ArrowLeft size={20}/> Quay lại trang chủ
+                    <ArrowLeft size={20} /> Quay lại trang chủ
                 </button>
 
                 <h1 className="text-3xl font-extrabold text-gray-800 mb-8">Hồ Sơ Của Tôi</h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
+
                     {/* Form Thông tin */}
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <div className="flex items-center gap-3 mb-6 border-b pb-4">
-                            <div className="bg-orange-100 p-2 rounded-lg text-orange-600"><User size={24}/></div>
+                            <div className="bg-orange-100 p-2 rounded-lg text-orange-600"><User size={24} /></div>
                             <h2 className="text-xl font-bold text-gray-800">Thông Tin Chung</h2>
                         </div>
 
                         <form onSubmit={handleUpdateInfo} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input disabled value={info.email} className="w-full bg-gray-100 border p-3 rounded-xl text-gray-500 cursor-not-allowed"/>
+                                <input disabled value={info.email} className="w-full bg-gray-100 border p-3 rounded-xl text-gray-500 cursor-not-allowed" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Họ tên</label>
-                                <input required value={info.name} onChange={e => setInfo({...info, name: e.target.value})} className="w-full border p-3 rounded-xl focus:border-orange-500 outline-none"/>
+                                <input required value={info.name} onChange={e => setInfo({ ...info, name: e.target.value })} className="w-full border p-3 rounded-xl focus:border-orange-500 outline-none" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
-                                <input required type="tel" value={info.phone} onChange={e => setInfo({...info, phone: e.target.value})} className="w-full border p-3 rounded-xl focus:border-orange-500 outline-none"/>
+                                <input required type="tel" value={info.phone} onChange={e => setInfo({ ...info, phone: e.target.value })} className="w-full border p-3 rounded-xl focus:border-orange-500 outline-none" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
-                                <textarea required value={info.address} onChange={e => setInfo({...info, address: e.target.value})} className="w-full border p-3 rounded-xl focus:border-orange-500 outline-none resize-none h-24"></textarea>
+                                <textarea required value={info.address} onChange={e => setInfo({ ...info, address: e.target.value })} className="w-full border p-3 rounded-xl focus:border-orange-500 outline-none resize-none h-24"></textarea>
                             </div>
                             <button type="submit" className="w-full bg-orange-600 text-white py-3 rounded-xl font-bold hover:bg-orange-700 transition flex items-center justify-center gap-2">
-                                <Save size={20}/> Lưu Thay Đổi
+                                <Save size={20} /> Lưu Thay Đổi
                             </button>
                         </form>
                     </div>
@@ -148,25 +148,25 @@ export const UserProfile = () => {
                     {/* Form Đổi mật khẩu */}
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
                         <div className="flex items-center gap-3 mb-6 border-b pb-4">
-                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><Lock size={24}/></div>
+                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><Lock size={24} /></div>
                             <h2 className="text-xl font-bold text-gray-800">Bảo Mật</h2>
                         </div>
 
                         <form onSubmit={handleChangePassword} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
-                                <input type="password" required value={pass.oldPassword} onChange={e => setPass({...pass, oldPassword: e.target.value})} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none"/>
+                                <input type="password" required value={pass.oldPassword} onChange={e => setPass({ ...pass, oldPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
-                                <input type="password" required value={pass.newPassword} onChange={e => setPass({...pass, newPassword: e.target.value})} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none"/>
+                                <input type="password" required value={pass.newPassword} onChange={e => setPass({ ...pass, newPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Nhập lại mật khẩu mới</label>
-                                <input type="password" required value={pass.confirmPassword} onChange={e => setPass({...pass, confirmPassword: e.target.value})} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none"/>
+                                <input type="password" required value={pass.confirmPassword} onChange={e => setPass({ ...pass, confirmPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
                             </div>
                             <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
-                                <Lock size={18}/> Đổi Mật Khẩu
+                                <Lock size={18} /> Đổi Mật Khẩu
                             </button>
                         </form>
                     </div>

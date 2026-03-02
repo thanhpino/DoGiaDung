@@ -10,12 +10,15 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    multipleStatements: true,
     ssl: {
         rejectUnauthorized: false
     }
 });
 
+// Promise-based pool cho async/await
+const promisePool = pool.promise();
+
+// Test connection
 pool.getConnection((err, connection) => {
     if (err) {
         console.error('❌ Lỗi kết nối DB:', err.message);
@@ -26,4 +29,4 @@ pool.getConnection((err, connection) => {
     }
 });
 
-module.exports = pool;
+module.exports = promisePool;

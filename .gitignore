@@ -32,3 +32,4 @@ build/
 # --- PHẦN BẢO MẬT & SERVER ---
 .env
 server/.env
+server/uploads/

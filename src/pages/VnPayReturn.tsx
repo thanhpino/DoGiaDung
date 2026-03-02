@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 
@@ -18,7 +18,7 @@ export const VnPayReturn = () => {
             if (pendingOrder) {
                 const orderData = JSON.parse(pendingOrder);
                 // Gửi đơn hàng xuống DB
-                axios.post(`${import.meta.env.VITE_API_URL}/api/orders`, {
+                api.post('/api/orders', {
                     ...orderData,
                     payment_method: 'VNPAY Online'
                 }).then(() => {

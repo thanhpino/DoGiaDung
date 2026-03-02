@@ -4,13 +4,14 @@ const multer = require('multer');
 const path = require('path');
 const db = require('../config/database');
 const fs = require('fs');
+const { verifyToken } = require('../middleware/authMiddleware');
 
 // Cấu hình nơi lưu ảnh
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const dir = 'uploads/';
-        
-        if (!fs.existsSync(dir)){
+
+        if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
 
@@ -23,10 +24,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// API Upload Avatar
-router.post('/upload-avatar/:userId', upload.single('avatar'), (req, res) => {
+// API Upload Avatar (cần đăng nhập)
+router.post('/upload-avatar/:userId', verifyToken, upload.single('avatar'), (req, res) => {
     const userId = req.params.userId;
-    
+
     if (!req.file) return res.status(400).json("Chưa chọn file");
 
     const filename = `/uploads/${req.file.filename}`;

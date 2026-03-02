@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/axiosConfig';
 import { ShoppingBag, Phone, MapPin } from 'lucide-react';
 
 export const InvoicePage = () => {
@@ -14,8 +14,8 @@ export const InvoicePage = () => {
             try {
                 // Gọi song song 2 API để lấy thông tin đơn hàng và sản phẩm
                 const [orderRes, itemsRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${id}`),
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${id}/items`)
+                    api.get(`/api/orders/${id}`),
+                    api.get(`/api/orders/${id}/items`)
                 ]);
 
                 setOrder(orderRes.data);
@@ -41,7 +41,7 @@ export const InvoicePage = () => {
 
     return (
         <div className="bg-white text-black font-sans p-8 max-w-[210mm] mx-auto min-h-screen relative">
-            
+
             {/* --- HEADER --- */}
             <div className="flex justify-between items-start border-b-2 border-gray-800 pb-6 mb-6">
                 <div>
@@ -54,7 +54,7 @@ export const InvoicePage = () => {
                 </div>
                 <div className="text-right">
                     <h2 className="text-xl font-bold text-orange-600 flex items-center justify-end gap-2">
-                        <ShoppingBag size={20}/> GIA DỤNG TMT
+                        <ShoppingBag size={20} /> GIA DỤNG TMT
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">670/32 Đoàn Văn Bơ, P.16, Q.4, TP.HCM</p>
                     <p className="text-sm text-gray-500">Hotline: 0932 013 424</p>
@@ -69,10 +69,10 @@ export const InvoicePage = () => {
                     <div className="text-sm space-y-1">
                         <p className="font-bold text-lg">{order.customer_name}</p>
                         <p className="flex items-start gap-2 text-gray-600">
-                            <MapPin size={14} className="mt-1 shrink-0"/> {order.customer_address}
+                            <MapPin size={14} className="mt-1 shrink-0" /> {order.customer_address}
                         </p>
                         <p className="flex items-center gap-2 text-gray-600">
-                            <Phone size={14}/> {order.customer_phone}
+                            <Phone size={14} /> {order.customer_phone}
                         </p>
                     </div>
                 </div>
@@ -138,7 +138,7 @@ export const InvoicePage = () => {
                     <p className="font-mono text-[10px] text-gray-400">INVOICE ID: {order.id} | PRINTED: {new Date().toLocaleString()}</p>
                 </div>
             </div>
-            
+
             {/* CSS Ẩn */}
             <style>{`
                 @media print {

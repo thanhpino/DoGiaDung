@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 import { Package, Truck, ChevronDown, ChevronUp, Star } from 'lucide-react'; // Thêm Star
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -10,17 +10,17 @@ export const OrderHistory = () => {
     const { user } = useAuth();
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    
+
     const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
-    const [orderItems, setOrderItems] = useState<any[]>([]); 
-    
+    const [orderItems, setOrderItems] = useState<any[]>([]);
+
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
 
     useEffect(() => {
         if (user) {
-            axios.get(`${import.meta.env.VITE_API_URL}/api/orders/user/${user.id}`)
+            api.get(`/api/orders/user/${user.id}`)
                 .then(res => {
                     setOrders(res.data);
                     setLoading(false);
@@ -35,7 +35,7 @@ export const OrderHistory = () => {
     // HÀM TẢI LẠI ITEM
     const refreshOrderItems = async (orderId: string) => {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/items`);
+            const res = await api.get(`/api/orders/${orderId}/items`);
             setOrderItems(res.data);
         } catch (error) {
             console.error("Lỗi tải chi tiết đơn:", error);
@@ -44,7 +44,7 @@ export const OrderHistory = () => {
 
     const toggleExpand = async (orderId: string) => {
         if (expandedOrder === orderId) {
-            setExpandedOrder(null); 
+            setExpandedOrder(null);
             setOrderItems([]);
         } else {
             setExpandedOrder(orderId);
@@ -58,7 +58,7 @@ export const OrderHistory = () => {
     return (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 min-h-screen bg-[#FFFBF7]">
             <h1 className="text-3xl font-extrabold mb-8 flex items-center gap-3 text-gray-800">
-                <div className="bg-orange-100 p-3 rounded-xl"><Package className="text-orange-600" size={32}/></div>
+                <div className="bg-orange-100 p-3 rounded-xl"><Package className="text-orange-600" size={32} /></div>
                 Đơn hàng của tôi
             </h1>
 
@@ -73,7 +73,7 @@ export const OrderHistory = () => {
                 <div className="space-y-6">
                     {orders.map((order: any) => (
                         <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden transition hover:shadow-md">
-                            
+
                             {/* Header Đơn Hàng */}
                             <div className="p-6 cursor-pointer" onClick={() => toggleExpand(order.id)}>
                                 <div className="flex justify-between items-center">
@@ -86,9 +86,9 @@ export const OrderHistory = () => {
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <span className="px-4 py-1.5 rounded-full text-sm font-bold bg-blue-50 text-blue-600 border border-blue-100 flex items-center gap-2">
-                                            <Truck size={14}/> {order.status}
+                                            <Truck size={14} /> {order.status}
                                         </span>
-                                        {expandedOrder === order.id ? <ChevronUp size={20}/> : <ChevronDown size={20}/>}
+                                        {expandedOrder === order.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                     </div>
                                 </div>
                             </div>
@@ -112,46 +112,46 @@ export const OrderHistory = () => {
                                     {/* DANH SÁCH SẢN PHẨM */}
                                     <h4 className="font-bold text-gray-800 mb-3">Sản phẩm đã mua:</h4>
                                     <div className="space-y-4">
-                                        {orderItems.length === 0 ? <p>Đang tải sản phẩm...</p> : 
-                                         orderItems.map((item: any, index: number) => (
-                                            <div key={index} className="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100">
-                                                <div className="flex items-center gap-3">
-                                                    <img src={item.image_url} alt="" className="w-12 h-12 rounded object-cover border"/>
-                                                    <div>
-                                                        <p className="font-bold text-gray-800 text-sm">{item.name}</p>
-                                                        <p className="text-xs text-gray-500">SL: {item.quantity} x {formatCurrency(item.price)}</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                {/* --- LOGIC HIỂN THỊ NÚT HOẶC ĐÃ ĐÁNH GIÁ --- */}
-                                                {order.status === 'Hoàn thành' && (
-                                                    item.rating ? (
-                                                        // Nếu ĐÃ có rating -> Hiện kết quả
-                                                        <div className="flex flex-col items-end">
-                                                            <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg border border-green-100 mb-1">
-                                                                Đã đánh giá
-                                                            </span>
-                                                            <div className="flex text-yellow-400">
-                                                                {[...Array(5)].map((_, i) => (
-                                                                    <Star key={i} size={12} fill={i < item.rating ? "currentColor" : "none"} />
-                                                                ))}
-                                                            </div>
+                                        {orderItems.length === 0 ? <p>Đang tải sản phẩm...</p> :
+                                            orderItems.map((item: any, index: number) => (
+                                                <div key={index} className="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100">
+                                                    <div className="flex items-center gap-3">
+                                                        <img src={item.image_url} alt="" className="w-12 h-12 rounded object-cover border" />
+                                                        <div>
+                                                            <p className="font-bold text-gray-800 text-sm">{item.name}</p>
+                                                            <p className="text-xs text-gray-500">SL: {item.quantity} x {formatCurrency(item.price)}</p>
                                                         </div>
-                                                    ) : (
-                                                        // Nếu CHƯA có rating -> Hiện nút Viết đánh giá
-                                                        <button 
-                                                            onClick={() => {
-                                                                setSelectedProduct(item);
-                                                                setIsReviewOpen(true);
-                                                            }} 
-                                                            className="text-sm font-bold text-orange-600 hover:text-orange-800 underline bg-orange-50 px-3 py-1 rounded-lg"
-                                                        >
-                                                            Viết đánh giá
-                                                        </button>
-                                                    )
-                                                )}
-                                            </div>
-                                        ))}
+                                                    </div>
+
+                                                    {/* --- LOGIC HIỂN THỊ NÚT HOẶC ĐÃ ĐÁNH GIÁ --- */}
+                                                    {order.status === 'Hoàn thành' && (
+                                                        item.rating ? (
+                                                            // Nếu ĐÃ có rating -> Hiện kết quả
+                                                            <div className="flex flex-col items-end">
+                                                                <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg border border-green-100 mb-1">
+                                                                    Đã đánh giá
+                                                                </span>
+                                                                <div className="flex text-yellow-400">
+                                                                    {[...Array(5)].map((_, i) => (
+                                                                        <Star key={i} size={12} fill={i < item.rating ? "currentColor" : "none"} />
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            // Nếu CHƯA có rating -> Hiện nút Viết đánh giá
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedProduct(item);
+                                                                    setIsReviewOpen(true);
+                                                                }}
+                                                                className="text-sm font-bold text-orange-600 hover:text-orange-800 underline bg-orange-50 px-3 py-1 rounded-lg"
+                                                            >
+                                                                Viết đánh giá
+                                                            </button>
+                                                        )
+                                                    )}
+                                                </div>
+                                            ))}
                                     </div>
                                 </div>
                             )}
@@ -159,15 +159,15 @@ export const OrderHistory = () => {
                     ))}
                 </div>
             )}
-            
+
             {/* --- MODAL ĐÁNH GIÁ  --- */}
             {selectedProduct && (
-                <ReviewModal 
-                    isOpen={isReviewOpen} 
-                    onClose={() => setIsReviewOpen(false)} 
-                    product={selectedProduct} 
-                    userId={user.id} 
-                    onSuccess={() => refreshOrderItems(expandedOrder!)} 
+                <ReviewModal
+                    isOpen={isReviewOpen}
+                    onClose={() => setIsReviewOpen(false)}
+                    product={selectedProduct}
+                    userId={user.id}
+                    onSuccess={() => refreshOrderItems(expandedOrder!)}
                 />
             )}
         </div>

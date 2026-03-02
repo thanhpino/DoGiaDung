@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Star, X, Upload } from 'lucide-react';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 import { toast } from 'react-hot-toast';
 
 interface ReviewModalProps {
@@ -8,7 +8,7 @@ interface ReviewModalProps {
     onClose: () => void;
     product: any;
     userId: number;
-    onSuccess: () => void; 
+    onSuccess: () => void;
 }
 
 export const ReviewModal = ({ isOpen, onClose, product, userId, onSuccess }: ReviewModalProps) => {
@@ -42,11 +42,11 @@ export const ReviewModal = ({ isOpen, onClose, product, userId, onSuccess }: Rev
         }
 
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/reviews`, formData, {
+            await api.post('/api/reviews', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             toast.success('Cảm ơn bạn đã đánh giá!');
-            
+
             onSuccess(); // <--- 2. GỌI HÀM NÀY KHI THÀNH CÔNG
             onClose();
         } catch (error) {
@@ -59,11 +59,11 @@ export const ReviewModal = ({ isOpen, onClose, product, userId, onSuccess }: Rev
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-2xl w-full max-w-md p-6 relative">
-                <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={24}/></button>
-                
+                <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={24} /></button>
+
                 <h3 className="text-xl font-bold mb-4">Đánh giá sản phẩm</h3>
                 <div className="flex items-center gap-3 mb-6 bg-gray-50 p-3 rounded-xl">
-                    <img src={product.image_url} alt="" className="w-12 h-12 object-cover rounded-lg"/>
+                    <img src={product.image_url} alt="" className="w-12 h-12 object-cover rounded-lg" />
                     <p className="font-medium text-sm line-clamp-2">{product.name}</p>
                 </div>
 
@@ -79,7 +79,7 @@ export const ReviewModal = ({ isOpen, onClose, product, userId, onSuccess }: Rev
                         {rating === 5 ? 'Tuyệt vời!' : rating === 4 ? 'Hài lòng' : rating === 3 ? 'Bình thường' : 'Tệ'}
                     </p>
 
-                    <textarea 
+                    <textarea
                         className="w-full border p-3 rounded-xl focus:border-orange-500 outline-none h-24 resize-none bg-gray-50"
                         placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm..."
                         value={comment}
@@ -88,14 +88,14 @@ export const ReviewModal = ({ isOpen, onClose, product, userId, onSuccess }: Rev
                     ></textarea>
 
                     <div>
-                        <input type="file" id="review-img" hidden accept="image/*" onChange={handleImageChange}/>
+                        <input type="file" id="review-img" hidden accept="image/*" onChange={handleImageChange} />
                         <label htmlFor="review-img" className="flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 p-3 rounded-xl cursor-pointer hover:bg-gray-50 hover:border-orange-400 transition text-gray-500">
-                            <Upload size={20}/> {image ? 'Đổi ảnh khác' : 'Thêm ảnh thực tế'}
+                            <Upload size={20} /> {image ? 'Đổi ảnh khác' : 'Thêm ảnh thực tế'}
                         </label>
                         {preview && (
                             <div className="mt-2 relative inline-block">
-                                <img src={preview} alt="Preview" className="h-20 w-20 object-cover rounded-lg border"/>
-                                <button type="button" onClick={() => {setImage(null); setPreview(null)}} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5"><X size={12}/></button>
+                                <img src={preview} alt="Preview" className="h-20 w-20 object-cover rounded-lg border" />
+                                <button type="button" onClick={() => { setImage(null); setPreview(null) }} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5"><X size={12} /></button>
                             </div>
                         )}
                     </div>

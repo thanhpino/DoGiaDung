@@ -7,7 +7,7 @@ const db = require('../config/database');
 const getComboSuggestion = async (req, res) => {
     try {
         // 1. Nhận và ép kiểu
-        const budget = Number(req.body.budget); 
+        const budget = Number(req.body.budget);
         const categories = req.body.categories;
 
         // Validation
@@ -17,18 +17,13 @@ const getComboSuggestion = async (req, res) => {
 
         // 2. Fetch Data: Lấy sản phẩm & SẮP XẾP GIÁ TĂNG DẦN
         const sql = "SELECT * FROM products WHERE price <= ? ORDER BY price ASC";
-        
-        const allProducts = await new Promise((resolve, reject) => {
-            db.query(sql, [budget], (err, results) => {
-                if (err) reject(err);
-                else resolve(results);
-            });
-        });
+
+        const [allProducts] = await db.query(sql, [budget]);
 
         // 3. Map sản phẩm vào danh mục
         const domainMap = {};
         categories.forEach(reqCat => {
-            domainMap[reqCat] = allProducts.filter(p => 
+            domainMap[reqCat] = allProducts.filter(p =>
                 p.category && p.category.toLowerCase().includes(reqCat.toLowerCase())
             );
         });
@@ -36,10 +31,10 @@ const getComboSuggestion = async (req, res) => {
         // Kiểm tra xem có danh mục nào bị rỗng không
         for (const cat of categories) {
             if (!domainMap[cat] || domainMap[cat].length === 0) {
-                return res.json({ 
-                    success: true, 
-                    solutions: [], 
-                    message: `Rất tiếc, kho không có sản phẩm loại "${cat}" nào dưới ${budget.toLocaleString('vi-VN')}đ` 
+                return res.json({
+                    success: true,
+                    solutions: [],
+                    message: `Rất tiếc, kho không có sản phẩm loại "${cat}" nào dưới ${budget.toLocaleString('vi-VN')}đ`
                 });
             }
         }
@@ -55,10 +50,10 @@ const getComboSuggestion = async (req, res) => {
             if (index === categories.length) {
                 // Ràng buộc lỏng: Chỉ cần Tổng tiền <= Ngân sách là OK
                 if (currentTotal <= budget && currentTotal > 0) {
-                    solutions.push({ 
-                        items: [...currentCombo], 
-                        totalPrice: currentTotal, 
-                        remaining: budget - currentTotal 
+                    solutions.push({
+                        items: [...currentCombo],
+                        totalPrice: currentTotal,
+                        remaining: budget - currentTotal
                     });
                 }
                 return;
@@ -68,7 +63,7 @@ const getComboSuggestion = async (req, res) => {
             const items = domainMap[currentCategory];
 
             // TỐI ƯU: Chỉ lấy 20 sản phẩm RẺ NHẤT của danh mục
-            const optimizedItems = items.slice(0, 20); 
+            const optimizedItems = items.slice(0, 20);
 
             for (const item of optimizedItems) {
                 // Ép kiểu giá sản phẩm sang Number cho chắc chắn
@@ -76,18 +71,18 @@ const getComboSuggestion = async (req, res) => {
 
                 // Forward Checking: Nếu cộng món này vào mà vẫn đủ tiền
                 if (currentTotal + itemPrice <= budget) {
-                    
+
                     // Assign
                     currentCombo.push(item);
-                    
+
                     // Recursive call
                     backtrack(index + 1, currentCombo, currentTotal + itemPrice);
-                    
+
                     // Backtrack
-                    currentCombo.pop(); 
-                } 
+                    currentCombo.pop();
+                }
                 else {
-                    break; 
+                    break;
                 }
             }
         };
@@ -102,8 +97,8 @@ const getComboSuggestion = async (req, res) => {
         // Chỉ lấy Top 6 kết quả tốt nhất để trả về
         const topSolutions = solutions.slice(0, 6);
 
-        return res.json({ 
-            success: true, 
+        return res.json({
+            success: true,
             count: topSolutions.length,
             solutions: topSolutions,
             metadata: { executionTime: `${executionTime}ms`, exploredNodes }
@@ -121,15 +116,11 @@ const getAdvancedComboSuggestion = async (req, res) => {
         const { budget, categories, preferredColor, preferredBrand } = req.body;
         const budgetNum = Number(budget);
 
-        if (!budgetNum || !categories || categories.length === 0) 
+        if (!budgetNum || !categories || categories.length === 0)
             return res.status(400).json({ success: false, message: "Thiếu thông tin!" });
 
         const sql = "SELECT * FROM products WHERE price <= ? ORDER BY price ASC";
-        const allProducts = await new Promise((resolve, reject) => {
-            db.query(sql, [budgetNum], (err, results) => {
-                if (err) reject(err); else resolve(results);
-            });
-        });
+        const [allProducts] = await db.query(sql, [budgetNum]);
 
         const domainMap = {};
         categories.forEach(reqCat => {
@@ -137,12 +128,12 @@ const getAdvancedComboSuggestion = async (req, res) => {
         });
 
         for (const cat of categories) {
-             if (!domainMap[cat] || domainMap[cat].length === 0) 
+            if (!domainMap[cat] || domainMap[cat].length === 0)
                 return res.json({ success: true, solutions: [], message: `Không tìm thấy sản phẩm "${cat}"` });
         }
 
         const solutions = [];
-        
+
         const backtrack = (index, currentCombo, currentTotal) => {
             if (index === categories.length) {
                 if (currentTotal <= budgetNum && currentTotal > 0) {
@@ -154,7 +145,7 @@ const getAdvancedComboSuggestion = async (req, res) => {
                     // Check Brand
                     if (preferredBrand) {
                         const allSameBrand = currentCombo.every(item => item.brand && item.brand.toLowerCase() === preferredBrand.toLowerCase());
-                        if (!allSameBrand) return; 
+                        if (!allSameBrand) return;
                     }
                     solutions.push({ items: [...currentCombo], totalPrice: currentTotal, remaining: budgetNum - currentTotal });
                 }
@@ -178,7 +169,7 @@ const getAdvancedComboSuggestion = async (req, res) => {
 
         backtrack(0, [], 0);
         solutions.sort((a, b) => a.remaining - b.remaining);
-        
+
         return res.json({ success: true, count: solutions.length, solutions: solutions.slice(0, 5) });
 
     } catch (error) {

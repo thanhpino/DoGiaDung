@@ -5,7 +5,7 @@ services:
     container_name: tmt_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "@Thanhquynh170456"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
       MYSQL_DATABASE: dogiadung_db
     ports:
       - "3307:3306"

