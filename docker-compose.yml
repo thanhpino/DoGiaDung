@@ -12,23 +12,39 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  # 2. BACKEND
+  # 2. BACKEND (Main Server)
   server:
     build: ./server
     container_name: tmt_server
     restart: always
     ports:
       - "8081:8081"
-    env_file:            
+    env_file:
       - ./server/.env
-    environment:         
-      - DB_HOST=mysqldb 
+    environment:
+      - DB_HOST=mysqldb
+      - CHATBOT_SERVICE_URL=http://chatbot:8082
+    depends_on:
+      - mysqldb
+      - chatbot
+
+  # 3. CHATBOT MICROSERVICE (Gemini AI)
+  chatbot:
+    build: ./chatbot-service
+    container_name: tmt_chatbot
+    restart: always
+    ports:
+      - "8082:8082"
+    env_file:
+      - ./chatbot-service/.env
+    environment:
+      - DB_HOST=mysqldb
     depends_on:
       - mysqldb
 
-  # 3. FRONTEND
+  # 4. FRONTEND
   client:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.client
     container_name: tmt_client

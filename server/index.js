@@ -6,10 +6,16 @@ const http = require('http');
 const { Server } = require("socket.io");
 const path = require('path');
 
-// Security and logging middlewares
+// Security, Logging & Documentation
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const logger = require('./config/logger');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+
+// Error Handlers
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 // Import database & Routes
 const db = require('./config/database');
@@ -35,7 +41,7 @@ const server = http.createServer(app);
 // CẤU HÌNH CORS
 app.use(cors({
     origin: [
-        "http://localhost:5173", 
+        "http://localhost:5173",
         "https://dogiadung-vwp8.onrender.com",
         process.env.CLIENT_URL
     ],
@@ -48,13 +54,13 @@ app.use(cors({
 // 1. Helmet: Bảo vệ Header
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
-// 2. Morgan: Ghi log
-app.use(morgan("common"));
+// 2. Morgan + Winston: Ghi log chuyên nghiệp
+app.use(morgan("combined", { stream: logger.stream }));
 
 // 3. Rate Limit: Chống spam
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    limit: 2000, 
+    windowMs: 15 * 60 * 1000,
+    limit: 2000,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     message: "🚫 Bạn gửi quá nhiều request, vui lòng thử lại sau 15 phút!"
@@ -77,8 +83,9 @@ const io = new Server(server, {
 setSocketIO(io);
 
 io.on("connection", (socket) => {
-    console.log(`⚡ Client connected: ${socket.id}`);
+    logger.info(`⚡ Client connected: ${socket.id}`);
     socket.on("disconnect", () => {
+        logger.info(`🔌 Client disconnected: ${socket.id}`);
     });
 });
 
@@ -86,6 +93,12 @@ io.on("connection", (socket) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// 📖 SWAGGER API DOCS
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Gia Dụng TMT API Docs'
+}));
 
 // 4. ĐĂNG KÝ ROUTES
 app.use('/', authRoutes);
@@ -101,18 +114,25 @@ app.use('/api', suggestionRoutes);
 
 // 5. HEALTH CHECK
 app.get('/', (req, res) => {
-    res.json({ 
-        status: 'OK', 
+    res.json({
+        status: 'OK',
         message: 'Gia Dụng TMT API is running!',
+        docs: '/api-docs',
         timestamp: new Date().toISOString()
     });
 });
 
-// 6. LẮNG NGHE PORT
+// 6. ERROR HANDLING (phải đặt SAU tất cả routes)
+app.use(notFoundHandler);
+app.use(errorHandler);
+
+// 7. LẮNG NGHE PORT
 const PORT = process.env.PORT || 8081;
 
 if (require.main === module) {
     server.listen(PORT, () => {
+        logger.info(`🚀 Server đang chạy tại http://localhost:${PORT}`);
+        logger.info(`📖 API Docs: http://localhost:${PORT}/api-docs`);
     });
 }
 
