@@ -1,11 +1,22 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { Product } from '../data/products';
-import { useAuth } from './AuthContext'; 
+import { useAuth } from './AuthContext';
 
 // --- 1. INTERFACE ---
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  old_price?: number;
+  category?: string;
+  img?: string;
+  image_url?: string;
+  description?: string;
+  rating?: number;
+  review_count?: number;
+}
+
 export interface CartItem extends Product {
   quantity: number;
-  image_url?: string;
 }
 
 export interface Order {
@@ -14,33 +25,33 @@ export interface Order {
   total: number;
   items: CartItem[];
   status: string;
-  paymentMethod: string; 
-  note: string;          
+  paymentMethod: string;
+  note: string;
 }
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: any) => void; 
+  addToCart: (product: any) => void;
   removeFromCart: (id: number) => void;
   updateQuantity: (id: number, amount: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   getCartCount: () => number;
-  placeOrder: (paymentMethod: string, note: string) => Promise<void>; 
+  placeOrder: (paymentMethod: string, note: string) => Promise<void>;
   orders: Order[];
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  useAuth(); 
-  
+  useAuth();
+
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('cart');
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [orders, setOrders] = useState<Order[]>([]); 
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => { localStorage.setItem('cart', JSON.stringify(cartItems)); }, [cartItems]);
 
@@ -48,10 +59,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const addToCart = (product: any) => {
     // Ép kiểu dữ liệu để đảm bảo luôn có ảnh hiển thị
     const productToAdd: CartItem = {
-        ...product,
-        // Ưu tiên lấy image_url (DB/Chatbot), nếu không có thì lấy img, không có nữa thì lấy ảnh giữ chỗ
-        img: product.image_url || product.img || 'https://placehold.co/400x400?text=No+Image',
-        quantity: 1
+      ...product,
+      // Ưu tiên lấy image_url (DB/Chatbot), nếu không có thì lấy img, không có nữa thì lấy ảnh giữ chỗ
+      img: product.image_url || product.img || 'https://placehold.co/400x400?text=No+Image',
+      quantity: 1
     };
 
     setCartItems((prevItems) => {
@@ -86,24 +97,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const getCartTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
-  
+
   const getCartCount = () => {
     return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
 
   const placeOrder = async (paymentMethod: string, note: string) => {
-      clearCart();
-      // Lưu lịch sử local tạm thời
-      const newOrderUI: Order = {
-          id: `ORD-${Date.now()}`,
-          date: new Date().toLocaleString('vi-VN'),
-          total: getCartTotal(),
-          items: [...cartItems],
-          status: 'Chờ xác nhận',
-          paymentMethod: paymentMethod,
-          note: note
-      };
-      setOrders(prev => [newOrderUI, ...prev]);
+    clearCart();
+    // Lưu lịch sử local tạm thời
+    const newOrderUI: Order = {
+      id: `ORD-${Date.now()}`,
+      date: new Date().toLocaleString('vi-VN'),
+      total: getCartTotal(),
+      items: [...cartItems],
+      status: 'Chờ xác nhận',
+      paymentMethod: paymentMethod,
+      note: note
+    };
+    setOrders(prev => [newOrderUI, ...prev]);
   };
 
   return (
