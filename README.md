@@ -4,7 +4,7 @@
 
   # 🏠 GIA DỤNG TMT — E-COMMERCE PLATFORM
 
-  **Fullstack E-Commerce với JWT Auth, AI Chatbot, Thuật toán CSP, Real-time & VNPay**
+  **Fullstack E-Commerce với Microservice, Gemini AI Chatbot, Thuật toán CSP, Real-time & VNPay**
 
   [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -27,7 +27,7 @@
 **Gia Dụng TMT** là hệ thống Thương mại điện tử Fullstack hoàn chỉnh, mô phỏng quy trình vận hành thực tế của doanh nghiệp. Hệ thống tích hợp:
 
 - 🔐 **JWT Authentication** — Xác thực stateless, phân quyền Admin/Customer
-- 🤖 **AI Chatbot** — Tư vấn sản phẩm tự động 24/7
+- 🤖 **AI Chatbot (Gemini)** — Microservice riêng, phân tích ngôn ngữ tự nhiên, tư vấn 24/7
 - 💡 **Thuật toán CSP** — Gợi ý combo bằng Backtracking + Forward Checking
 - ⚡ **Real-time** — Socket.IO thông báo đơn hàng mới
 - 💳 **VNPay** — Cổng thanh toán trực tuyến
@@ -41,7 +41,7 @@
 | Tính năng | Mô tả |
 |-----------|--------|
 | 🛒 Mua sắm | Xem, tìm kiếm, lọc sản phẩm (phân trang) |
-| 🤖 AI Chatbot | Tư vấn sản phẩm, hỏi đáp tự động |
+| 🤖 AI Chatbot (Gemini) | Phân tích ngôn ngữ tự nhiên, tư vấn thông minh, query DB thật |
 | 💡 Gợi ý Combo | Thuật toán CSP tìm combo tối ưu theo ngân sách |
 | 💳 Thanh toán | VNPay (ATM/QR), COD |
 | 📧 Email tự động | Xác nhận đơn hàng, reset mật khẩu |
@@ -65,18 +65,23 @@
 📦 dogiadung-main/
 ├── 📂 src/                     # Frontend (React + TypeScript)
 │   ├── pages/                  # Trang: Home, Products, Checkout, Admin...
-│   ├── components/             # Components tái sử dụng
+│   ├── components/             # Components tái sử dụng (ChatBot UI)
 │   ├── context/                # AuthContext (JWT)
 │   ├── utils/                  # axiosConfig (JWT interceptor)
 │   └── layout/                 # Layout chung
-├── 📂 server/                  # Backend (Node.js + Express)
+├── 📂 server/                  # Backend API (Node.js + Express)
 │   ├── config/                 # Database, Logger, Swagger, Multer
 │   ├── controllers/            # Business logic (async/await)
 │   ├── middleware/              # Auth, Validators, Error Handler
 │   ├── routes/                 # API routes (Swagger JSDoc)
 │   ├── utils/                  # Email service
 │   └── tests/                  # Jest + Supertest (24 test cases)
-├── 🐳 docker-compose.yml       # Docker orchestration
+├── 📂 chatbot-service/         # 🤖 AI Microservice (Gemini 1.5-Flash)
+│   ├── config/                 # Gemini AI, Database, Logger
+│   ├── controllers/            # Chat handler (intent + response)
+│   ├── services/               # Product query service (6 functions)
+│   └── Dockerfile
+├── 🐳 docker-compose.yml       # Docker (4 services)
 ├── 🐳 Dockerfile.client        # Frontend container
 └── 📋 nginx.conf               # Reverse proxy config
 ```
@@ -89,6 +94,7 @@
 |-------|-----------|
 | **Frontend** | React (Vite), TypeScript, TailwindCSS, Axios, Recharts, Lucide |
 | **Backend** | Node.js, Express.js, async/await |
+| **AI Chatbot** | Google Gemini 1.5-Flash, Microservice Architecture |
 | **Database** | MySQL 8.0 (mysql2 Promise Pool) |
 | **Auth** | JWT (jsonwebtoken), bcryptjs, express-validator |
 | **Real-time** | Socket.IO (WebSockets) |
@@ -96,7 +102,7 @@
 | **Logging** | Winston (file + console), Morgan |
 | **API Docs** | Swagger (OpenAPI 3.0) |
 | **Testing** | Jest, Supertest (24 test cases) |
-| **DevOps** | Docker, Docker Compose, GitHub Actions, Render |
+| **DevOps** | Docker, Docker Compose, Render |
 | **Payment** | VNPay SDK |
 | **Email** | Nodemailer |
 
@@ -184,6 +190,9 @@ VNPAY_TMN_CODE=your_tmn_code
 VNPAY_HASH_SECRET=your_secret
 VNPAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 VNPAY_RETURN_URL=http://localhost:5173/vnpay-return
+
+# AI Chatbot (Gemini)
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 ---
@@ -236,6 +245,27 @@ Swagger UI có sẵn tại: **[/api-docs](http://localhost:8081/api-docs)**
 | 💳 Thanh Toán VNPay | 📖 Swagger API Docs |
 |:---:|:---:|
 | <img src="public/screenshots/vnpay.png" width="100%" alt="VNPay"/> | <img src="public/screenshots/swagger.png" width="100%" alt="Swagger"/> |
+
+---
+
+## 🤖 AI ChatBot — Gemini Microservice
+
+ChatBot sử dụng **Google Gemini 1.5-Flash** để phân tích ngôn ngữ tự nhiên:
+
+```
+User: "Mình có 5 triệu, gợi ý đồ cho bếp đi"
+    │
+    ▼ Gemini AI (Intent Classification)
+    intent: "cheap_products", maxPrice: 5000000, category: "Nhà bếp"
+    │
+    ▼ MySQL Query (sản phẩm thật)
+    products: [Nồi chiên 1.2tr, Bếp từ 2.5tr, ...]
+    │
+    ▼ AI Response Generation
+    "Dạ với 5 triệu, em gợi ý combo bếp này cho anh/chị:"
+```
+
+**Kiến trúc hybrid:** Microservice (Docker) hoặc In-process (Render)
 
 ---
 

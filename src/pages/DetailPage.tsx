@@ -67,28 +67,28 @@ export const ProductDetail = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFFBF7]">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFFBF7] dark:bg-gray-950">
       <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin"></div>
       <p className="mt-4 text-gray-500 font-medium">Đang tải dữ liệu...</p>
     </div>
   );
 
   if (!product) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#FFFBF7]">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#FFFBF7] dark:bg-gray-950">
       <h2 className="text-2xl font-bold text-gray-800">Sản phẩm không tồn tại!</h2>
       <button onClick={() => navigate('/home')} className="text-orange-600 underline hover:text-orange-700">Quay về trang chủ</button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#FFFBF7] font-sans text-gray-800 pb-20">
+    <div className="min-h-screen bg-[#FFFBF7] dark:bg-gray-950 font-sans text-gray-800 pb-20">
       {/* Navigation */}
-      <nav className="px-6 py-4 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md sticky top-0 z-40">
+      <nav className="px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-orange-600 font-bold transition group">
-          <div className="bg-gray-100 p-2 rounded-full group-hover:bg-orange-100 transition"><ArrowLeft size={20} /></div>
+          <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded-full group-hover:bg-orange-100 transition"><ArrowLeft size={20} /></div>
           Quay lại
         </button>
-        <div className="font-bold text-lg text-gray-800 hidden md:block truncate max-w-md">{product.name}</div>
+        <div className="font-bold text-lg text-gray-800 dark:text-white hidden md:block truncate max-w-md">{product.name}</div>
         <div className="w-10"></div> {/* Spacer */}
       </nav>
 
@@ -99,7 +99,7 @@ export const ProductDetail = () => {
           <div className="lg:col-span-7 space-y-6">
 
             {/* Ảnh sản phẩm chính */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 flex items-center justify-center relative overflow-hidden group">
+            <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 p-8 flex items-center justify-center relative overflow-hidden group">
               <img
                 src={product.img || product.image_url}
                 alt={product.name}
@@ -118,7 +118,7 @@ export const ProductDetail = () => {
             </div>
 
             {/* --- KHU VỰC TRẢI NGHIỆM ẢO  --- */}
-            <div className="h-[320px] w-full rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 bg-white">
+            <div className="h-[320px] w-full rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
               <ProductSimulation product={product} />
             </div>
 
@@ -126,7 +126,7 @@ export const ProductDetail = () => {
 
           {/* --- CỘT PHẢI: THÔNG TIN & MUA HÀNG --- */}
           <div className="lg:col-span-5">
-            <div className="sticky top-24 space-y-8 p-6 bg-white rounded-[2rem] shadow-xl shadow-orange-100/50 border border-orange-50">
+            <div className="sticky top-24 space-y-8 p-6 bg-white dark:bg-gray-800 rounded-[2rem] shadow-xl shadow-orange-100/50 dark:shadow-gray-900/50 border border-orange-50 dark:border-gray-700">
 
               {/* Header Info */}
               <div>
@@ -139,10 +139,10 @@ export const ProductDetail = () => {
                     <span className="text-gray-500 font-medium ml-1">4.8 (128 đánh giá)</span>
                   </div>
                 </div>
-                <h1 className="text-3xl font-extrabold text-gray-900 leading-tight mb-4">{product.name}</h1>
+                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight mb-4">{product.name}</h1>
 
                 {/* Hiển thị giá giảm và chưa giảm*/}
-                <div className="flex items-end gap-3 pb-6 border-b border-gray-100">
+                <div className="flex items-end gap-3 pb-6 border-b border-gray-100 dark:border-gray-700">
                   <span className="text-4xl font-extrabold text-orange-600">{formatCurrency(product.price)}</span>
                   {product.oldPrice && product.oldPrice > product.price && (
                     <>
@@ -157,10 +157,10 @@ export const ProductDetail = () => {
 
               {/* Mô tả ngắn */}
               <div>
-                <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-sm uppercase tracking-wide">
+                <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-2 text-sm uppercase tracking-wide">
                   Mô tả nổi bật
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-sm bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm bg-gray-50 dark:bg-gray-700 p-4 rounded-xl border border-gray-100 dark:border-gray-600">
                   {product.description || "Sản phẩm công nghệ cao cấp, thiết kế hiện đại, phù hợp với mọi gia đình Việt."}
                 </p>
               </div>

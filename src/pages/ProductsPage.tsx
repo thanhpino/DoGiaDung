@@ -82,7 +82,7 @@ export const ProductsPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#FFFBF7] py-8 px-4 md:px-8">
+        <div className="min-h-screen bg-[#FFFBF7] dark:bg-gray-950 py-8 px-4 md:px-8 transition-colors">
             <div className="max-w-7xl mx-auto">
 
                 {/* HEADER & FILTER SECTION */}
@@ -91,10 +91,10 @@ export const ProductsPage = () => {
                     {/* Tiêu đề & Thanh tìm kiếm */}
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold text-[#4a3b32] flex items-center gap-2">
+                            <h1 className="text-3xl font-bold text-[#4a3b32] dark:text-white flex items-center gap-2">
                                 <ShoppingBag className="text-orange-600" /> Tất cả sản phẩm
                             </h1>
-                            <p className="text-gray-500 mt-1 text-sm">Hiển thị {products.length} trên tổng số {pagination.total} sản phẩm</p>
+                            <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">Hiển thị {products.length} trên tổng số {pagination.total} sản phẩm</p>
                         </div>
 
                         {/* SEARCH BAR */}
@@ -102,7 +102,7 @@ export const ProductsPage = () => {
                             <input
                                 type="text"
                                 placeholder="Tìm tên sản phẩm..."
-                                className="w-full pl-10 pr-4 py-3 rounded-full border border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition shadow-sm"
+                                className="w-full pl-10 pr-4 py-3 rounded-full border border-orange-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition shadow-sm"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -112,13 +112,13 @@ export const ProductsPage = () => {
 
                     {/* CATEGORY TABS */}
                     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-                        <div className="flex items-center gap-2 bg-white p-1.5 rounded-full border border-orange-100 shadow-sm">
+                        <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-1.5 rounded-full border border-orange-100 dark:border-gray-700 shadow-sm">
                             <span className="pl-3 pr-2 text-orange-600"><Filter size={18} /></span>
                             {categories.map(cat => (
                                 <button
                                     key={cat}
                                     onClick={() => { setFilter(cat); setPagination(prev => ({ ...prev, page: 1 })); }}
-                                    className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition ${filter === cat ? 'bg-orange-600 text-white shadow-md' : 'text-gray-600 hover:bg-orange-50'}`}
+                                    className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition ${filter === cat ? 'bg-orange-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-gray-700'}`}
                                 >
                                     {cat === 'All' ? 'Tất cả' : cat}
                                 </button>
@@ -131,10 +131,10 @@ export const ProductsPage = () => {
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[...Array(8)].map((_, i) => (
-                            <div key={i} className="bg-white p-4 rounded-2xl h-80 animate-pulse border border-gray-100">
-                                <div className="bg-gray-200 h-48 rounded-xl mb-4"></div>
-                                <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
-                                <div className="bg-gray-200 h-4 w-1/2 rounded"></div>
+                            <div key={i} className="bg-white dark:bg-gray-800 p-4 rounded-2xl h-80 animate-pulse border border-gray-100 dark:border-gray-700">
+                                <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-xl mb-4"></div>
+                                <div className="bg-gray-200 dark:bg-gray-700 h-4 w-3/4 rounded mb-2"></div>
+                                <div className="bg-gray-200 dark:bg-gray-700 h-4 w-1/2 rounded"></div>
                             </div>
                         ))}
                     </div>
@@ -144,7 +144,7 @@ export const ProductsPage = () => {
                         {products.length === 0 ? (
                             <div className="text-center py-20">
                                 <div className="text-6xl mb-4">🔍</div>
-                                <h3 className="text-xl font-bold text-gray-600">Không tìm thấy sản phẩm nào</h3>
+                                <h3 className="text-xl font-bold text-gray-600 dark:text-gray-300">Không tìm thấy sản phẩm nào</h3>
                                 <p className="text-gray-400">Thử tìm từ khóa khác hoặc chọn danh mục khác nhé.</p>
                             </div>
                         ) : (
@@ -152,11 +152,11 @@ export const ProductsPage = () => {
                                 {products.map((product) => (
                                     <div
                                         key={product.id}
-                                        className="bg-white p-4 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group cursor-pointer flex flex-col relative"
+                                        className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 group cursor-pointer flex flex-col relative"
                                         onClick={() => navigate(`/product/${product.id}`)}
                                     >
                                         {/* ẢNH SẢN PHẨM */}
-                                        <div className="relative mb-4 overflow-hidden rounded-xl h-48 bg-gray-50 flex items-center justify-center p-4">
+                                        <div className="relative mb-4 overflow-hidden rounded-xl h-48 bg-gray-50 dark:bg-gray-700 flex items-center justify-center p-4">
                                             {product.old_price && product.old_price > product.price && (
                                                 <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-sm">
                                                     -{Math.round(((product.old_price - product.price) / product.old_price) * 100)}%
@@ -179,7 +179,7 @@ export const ProductsPage = () => {
 
                                         <div className="flex-1 flex flex-col">
                                             <p className="text-xs text-gray-400 font-bold uppercase mb-1 tracking-wider">{product.category}</p>
-                                            <h3 className="font-bold text-lg mb-1 line-clamp-2 text-gray-800 flex-1 group-hover:text-orange-600 transition">{product.name}</h3>
+                                            <h3 className="font-bold text-lg mb-1 line-clamp-2 text-gray-800 dark:text-gray-100 flex-1 group-hover:text-orange-600 transition">{product.name}</h3>
 
                                             <div className="flex items-center gap-2 mt-2">
                                                 <span className="text-yellow-400 text-sm">★ {product.rating || 5}</span>
@@ -187,7 +187,7 @@ export const ProductsPage = () => {
                                                 <span className="text-gray-400 text-xs">{product.review_count || 0} đã bán</span>
                                             </div>
 
-                                            <div className="flex items-end justify-between mt-3 pt-3 border-t border-gray-50">
+                                            <div className="flex items-end justify-between mt-3 pt-3 border-t border-gray-50 dark:border-gray-700">
                                                 <div>
                                                     <div className="text-red-600 font-bold text-xl">{formatCurrency(product.price)}</div>
                                                     {product.old_price && product.old_price > product.price && (
@@ -210,7 +210,7 @@ export const ProductsPage = () => {
                                 <button
                                     onClick={() => handlePageChange(pagination.page - 1)}
                                     disabled={pagination.page === 1}
-                                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
+                                    className="p-3 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
@@ -224,8 +224,8 @@ export const ProductsPage = () => {
                                                     key={pageNum}
                                                     onClick={() => handlePageChange(pageNum)}
                                                     className={`w-10 h-10 rounded-full font-bold text-sm transition shadow-sm ${pagination.page === pageNum
-                                                            ? 'bg-orange-600 text-white scale-110'
-                                                            : 'bg-white text-gray-600 border border-gray-200 hover:bg-orange-50'
+                                                        ? 'bg-orange-600 text-white scale-110'
+                                                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-700'
                                                         }`}
                                                 >
                                                     {pageNum}
@@ -241,7 +241,7 @@ export const ProductsPage = () => {
                                 <button
                                     onClick={() => handlePageChange(pagination.page + 1)}
                                     disabled={pagination.page === pagination.totalPages}
-                                    className="p-3 rounded-full bg-white border border-gray-200 hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
+                                    className="p-3 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm"
                                 >
                                     <ChevronRight size={20} />
                                 </button>

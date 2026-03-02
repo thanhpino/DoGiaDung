@@ -56,23 +56,23 @@ export const OrderHistory = () => {
     if (loading) return <div className="p-12 text-center">Đang tải dữ liệu...</div>;
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 min-h-screen bg-[#FFFBF7]">
-            <h1 className="text-3xl font-extrabold mb-8 flex items-center gap-3 text-gray-800">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 min-h-screen bg-[#FFFBF7] dark:bg-gray-950 transition-colors">
+            <h1 className="text-3xl font-extrabold mb-8 flex items-center gap-3 text-gray-800 dark:text-white">
                 <div className="bg-orange-100 p-3 rounded-xl"><Package className="text-orange-600" size={32} /></div>
                 Đơn hàng của tôi
             </h1>
 
             {orders.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100">
+                <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
                     <div className="text-6xl mb-4">📦</div>
-                    <h3 className="text-xl font-bold text-gray-800">Chưa có đơn hàng nào</h3>
-                    <p className="text-gray-500 mt-2 mb-6">Bạn chưa mua gì cả. Hãy dạo một vòng nhé!</p>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">Chưa có đơn hàng nào</h3>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 mb-6">Bạn chưa mua gì cả. Hãy dạo một vòng nhé!</p>
                     <Link to="/products" className="bg-orange-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-700">Mua sắm ngay</Link>
                 </div>
             ) : (
                 <div className="space-y-6">
                     {orders.map((order: any) => (
-                        <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden transition hover:shadow-md">
+                        <div key={order.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-orange-100 dark:border-gray-700 overflow-hidden transition hover:shadow-md">
 
                             {/* Header Đơn Hàng */}
                             <div className="p-6 cursor-pointer" onClick={() => toggleExpand(order.id)}>
@@ -80,8 +80,8 @@ export const OrderHistory = () => {
                                     <div className="flex items-center gap-4">
                                         <div className="bg-orange-50 p-3 rounded-full text-orange-600 font-bold text-lg">#{order.id}</div>
                                         <div>
-                                            <p className="text-sm text-gray-500">Ngày đặt: {new Date(order.created_at).toLocaleDateString()}</p>
-                                            <p className="font-bold text-gray-800 text-lg">{formatCurrency(order.total_amount)}</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">Ngày đặt: {new Date(order.created_at).toLocaleDateString()}</p>
+                                            <p className="font-bold text-gray-800 dark:text-gray-100 text-lg">{formatCurrency(order.total_amount)}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -95,8 +95,8 @@ export const OrderHistory = () => {
 
                             {/* Chi tiết mở rộng */}
                             {expandedOrder === order.id && (
-                                <div className="border-t border-gray-100 bg-gray-50 p-6 animate-fade-in">
-                                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
+                                <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-6 animate-fade-in">
+                                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-300 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
                                         <div>
                                             <p className="font-bold text-gray-800">Thông tin giao hàng:</p>
                                             <p>{order.customer_name} - {order.customer_phone}</p>
@@ -114,7 +114,7 @@ export const OrderHistory = () => {
                                     <div className="space-y-4">
                                         {orderItems.length === 0 ? <p>Đang tải sản phẩm...</p> :
                                             orderItems.map((item: any, index: number) => (
-                                                <div key={index} className="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100">
+                                                <div key={index} className="flex justify-between items-center bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700">
                                                     <div className="flex items-center gap-3">
                                                         <img src={item.image_url} alt="" className="w-12 h-12 rounded object-cover border" />
                                                         <div>

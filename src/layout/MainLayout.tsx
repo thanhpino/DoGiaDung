@@ -2,12 +2,12 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '../layout/Header';
 import { Footer } from '../layout/Footer';
-import { ChatBot } from '../components/ChatBot'; 
+import { ChatBot } from '../components/ChatBot';
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFFBF7] relative">
-      
+    <div className="min-h-screen flex flex-col bg-[#FFFBF7] dark:bg-gray-950 relative transition-colors duration-300">
+
       {/* HEADER */}
       <Header />
 
@@ -20,8 +20,8 @@ const MainLayout = () => {
       <Footer />
 
       {/* --- 2. THÊM CHATBOT  --- */}
-      <ChatBot /> 
-      
+      <ChatBot />
+
     </div>
   );
 };

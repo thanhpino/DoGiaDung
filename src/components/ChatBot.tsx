@@ -67,7 +67,7 @@ export const ChatBot = () => {
 
             {/* CỬA SỔ CHAT  */}
             {isOpen && (
-                <div className="w-[360px] md:w-[400px] h-[600px] bg-white rounded-[2rem] shadow-2xl flex flex-col mb-6 animate-fade-in-up overflow-hidden border border-gray-100 ring-4 ring-orange-50 relative">
+                <div className="w-[360px] md:w-[400px] h-[600px] bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl flex flex-col mb-6 animate-fade-in-up overflow-hidden border border-gray-100 dark:border-gray-700 ring-4 ring-orange-50 dark:ring-gray-800 relative">
 
                     {/* HEADER: Gradient + Glass effect */}
                     <div className="bg-gradient-to-r from-orange-600 via-red-500 to-red-600 p-5 flex justify-between items-center text-white shadow-lg relative overflow-hidden">
@@ -101,7 +101,7 @@ export const ChatBot = () => {
                     </div>
 
                     {/* BODY: Background hoa văn nhẹ */}
-                    <div className="flex-1 p-4 overflow-y-auto bg-[#F8FAFC] space-y-5 custom-scrollbar relative">
+                    <div className="flex-1 p-4 overflow-y-auto bg-[#F8FAFC] dark:bg-gray-950 space-y-5 custom-scrollbar relative">
 
                         {/* Tin nhắn */}
                         {messages.map((msg, idx) => (
@@ -115,7 +115,7 @@ export const ChatBot = () => {
                                     {/* Bong bóng chat */}
                                     <div className={`px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm relative ${msg.isUser
                                         ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-tr-none'
-                                        : 'bg-white text-gray-700 border border-gray-100 rounded-tl-none shadow-[0_2px_8px_rgba(0,0,0,0.05)]'
+                                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-100 dark:border-gray-700 rounded-tl-none shadow-[0_2px_8px_rgba(0,0,0,0.05)]'
                                         }`}>
                                         {msg.text}
                                     </div>
@@ -124,7 +124,7 @@ export const ChatBot = () => {
                                     {msg.products && msg.products.length > 0 && (
                                         <div className="mt-3 space-y-3 w-full animate-fade-in-up">
                                             {msg.products.map(p => (
-                                                <div key={p.id} className="bg-white p-3 rounded-2xl border border-gray-100 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+                                                <div key={p.id} className="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden">
                                                     {/* Hiệu ứng shine */}
                                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
 
@@ -133,7 +133,7 @@ export const ChatBot = () => {
                                                             <img src={p.image_url || p.img} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition duration-500" alt="" />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-bold text-sm text-gray-800 line-clamp-2 mb-1 group-hover:text-orange-600 transition-colors">{p.name}</p>
+                                                            <p className="font-bold text-sm text-gray-800 dark:text-gray-100 line-clamp-2 mb-1 group-hover:text-orange-600 transition-colors">{p.name}</p>
                                                             <div className="flex justify-between items-center mt-2">
                                                                 <p className="text-red-600 font-extrabold text-sm">{formatCurrency(p.price)}</p>
                                                                 <button
@@ -163,7 +163,7 @@ export const ChatBot = () => {
                                 <div className="w-9 h-9 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-sm">
                                     <Bot size={18} className="text-white" />
                                 </div>
-                                <div className="bg-white border border-gray-200 px-4 py-3 rounded-2xl rounded-tl-none flex gap-1 shadow-sm items-center h-10">
+                                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-3 rounded-2xl rounded-tl-none flex gap-1 shadow-sm items-center h-10">
                                     <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
                                     <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-100"></span>
                                     <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-200"></span>
@@ -174,14 +174,14 @@ export const ChatBot = () => {
                     </div>
 
                     {/* FOOTER: Input & Quick Actions */}
-                    <div className="bg-white border-t border-gray-100 pb-2">
+                    <div className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700 pb-2">
                         {/* Chips câu hỏi nhanh */}
                         <div className="flex gap-2 p-3 overflow-x-auto no-scrollbar scroll-smooth">
                             {quickQuestions.map((q, i) => (
                                 <button
                                     key={i}
                                     onClick={() => handleSend(q)}
-                                    className="whitespace-nowrap px-3 py-1.5 bg-orange-50/50 text-orange-700 text-xs font-semibold rounded-full border border-orange-100 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition shadow-sm active:scale-95"
+                                    className="whitespace-nowrap px-3 py-1.5 bg-orange-50/50 dark:bg-gray-800 text-orange-700 dark:text-orange-400 text-xs font-semibold rounded-full border border-orange-100 dark:border-gray-700 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition shadow-sm active:scale-95"
                                 >
                                     {q}
                                 </button>
@@ -190,11 +190,11 @@ export const ChatBot = () => {
 
                         {/* Ô nhập liệu */}
                         <div className="px-3 pb-3 flex gap-2 items-center">
-                            <div className="flex-1 bg-gray-100 rounded-full flex items-center px-4 border border-transparent focus-within:border-orange-500 focus-within:bg-white focus-within:ring-4 focus-within:ring-orange-100 transition-all duration-300 shadow-inner">
+                            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center px-4 border border-transparent focus-within:border-orange-500 focus-within:bg-white dark:focus-within:bg-gray-700 focus-within:ring-4 focus-within:ring-orange-100 dark:focus-within:ring-orange-900/30 transition-all duration-300 shadow-inner">
                                 <input
                                     type="text"
                                     placeholder="Nhập tin nhắn..."
-                                    className="w-full bg-transparent border-none py-3 text-sm focus:outline-none text-gray-700 placeholder-gray-400"
+                                    className="w-full bg-transparent border-none py-3 text-sm focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-400"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyPress}

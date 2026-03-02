@@ -117,12 +117,12 @@ export const Checkout = () => {
 
     return (
         <PayPalScriptProvider options={{ "clientId": "AU-h8a9Gg74tcWPBGoLNSg7e2L5NjQVwykNNgjJH35iheuv9eJwq9m60Er0_ovG30ZO54IoBgcZz5V7e", currency: "USD" }}>
-            <div className="min-h-screen bg-[#FDF8F3] font-sans text-gray-800 p-4 lg:p-8 relative">
+            <div className="min-h-screen bg-[#FDF8F3] dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-100 p-4 lg:p-8 relative transition-colors">
 
                 {/* QR CODE */}
                 {showQR && (
                     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-fade-in relative">
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-fade-in relative">
                             <button onClick={() => setShowQR(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={24} /></button>
                             <div className="text-center">
                                 <h3 className="text-xl font-bold mb-2">Quét mã thanh toán</h3>
@@ -156,27 +156,27 @@ export const Checkout = () => {
 
                     {/* CỘT TRÁI - FORM & CART */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-orange-100 dark:border-gray-700">
                             <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Truck className="text-orange-600" /> Thông tin giao hàng</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" placeholder="Họ tên người nhận" className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                                <input type="text" placeholder="Số điện thoại" className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-                                <input type="text" placeholder="Địa chỉ chi tiết" className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none md:col-span-2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+                                <input type="text" placeholder="Họ tên người nhận" className="w-full border dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:border-orange-500 outline-none" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                                <input type="text" placeholder="Số điện thoại" className="w-full border dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:border-orange-500 outline-none" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                                <input type="text" placeholder="Địa chỉ chi tiết" className="w-full border dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:border-orange-500 outline-none md:col-span-2" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                                 <div className="md:col-span-2 mt-2">
                                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1"><FileText size={16} /> Ghi chú (Tùy chọn)</label>
-                                    <textarea value={formData.note} onChange={(e) => setFormData({ ...formData, note: e.target.value })} placeholder="Ví dụ: Giao giờ hành chính..." className="w-full border p-3 rounded-lg bg-gray-50 focus:border-orange-500 outline-none h-24 resize-none"></textarea>
+                                    <textarea value={formData.note} onChange={(e) => setFormData({ ...formData, note: e.target.value })} placeholder="Ví dụ: Giao giờ hành chính..." className="w-full border dark:border-gray-600 p-3 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:border-orange-500 outline-none h-24 resize-none"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-orange-100 dark:border-gray-700">
                             <h2 className="text-xl font-bold mb-4">Giỏ hàng ({cartItems.length})</h2>
                             <div className="space-y-4">
                                 {cartItems.map((item) => (
-                                    <div key={item.id} className="flex gap-4 items-center border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                    <div key={item.id} className="flex gap-4 items-center border-b border-gray-100 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
                                         <img src={item.img} className="w-16 h-16 rounded-lg object-cover" />
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-gray-800">{item.name}</h4>
+                                            <h4 className="font-bold text-gray-800 dark:text-gray-100">{item.name}</h4>
                                             <p className="text-orange-600 font-bold text-sm">{formatCurrency(item.price)}</p>
                                         </div>
                                         <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
@@ -193,12 +193,12 @@ export const Checkout = () => {
 
                     {/* CỘT PHẢI - THANH TOÁN */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white p-6 rounded-2xl shadow-lg border border-orange-100 sticky top-24">
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-orange-100 dark:border-gray-700 sticky top-24">
                             <h2 className="text-xl font-bold mb-6">Thanh toán</h2>
 
                             <div className="space-y-3 mb-6">
                                 {/* 1. COD */}
-                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'cod' ? 'border-orange-500 bg-orange-50' : 'hover:bg-gray-50'}`} onClick={() => setPaymentMethod('cod')}>
+                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'cod' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`} onClick={() => setPaymentMethod('cod')}>
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-orange-500' : 'border-gray-300'}`}>
                                         {paymentMethod === 'cod' && <div className="w-2.5 h-2.5 bg-orange-500 rounded-full"></div>}
                                     </div>
@@ -206,7 +206,7 @@ export const Checkout = () => {
                                 </div>
 
                                 {/* 2. QR */}
-                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'qr' ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`} onClick={() => setPaymentMethod('qr')}>
+                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'qr' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`} onClick={() => setPaymentMethod('qr')}>
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'qr' ? 'border-blue-500' : 'border-gray-300'}`}>
                                         {paymentMethod === 'qr' && <div className="w-2.5 h-2.5 bg-blue-500 rounded-full"></div>}
                                     </div>
@@ -214,7 +214,7 @@ export const Checkout = () => {
                                 </div>
 
                                 {/* 3. VNPAY  */}
-                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'vnpay' ? 'border-red-500 bg-red-50' : 'hover:bg-gray-50'}`} onClick={() => setPaymentMethod('vnpay')}>
+                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'vnpay' ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`} onClick={() => setPaymentMethod('vnpay')}>
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'vnpay' ? 'border-red-500' : 'border-gray-300'}`}>
                                         {paymentMethod === 'vnpay' && <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>}
                                     </div>
@@ -224,7 +224,7 @@ export const Checkout = () => {
                                 </div>
 
                                 {/* 4. PAYPAL */}
-                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'paypal' ? 'border-indigo-500 bg-indigo-50' : 'hover:bg-gray-50'}`} onClick={() => setPaymentMethod('paypal')}>
+                                <div className={`p-4 border rounded-xl cursor-pointer transition flex items-center gap-3 ${paymentMethod === 'paypal' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`} onClick={() => setPaymentMethod('paypal')}>
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'paypal' ? 'border-indigo-500' : 'border-gray-300'}`}>
                                         {paymentMethod === 'paypal' && <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></div>}
                                     </div>
