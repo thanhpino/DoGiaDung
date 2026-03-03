@@ -252,7 +252,24 @@ describe('KIỂM TRA INPUT VALIDATION', () => {
     });
 });
 
-// Đóng kết nối DB sau khi test xong
+// Đóng kết nối DB + Redis sau khi test xong
 afterAll(async () => {
-    await new Promise(resolve => setTimeout(() => resolve(), 500));
+    const redis = require('../config/redisClient');
+    const db = require('../config/database');
+
+    // Disconnect Redis (nếu đang kết nối)
+    try {
+        if (redis && redis.status === 'ready') {
+            await redis.quit();
+        } else if (redis) {
+            redis.disconnect();
+        }
+    } catch (e) { /* ignore */ }
+
+    // Close MySQL pool
+    try {
+        await db.pool ? db.pool.end() : db.end();
+    } catch (e) { /* ignore */ }
+
+    await new Promise(resolve => setTimeout(resolve, 500));
 });
