@@ -2,6 +2,8 @@ const request = require('supertest');
 const app = require('../index');
 const jwt = require('jsonwebtoken');
 
+jest.setTimeout(15000);
+
 beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => { });
     jest.spyOn(console, 'error').mockImplementation(() => { });

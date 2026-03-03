@@ -55,19 +55,19 @@ const googleLogin = async (req, res) => {
             user = existingUsers[0];
 
             // Cập nhật avatar + provider nếu chưa có
-            if (!user.avatar_url || user.provider === 'local') {
+            if (!user.avatar || user.provider === 'local') {
                 await db.query(
-                    "UPDATE users SET avatar_url = COALESCE(avatar_url, ?), provider_id = COALESCE(provider_id, ?) WHERE id = ?",
+                    "UPDATE users SET avatar = COALESCE(avatar, ?), provider_id = COALESCE(provider_id, ?) WHERE id = ?",
                     [picture, googleId, user.id]
                 );
-                user.avatar_url = picture;
+                user.avatar = picture;
             }
 
             logger.info(`🔑 Google login (existing): ${email}`);
         } else {
             // User mới → tạo account (không cần password)
             const [result] = await db.query(
-                "INSERT INTO users (name, email, password, role, provider, provider_id, avatar_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO users (name, email, password, role, provider, provider_id, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [name, email, '', 'customer', 'google', googleId, picture]
             );
 
@@ -78,7 +78,7 @@ const googleLogin = async (req, res) => {
                 role: 'customer',
                 provider: 'google',
                 provider_id: googleId,
-                avatar_url: picture
+                avatar: picture
             };
 
             logger.info(`🆕 Google login (new user): ${email}`);
