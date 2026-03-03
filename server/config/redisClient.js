@@ -2,12 +2,11 @@
 const Redis = require('ioredis');
 const logger = require('./logger');
 
-// 1. Tạm thời XÓA BỎ cái fallback 'redis://localhost:6379'
-// Để nếu Render không đọc được biến, nó sẽ báo lỗi rỗng ngay chứ không âm thầm chạy localhost nữa
-const REDIS_URL = process.env.REDIS_URL;
+// Để nếu Render không đọc được biến, âm thầm chạy localhost.
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 if (!REDIS_URL) {
-    logger.error('🚨 BÁO ĐỘNG: Render không đọc được biến REDIS_URL! Vui lòng check lại mục Environment trên Render.');
+    logger.error('🚨 Render không đọc được biến REDIS_URL! Vui lòng check lại mục Environment trên Render.');
 }
 
 // 2. Thêm cấu hình TLS (Bắt buộc đối với Upstash Redis)
@@ -25,7 +24,7 @@ const redis = new Redis(REDIS_URL, {
 });
 
 redis.on('connect', () => {
-    logger.info('🟢 Redis (Upstash) đã kết nối thành công rực rỡ!');
+    logger.info('🟢 Redis (Upstash) đã kết nối thành công!');
 });
 
 redis.on('error', (err) => {
