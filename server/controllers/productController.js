@@ -1,5 +1,9 @@
 // controllers/productController.js
 const db = require('../config/database');
+const { invalidateCache } = require('../middleware/cacheMiddleware');
+const { queueEmbeddingSync } = require('../queues/embeddingQueue');
+const redis = require('../config/redisClient');
+const logger = require('../config/logger');
 
 const getProducts = async (req, res) => {
     try {
@@ -48,22 +52,47 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
     try {
-        const { name, price, category, img, description } = req.body;
-        const sql = "INSERT INTO products (name, price, category, image_url, description) VALUES (?)";
-        await db.query(sql, [[name, price, category, img, description]]);
-        return res.json("Thêm sản phẩm thành công");
+        const { name, price, category, img, description, stock } = req.body;
+        const sql = "INSERT INTO products (name, price, category, image_url, description, stock) VALUES (?)";
+        const [result] = await db.query(sql, [[name, price, category, img, description, stock || 100]]);
+
+        // Sync stock vào Redis
+        const productId = result.insertId;
+        redis.set(`stock:product:${productId}`, stock || 100).catch(() => { });
+
+        // Invalidate cache + queue embedding
+        invalidateCache('cache:/products*').catch(() => { });
+        queueEmbeddingSync('sync_product', productId).catch(() => { });
+
+        return res.json({ status: "Success", message: "Thêm sản phẩm thành công", productId });
     } catch (err) {
+        logger.error(`Create product error: ${err.message}`);
         res.status(500).json({ status: "Error", message: "Lỗi thêm sản phẩm" });
     }
 };
 
 const updateProduct = async (req, res) => {
     try {
-        const { name, price, category, img, description } = req.body;
+        const { name, price, category, img, description, stock } = req.body;
+        const productId = req.params.id;
+
         const sql = "UPDATE products SET name=?, price=?, category=?, image_url=?, description=? WHERE id=?";
-        await db.query(sql, [name, price, category, img, description, req.params.id]);
+        await db.query(sql, [name, price, category, img, description, productId]);
+
+        // Cập nhật stock nếu có
+        if (stock !== undefined) {
+            await db.query("UPDATE products SET stock=? WHERE id=?", [stock, productId]);
+            redis.set(`stock:product:${productId}`, stock).catch(() => { });
+        }
+
+        // Invalidate cache + queue embedding
+        invalidateCache('cache:/products*').catch(() => { });
+        invalidateCache(`cache:/api/products/${productId}`).catch(() => { });
+        queueEmbeddingSync('sync_product', productId).catch(() => { });
+
         return res.json("Cập nhật thành công");
     } catch (err) {
+        logger.error(`Update product error: ${err.message}`);
         res.status(500).json({ status: "Error", message: "Lỗi cập nhật sản phẩm" });
     }
 };
@@ -73,6 +102,11 @@ const deleteProduct = async (req, res) => {
         const sql = "UPDATE products SET is_deleted = 1 WHERE id = ?";
         const [result] = await db.query(sql, [req.params.id]);
         if (result.affectedRows === 0) return res.status(404).json("Không tìm thấy sản phẩm");
+
+        // Xóa stock khỏi Redis + invalidate cache
+        redis.del(`stock:product:${req.params.id}`).catch(() => { });
+        invalidateCache('cache:/products*').catch(() => { });
+
         return res.json("Đã xóa sản phẩm thành công");
     } catch (err) {
         res.status(500).json({ status: "Error", message: "Lỗi xóa sản phẩm" });

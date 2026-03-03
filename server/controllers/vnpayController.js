@@ -7,12 +7,12 @@ const createPaymentUrl = (req, res) => {
         const date = new Date();
 
         const pad = (n) => n < 10 ? '0' + n : n;
-        const createDate = 
-            date.getFullYear() + 
-            pad(date.getMonth() + 1) + 
-            pad(date.getDate()) + 
-            pad(date.getHours()) + 
-            pad(date.getMinutes()) + 
+        const createDate =
+            date.getFullYear() +
+            pad(date.getMonth() + 1) +
+            pad(date.getDate()) +
+            pad(date.getHours()) +
+            pad(date.getMinutes()) +
             pad(date.getSeconds());
 
         const orderId = Date.now().toString();
@@ -20,7 +20,7 @@ const createPaymentUrl = (req, res) => {
         const bankCode = req.body.bankCode;
         const orderInfo = req.body.orderDescription || `Thanh toan don hang ${orderId}`;
         const locale = req.body.language || 'vn';
-        
+
         let vnp_Params = {
             'vnp_Version': '2.1.0',
             'vnp_Command': 'pay',
@@ -35,8 +35,8 @@ const createPaymentUrl = (req, res) => {
             'vnp_IpAddr': '127.0.0.1',
             'vnp_CreateDate': createDate
         };
-        
-        if(bankCode) vnp_Params['vnp_BankCode'] = bankCode;
+
+        if (bankCode) vnp_Params['vnp_BankCode'] = bankCode;
 
         // 1. Sắp xếp tham số
         const sortedKeys = Object.keys(vnp_Params).sort();
@@ -47,16 +47,16 @@ const createPaymentUrl = (req, res) => {
         }).join('&');
 
         // 3. Tạo chữ ký 
-        const hmac = crypto.createHmac("sha512", vnp_HashSecret.trim()); 
+        const hmac = crypto.createHmac("sha512", vnp_HashSecret.trim());
         const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
-        
+
         // 4. Tạo URL
         const queryUrl = sortedKeys.map(key => {
             return encodeURIComponent(key) + "=" + encodeURIComponent(vnp_Params[key]).replace(/%20/g, "+");
         }).join('&');
 
         const paymentUrl = vnp_Url + '?' + queryUrl + '&vnp_SecureHash=' + signed;
-        
+
         res.json({ paymentUrl });
     } catch (error) {
         console.error("❌ Error:", error);

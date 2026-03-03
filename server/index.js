@@ -13,6 +13,8 @@ const rateLimit = require('express-rate-limit');
 const logger = require('./config/logger');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
+const redis = require('./config/redisClient');
+const { syncStockFromDB } = require('./services/inventoryService');
 
 // Error Handlers
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
@@ -113,10 +115,13 @@ app.use('/', uploadRoutes);
 app.use('/api', suggestionRoutes);
 
 // 5. HEALTH CHECK
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+    let redisStatus = 'disconnected';
+    try { await redis.ping(); redisStatus = 'connected'; } catch (e) { }
     res.json({
         status: 'OK',
         message: 'Gia Dụng TMT API is running!',
+        redis: redisStatus,
         docs: '/api-docs',
         timestamp: new Date().toISOString()
     });
@@ -130,10 +135,25 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 8081;
 
 if (require.main === module) {
-    server.listen(PORT, () => {
+    server.listen(PORT, async () => {
         logger.info(`🚀 Server đang chạy tại http://localhost:${PORT}`);
         logger.info(`📖 API Docs: http://localhost:${PORT}/api-docs`);
+
+        // Sync stock từ MySQL → Redis
+        try {
+            await syncStockFromDB();
+        } catch (err) {
+            logger.warn('⚠️ Không thể sync stock vào Redis, inventory check sẽ bị bỏ qua');
+        }
     });
 }
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+    logger.info('🛑 SIGTERM received, shutting down...');
+    await redis.quit();
+    server.close();
+    process.exit(0);
+});
 
 module.exports = app;

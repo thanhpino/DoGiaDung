@@ -1,6 +1,9 @@
 // controllers/orderController.js
 const db = require('../config/database');
-const { sendOrderEmail } = require('../utils/emailService');
+const { reserveStock, releaseStock } = require('../services/inventoryService');
+const { queueOrderEmail } = require('../queues/emailQueue');
+const { invalidateCache } = require('../middleware/cacheMiddleware');
+const logger = require('../config/logger');
 
 let io;
 
@@ -77,17 +80,32 @@ const createOrder = async (req, res) => {
     try {
         const { user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, items } = req.body;
 
-        // Lấy email user
+        // 1. KIỂM TRA TỒN KHO (Redis Atomic)
+        const stockResult = await reserveStock(items);
+        if (!stockResult.success) {
+            // Tìm tên sản phẩm hết hàng
+            const [failedProduct] = await db.query(
+                "SELECT name FROM products WHERE id = ?",
+                [stockResult.failedProductId]
+            );
+            const productName = failedProduct?.[0]?.name || `#${stockResult.failedProductId}`;
+            return res.status(400).json({
+                status: "Fail",
+                message: `Sản phẩm "${productName}" đã hết hàng hoặc không đủ số lượng!`
+            });
+        }
+
+        // 2. Lấy email user
         const [resUser] = await db.query("SELECT email FROM users WHERE id = ?", [user_id]);
         const userEmail = (resUser && resUser.length > 0) ? resUser[0].email : null;
 
-        // Tạo đơn hàng
+        // 3. Tạo đơn hàng
         const sqlOrder = "INSERT INTO orders (user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, status) VALUES (?)";
         const valuesOrder = [user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, 'Chờ xác nhận'];
         const [orderResult] = await db.query(sqlOrder, [valuesOrder]);
         const orderId = orderResult.insertId;
 
-        // Emit socket
+        // 4. Emit socket
         if (io) {
             io.emit("NEW_ORDER", {
                 message: `Có đơn hàng mới #${orderId} từ ${customer_name}`,
@@ -95,25 +113,52 @@ const createOrder = async (req, res) => {
             });
         }
 
-        // Lưu chi tiết
+        // 5. Lưu chi tiết
         const sqlItems = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ?";
         const valuesItems = items.map(item => [orderId, item.id, item.quantity, item.price]);
         await db.query(sqlItems, [valuesItems]);
 
-        // Gửi email
-        if (userEmail) sendOrderEmail(userEmail, orderId, items, total_amount, customer_name);
+        // 6. Gửi email qua BullMQ Queue (KHÔNG block response)
+        if (userEmail) {
+            queueOrderEmail(userEmail, orderId, items, total_amount, customer_name)
+                .catch(err => logger.error(`Queue email error: ${err.message}`));
+        }
+
+        // 7. Invalidate product cache (stock đã thay đổi)
+        invalidateCache('cache:/products*').catch(() => { });
+        invalidateCache('cache:/api/stats*').catch(() => { });
 
         return res.json({ status: "Success", orderId });
     } catch (err) {
+        logger.error(`Create order error: ${err.message}`);
         res.status(500).json({ status: "Error", message: "Lỗi tạo đơn hàng" });
     }
 };
 
 const updateOrderStatus = async (req, res) => {
     try {
-        await db.query("UPDATE orders SET status = ? WHERE id = ?", [req.body.status, req.params.id]);
+        const { status } = req.body;
+        const orderId = req.params.id;
+
+        // Nếu hủy đơn → hoàn lại stock
+        if (status === 'Đã hủy') {
+            const [items] = await db.query(
+                "SELECT product_id, quantity FROM order_items WHERE order_id = ?",
+                [orderId]
+            );
+            if (items.length > 0) {
+                await releaseStock(items);
+            }
+        }
+
+        await db.query("UPDATE orders SET status = ? WHERE id = ?", [status, orderId]);
+
+        // Invalidate cache
+        invalidateCache('cache:/api/stats*').catch(() => { });
+
         return res.json("Cập nhật thành công");
     } catch (err) {
+        logger.error(`Update order status error: ${err.message}`);
         res.status(500).json({ status: "Error", message: "Lỗi cập nhật trạng thái" });
     }
 };

@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { signup, login, forgotPassword, resetPassword } = require('../controllers/authController');
+const { googleLogin } = require('../controllers/oauthController');
 const { validateSignup, validateLogin } = require('../middleware/validators');
 
 /**
@@ -122,5 +123,30 @@ router.post('/forgot-password', forgotPassword);
  *         description: Đổi mật khẩu thành công
  */
 router.post('/reset-password', resetPassword);
+
+/**
+ * @swagger
+ * /auth/google:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Đăng nhập bằng Google
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [credential]
+ *             properties:
+ *               credential:
+ *                 type: string
+ *                 description: Google ID Token từ Google Identity Services
+ *     responses:
+ *       200:
+ *         description: Đăng nhập thành công
+ *       401:
+ *         description: Token không hợp lệ
+ */
+router.post('/auth/google', googleLogin);
 
 module.exports = router;

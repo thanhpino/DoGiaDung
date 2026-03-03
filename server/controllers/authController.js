@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
 const crypto = require('crypto');
-const { sendResetPasswordEmail } = require('../utils/emailService');
+const { queueResetEmail } = require('../queues/emailQueue');
 
 // Helper: Tạo JWT Token
 const generateToken = (user) => {
@@ -69,7 +69,8 @@ const forgotPassword = async (req, res) => {
         const expires = Date.now() + 3600000;
 
         await db.query("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?", [token, expires, email]);
-        sendResetPasswordEmail(email, token);
+        const resetLink = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
+        queueResetEmail(email, resetLink).catch(err => console.error('Queue email error:', err.message));
         return res.json({ status: "Success", message: "Đã gửi hướng dẫn vào email của bạn!" });
     } catch (err) {
         return res.status(500).json({ status: "Error", message: "Lỗi server" });

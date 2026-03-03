@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 const { validateProduct } = require('../middleware/validators');
+const { cacheRoute } = require('../middleware/cacheMiddleware');
 const {
     getProducts, getProductById, createProduct, updateProduct, deleteProduct
 } = require('../controllers/productController');
@@ -59,7 +60,7 @@ const {
  *                     totalPages:
  *                       type: integer
  */
-router.get('/products', getProducts);
+router.get('/products', cacheRoute(300), getProducts); // Cache 5 phút
 
 /**
  * @swagger
@@ -83,7 +84,7 @@ router.get('/products', getProducts);
  *       404:
  *         description: Không tìm thấy sản phẩm
  */
-router.get('/api/products/:id', getProductById);
+router.get('/api/products/:id', cacheRoute(600), getProductById); // Cache 10 phút
 
 /**
  * @swagger

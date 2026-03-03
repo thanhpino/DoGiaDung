@@ -1,5 +1,7 @@
 // controllers/statsController.js
 const db = require('../config/database');
+const redis = require('../config/redisClient');
+const logger = require('../config/logger');
 
 const getGeneralStats = async (req, res) => {
     try {

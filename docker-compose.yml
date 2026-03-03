@@ -24,9 +24,11 @@ services:
     environment:
       - DB_HOST=mysqldb
       - CHATBOT_SERVICE_URL=http://chatbot:8082
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - mysqldb
       - chatbot
+      - redis
 
   # 3. CHATBOT MICROSERVICE (Gemini AI)
   chatbot:
@@ -55,5 +57,17 @@ services:
     depends_on:
       - server
 
+  # 5. REDIS
+  redis:
+    image: redis:7-alpine
+    container_name: tmt_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
 volumes:
   mysql_data:
+  redis_data:

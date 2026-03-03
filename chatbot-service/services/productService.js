@@ -98,11 +98,65 @@ async function getProductsByCategory(category, limit = 3) {
     }
 }
 
+/**
+ * Lấy tất cả sản phẩm (cho embedding sync)
+ */
+async function getAllProducts() {
+    try {
+        const [rows] = await db.query(
+            "SELECT id, name, price, category, image_url, description FROM products WHERE is_deleted = 0"
+        );
+        return rows;
+    } catch (err) {
+        logger.error(`getAllProducts error: ${err.message}`);
+        return [];
+    }
+}
+
+/**
+ * Tìm kiếm ngữ nghĩa (Semantic Search) bằng Gemini Embedding
+ * Fallback sang LIKE search nếu vector store chưa sẵn sàng
+ */
+async function semanticSearch(queryText, topK = 5) {
+    const vectorStore = require('./vectorStore');
+    const { embedText } = require('./embeddingService');
+
+    try {
+        // Kiểm tra vector store đã có dữ liệu chưa
+        if (vectorStore.size() === 0) {
+            logger.warn('VectorStore trống, fallback sang LIKE search');
+            return await searchProducts(queryText, topK);
+        }
+
+        // Embed câu hỏi
+        const queryVector = await embedText(queryText);
+
+        // Tìm kiếm trong vector store
+        const results = vectorStore.search(queryVector, topK);
+
+        if (results.length === 0) {
+            logger.info('Semantic search không tìm thấy, fallback sang LIKE');
+            return await searchProducts(queryText, topK);
+        }
+
+        logger.info(`Semantic search: tìm thấy ${results.length} kết quả (top score: ${results[0].score.toFixed(3)})`);
+
+        // Trả về metadata (thông tin sản phẩm) thay vì vector
+        return results.map(r => r.metadata);
+
+    } catch (err) {
+        logger.error(`semanticSearch error: ${err.message}, fallback sang LIKE`);
+        return await searchProducts(queryText, topK);
+    }
+}
+
 module.exports = {
     searchProducts,
     getTopProducts,
     getNewProducts,
     getProductsByPrice,
     getPremiumProducts,
-    getProductsByCategory
+    getProductsByCategory,
+    getAllProducts,
+    semanticSearch
 };

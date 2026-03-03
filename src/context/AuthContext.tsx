@@ -10,19 +10,21 @@ interface User {
   name: string;
   email: string;
   role: string;
+  avatar_url?: string;
+  provider?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, pass: string) => Promise<void>;
   register: (name: string, email: string, pass: string) => Promise<void>;
+  socialLogin: (provider: string, token: string) => Promise<void>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // Khôi phục user từ localStorage nếu có khi khởi tạo state
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
@@ -42,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // 2. Đăng nhập
+  // 2. Đăng nhập thủ công
   const login = async (email: string, pass: string) => {
     try {
       const res = await api.post('/login', { email, password: pass });
@@ -51,14 +53,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userData = res.data.data;
         const token = res.data.token;
 
-        // Lưu user + JWT Token
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', token);
 
         toast.success(`Chào mừng ${userData.name}!`);
 
-        // --- CHUYỂN HƯỚNG THEO ROLE ---
         if (userData.role === 'admin') {
           navigate('/admin');
         } else {
@@ -75,7 +75,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // 3. Đăng xuất
+  // 3. Đăng nhập bằng Google / Facebook
+  const socialLogin = async (provider: string, token: string) => {
+    try {
+      const res = await api.post(`/auth/${provider}`, { credential: token });
+
+      if (res.data.status === "Success") {
+        const userData = res.data.data;
+        const jwtToken = res.data.token;
+
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('token', jwtToken);
+
+        toast.success(`Chào mừng ${userData.name}! 🎉`, { icon: '🔑' });
+
+        if (userData.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
+      } else {
+        toast.error(res.data.message || "Đăng nhập thất bại");
+      }
+    } catch (err: any) {
+      console.error(`Lỗi ${provider} login:`, err);
+      const errorMsg = err.response?.data?.message || "Lỗi đăng nhập bằng " + provider;
+      toast.error(typeof errorMsg === 'string' ? errorMsg : "Lỗi hệ thống");
+    }
+  };
+
+  // 4. Đăng xuất
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -85,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, socialLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -228,7 +228,10 @@ const handleChat = async (req, res) => {
     try {
         switch (aiResult.intent) {
             case 'search_product':
-                if (aiResult.keyword) products = await productService.searchProducts(aiResult.keyword);
+                // Ưu tiên Semantic Search (Gemini Embedding)
+                if (aiResult.keyword) {
+                    products = await productService.semanticSearch(aiResult.keyword, 5);
+                }
                 break;
             case 'top_products':
                 products = await productService.getTopProducts();
