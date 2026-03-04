@@ -2,15 +2,23 @@ import { useEffect, useState } from 'react';
 import api from '../../utils/axiosConfig';
 import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  AreaChart, Area
+  AreaChart, Area, PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
-import { DollarSign, ShoppingCart, Users, TrendingUp, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { DollarSign, ShoppingCart, Users, TrendingUp, Calendar, ArrowUpRight, ArrowDownRight, Download, Trophy } from 'lucide-react';
 import { formatCurrency } from '../../utils/format';
+
+// @ts-ignore
+import * as XLSX from 'xlsx';
+
+const COLORS = ['#ea580c', '#3b82f6', '#8b5cf6', '#10b981', '#ef4444', '#f59e0b', '#ec4899'];
 
 export const AdminDashboard = () => {
   const [stats, setStats] = useState({ revenue: 0, orders: 0, users: 0 });
   const [chartData, setChartData] = useState<any[]>([]);
   const [topCategories, setTopCategories] = useState<any[]>([]);
+  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [topProducts, setTopProducts] = useState<any[]>([]);
+  const [paymentData, setPaymentData] = useState<any[]>([]);
 
   // Mảng màu cho thanh tiến độ
   const categoryColors = [
@@ -27,14 +35,20 @@ export const AdminDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [resStats, resWeekly, resCats] = await Promise.all([
+      const [resStats, resWeekly, resCats, resMonthly, resTop, resPayment] = await Promise.all([
         api.get('/api/stats'),
         api.get('/api/stats/weekly'),
-        api.get('/api/stats/categories')
+        api.get('/api/stats/categories'),
+        api.get('/api/stats/monthly').catch(() => ({ data: [] })),
+        api.get('/api/stats/top-products').catch(() => ({ data: [] })),
+        api.get('/api/stats/payment').catch(() => ({ data: [] })),
       ]);
 
       setStats(resStats.data);
       setTopCategories(resCats.data);
+      setMonthlyData(resMonthly.data);
+      setTopProducts(resTop.data);
+      setPaymentData(resPayment.data);
 
       // Định dạng dữ liệu cho biểu đồ
       const formattedChart = resWeekly.data.map((item: any) => ({
@@ -46,6 +60,42 @@ export const AdminDashboard = () => {
     } catch (err) { console.error("Lỗi tải dashboard:", err); }
   };
 
+  // Xuất Excel
+  const handleExportExcel = () => {
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1: Tổng quan
+    const statsSheet = XLSX.utils.json_to_sheet([{
+      'Tổng Doanh Thu': stats.revenue,
+      'Tổng Đơn Hàng': stats.orders,
+      'Khách Hàng': stats.users
+    }]);
+    XLSX.utils.book_append_sheet(wb, statsSheet, 'Tổng Quan');
+
+    // Sheet 2: Top sản phẩm
+    if (topProducts.length > 0) {
+      const topSheet = XLSX.utils.json_to_sheet(topProducts.map(p => ({
+        'Tên SP': p.name,
+        'Giá': p.price,
+        'SL Bán': p.total_sold,
+        'Doanh Thu': p.total_revenue
+      })));
+      XLSX.utils.book_append_sheet(wb, topSheet, 'Top SP');
+    }
+
+    // Sheet 3: Monthly
+    if (monthlyData.length > 0) {
+      const monthSheet = XLSX.utils.json_to_sheet(monthlyData.map(m => ({
+        'Tháng': m.month,
+        'Doanh Thu': m.revenue,
+        'Số Đơn': m.orders
+      })));
+      XLSX.utils.book_append_sheet(wb, monthSheet, 'Theo Tháng');
+    }
+
+    XLSX.writeFile(wb, `BaoCao_TMT_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
 
@@ -55,8 +105,16 @@ export const AdminDashboard = () => {
           <h2 className="text-3xl font-bold text-gray-800">Tổng Quan Hệ Thống</h2>
           <p className="text-gray-500 mt-1">Cập nhật số liệu kinh doanh thời gian thực</p>
         </div>
-        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm text-sm text-gray-600">
-          <Calendar size={16} /> <span>Hôm nay: {new Date().toLocaleDateString('vi-VN')}</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 transition shadow-md"
+          >
+            <Download size={16} /> Xuất Excel
+          </button>
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm text-sm text-gray-600">
+            <Calendar size={16} /> <span>Hôm nay: {new Date().toLocaleDateString('vi-VN')}</span>
+          </div>
         </div>
       </div>
 
@@ -99,7 +157,7 @@ export const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* 2. BIỂU ĐỒ & DỰ BÁO */}
+      {/* 2. BIỂU ĐỒ TUẦN & DỰ BÁO */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         {/* CỘT TRÁI: BIỂU ĐỒ RECHARTS  */}
@@ -156,6 +214,117 @@ export const AdminDashboard = () => {
                 ))}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* 3. BIỂU ĐỒ DOANH THU THEO THÁNG (12 tháng) */}
+      {monthlyData.length > 0 && (
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h3 className="font-bold text-gray-800 text-lg mb-6 flex items-center gap-2">
+            <Calendar className="text-blue-600" /> Doanh Thu Theo Tháng (12 tháng gần nhất)
+          </h3>
+          <div style={{ width: '100%', height: 300 }}>
+            <ResponsiveContainer>
+              <LineChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} fontSize={12} />
+                <YAxis
+                  tickFormatter={(v) => new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(v)}
+                  axisLine={false} tickLine={false}
+                />
+                <Tooltip
+                  formatter={(value: number | undefined) => value !== undefined ? [new Intl.NumberFormat('vi-VN').format(value) + ' đ', 'Doanh thu'] : ''}
+                  contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                />
+                <Legend />
+                <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4 }} name="Doanh Thu" />
+                <Line type="monotone" dataKey="orders" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} name="Số Đơn" yAxisId={0} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* 4. TOP SẢN PHẨM BÁN CHẠY & THANH TOÁN */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        {/* Top sản phẩm bán chạy */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h3 className="font-bold text-gray-800 text-lg mb-6 flex items-center gap-2">
+            <Trophy className="text-yellow-500" /> Top 10 Sản Phẩm Bán Chạy
+          </h3>
+          {topProducts.length === 0 ? (
+            <p className="text-gray-400 text-center py-8">Chưa có dữ liệu</p>
+          ) : (
+            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              {topProducts.map((p, idx) => (
+                <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition">
+                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold text-white ${idx < 3 ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-gray-300'}`}>
+                    {idx + 1}
+                  </span>
+                  <img src={p.image_url} alt={p.name} className="w-10 h-10 rounded-lg object-cover border border-gray-100" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm text-gray-800 truncate">{p.name}</p>
+                    <p className="text-xs text-gray-400">{formatCurrency(p.price)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-sm text-orange-600">{p.total_sold} bán</p>
+                    <p className="text-xs text-gray-400">{formatCurrency(p.total_revenue)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Doanh thu theo phương thức thanh toán */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h3 className="font-bold text-gray-800 text-lg mb-6 flex items-center gap-2">
+            <DollarSign className="text-green-500" /> Doanh Thu Theo Thanh Toán
+          </h3>
+          {paymentData.length === 0 ? (
+            <p className="text-gray-400 text-center py-8">Chưa có dữ liệu</p>
+          ) : (
+            <div className="flex flex-col items-center gap-6">
+              <div style={{ width: 260, height: 260 }}>
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      data={paymentData}
+                      dataKey="revenue"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      innerRadius={50}
+                      paddingAngle={3}
+                      label={(props: any) => `${props.name || ''} (${((props.percent || 0) * 100).toFixed(0)}%)`}
+                      labelLine={false}
+                    >
+                      {paymentData.map((_: any, idx: number) => (
+                        <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: number | undefined) => value !== undefined ? formatCurrency(value) : ''} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="w-full space-y-2">
+                {paymentData.map((p, idx) => (
+                  <div key={p.name} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></span>
+                      <span className="font-medium text-gray-700">{p.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-bold text-gray-800">{formatCurrency(p.revenue)}</span>
+                      <span className="text-gray-400 ml-2">({p.orders} đơn)</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

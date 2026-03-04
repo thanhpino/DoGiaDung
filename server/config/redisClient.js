@@ -1,30 +1,34 @@
-// // config/redisClient.js
+// config/redisClient.js
 const Redis = require('ioredis');
 const logger = require('./logger');
 
-// Để nếu Render không đọc được biến, âm thầm chạy localhost.
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+// Mặc định lấy biến môi trường, nếu không có thì tự hiểu là đang chạy Local ở máy bro
+const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
-if (!REDIS_URL) {
-    logger.error('🚨 Render không đọc được biến REDIS_URL! Vui lòng check lại mục Environment trên Render.');
-}
+// Tự động phát hiện xem đang xài Cloud (rediss://) hay Local (redis://)
+const isTLS = REDIS_URL.startsWith('rediss://');
 
-// 2. Thêm cấu hình TLS (Bắt buộc đối với Upstash Redis)
-const redis = new Redis(REDIS_URL, {
-    maxRetriesPerRequest: null, // Required by BullMQ
+const redisConfig = {
+    maxRetriesPerRequest: null, // Bắt buộc cho BullMQ
     enableReadyCheck: false,
-    tls: {
-        rejectUnauthorized: false // CHÌA KHÓA VÀNG Ở ĐÂY: Bỏ qua lỗi SSL/TLS của Upstash
-    },
     retryStrategy(times) {
         const delay = Math.min(times * 500, 5000);
         logger.warn(`🔴 Redis reconnecting... (lần ${times}, chờ ${delay}ms)`);
         return delay;
     }
-});
+};
+
+// CHÌA KHÓA VÀNG: Chỉ bật cấu hình TLS nếu đang xài Upstash trên mạng
+if (isTLS) {
+    redisConfig.tls = {
+        rejectUnauthorized: false
+    };
+}
+
+const redis = new Redis(REDIS_URL, redisConfig);
 
 redis.on('connect', () => {
-    logger.info('🟢 Redis (Upstash) đã kết nối thành công!');
+    logger.info(`🟢 Redis đã kết nối thành công! (${isTLS ? 'Cloud/Upstash' : 'Local'})`);
 });
 
 redis.on('error', (err) => {

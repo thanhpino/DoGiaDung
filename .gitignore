@@ -36,3 +36,5 @@ server/.env
 chatbot-service/.env
 server/uploads/
 server/logs/
+dump.rdb
+*.tgz

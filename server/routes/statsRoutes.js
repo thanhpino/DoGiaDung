@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
-const { getGeneralStats, getWeeklyStats, getCategoryStats } = require('../controllers/statsController');
+const { getGeneralStats, getWeeklyStats, getCategoryStats, getMonthlyStats, getTopProducts, getRevenueByPayment } = require('../controllers/statsController');
 
 /**
  * @swagger
@@ -56,5 +56,8 @@ router.get('/api/stats/weekly', verifyToken, verifyAdmin, getWeeklyStats);
  *         description: Phần trăm bán hàng theo danh mục
  */
 router.get('/api/stats/categories', verifyToken, verifyAdmin, getCategoryStats);
+router.get('/api/stats/monthly', verifyToken, verifyAdmin, getMonthlyStats);
+router.get('/api/stats/top-products', verifyToken, verifyAdmin, getTopProducts);
+router.get('/api/stats/payment', verifyToken, verifyAdmin, getRevenueByPayment);
 
 module.exports = router;

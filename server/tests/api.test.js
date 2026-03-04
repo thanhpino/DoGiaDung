@@ -252,6 +252,183 @@ describe('KIỂM TRA INPUT VALIDATION', () => {
     });
 });
 
+// ============================================
+// PHẦN 5: KIỂM TRA WISHLIST API
+// ============================================
+describe('KIỂM TRA WISHLIST API', () => {
+
+    test('GET /api/wishlist - Không có token → 401', async () => {
+        const res = await request(app).get('/api/wishlist');
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('POST /api/wishlist - Không có token → 401', async () => {
+        const res = await request(app)
+            .post('/api/wishlist')
+            .send({ productId: 1 });
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('DELETE /api/wishlist/1 - Không có token → 401', async () => {
+        const res = await request(app).delete('/api/wishlist/1');
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('GET /api/wishlist/ids - Có token → 200 + array', async () => {
+        const customerToken = jwt.sign(
+            { id: 1, email: 'customer@test.com', role: 'customer' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .get('/api/wishlist/ids')
+            .set('Authorization', `Bearer ${customerToken}`);
+        // Nên 200 dù rỗng
+        expect(res.statusCode).toEqual(200);
+        expect(Array.isArray(res.body)).toBe(true);
+    });
+});
+
+// ============================================
+// PHẦN 6: KIỂM TRA COUPON API
+// ============================================
+describe('KIỂM TRA COUPON API', () => {
+
+    test('POST /api/coupons/validate - Không có token → 401', async () => {
+        const res = await request(app)
+            .post('/api/coupons/validate')
+            .send({ code: 'TEST10', order_total: 100000 });
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('POST /api/coupons/validate - Mã không tồn tại → 404', async () => {
+        const customerToken = jwt.sign(
+            { id: 999, email: 'customer@test.com', role: 'customer' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .post('/api/coupons/validate')
+            .set('Authorization', `Bearer ${customerToken}`)
+            .send({ code: 'NONEXISTENT_CODE_XYZ', order_total: 100000 });
+        expect(res.statusCode).toEqual(404);
+    });
+
+    test('POST /api/coupons/validate - Thiếu code → 400', async () => {
+        const customerToken = jwt.sign(
+            { id: 999, email: 'customer@test.com', role: 'customer' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .post('/api/coupons/validate')
+            .set('Authorization', `Bearer ${customerToken}`)
+            .send({ order_total: 100000 });
+        expect(res.statusCode).toEqual(400);
+    });
+
+    test('GET /api/coupons - Customer (không phải admin) → 403', async () => {
+        const customerToken = jwt.sign(
+            { id: 999, email: 'customer@test.com', role: 'customer' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .get('/api/coupons')
+            .set('Authorization', `Bearer ${customerToken}`);
+        expect(res.statusCode).toEqual(403);
+    });
+
+    test('POST /api/coupons - Admin nhưng thiếu code → 400', async () => {
+        const adminToken = jwt.sign(
+            { id: 1, email: 'admin@test.com', role: 'admin' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .post('/api/coupons')
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({ discount_value: 10 }); // thiếu code
+        expect(res.statusCode).toEqual(400);
+    });
+});
+
+// ============================================
+// PHẦN 7: KIỂM TRA NOTIFICATION API
+// ============================================
+describe('KIỂM TRA NOTIFICATION API', () => {
+
+    test('GET /api/notifications - Không có token → 401', async () => {
+        const res = await request(app).get('/api/notifications');
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('GET /api/notifications/unread-count - Không có token → 401', async () => {
+        const res = await request(app).get('/api/notifications/unread-count');
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('GET /api/notifications - Có token → 200', async () => {
+        const customerToken = jwt.sign(
+            { id: 1, email: 'customer@test.com', role: 'customer' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .get('/api/notifications')
+            .set('Authorization', `Bearer ${customerToken}`);
+        expect(res.statusCode).toEqual(200);
+        expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    test('GET /api/notifications/unread-count - Có token → 200 + count', async () => {
+        const customerToken = jwt.sign(
+            { id: 1, email: 'customer@test.com', role: 'customer' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .get('/api/notifications/unread-count')
+            .set('Authorization', `Bearer ${customerToken}`);
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toHaveProperty('count');
+        expect(typeof res.body.count).toBe('number');
+    });
+});
+
+// ============================================
+// PHẦN 8: KIỂM TRA STATS ANALYTICS API
+// ============================================
+describe('KIỂM TRA STATS ANALYTICS API', () => {
+
+    test('GET /api/stats/monthly - Không có token → 401', async () => {
+        const res = await request(app).get('/api/stats/monthly');
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('GET /api/stats/monthly - Customer → 403', async () => {
+        const customerToken = jwt.sign(
+            { id: 999, email: 'customer@test.com', role: 'customer' },
+            process.env.JWT_SECRET || 'test-secret',
+            { expiresIn: '1h' }
+        );
+        const res = await request(app)
+            .get('/api/stats/monthly')
+            .set('Authorization', `Bearer ${customerToken}`);
+        expect(res.statusCode).toEqual(403);
+    });
+
+    test('GET /api/stats/top-products - Không có token → 401', async () => {
+        const res = await request(app).get('/api/stats/top-products');
+        expect(res.statusCode).toEqual(401);
+    });
+
+    test('GET /api/stats/payment - Không có token → 401', async () => {
+        const res = await request(app).get('/api/stats/payment');
+        expect(res.statusCode).toEqual(401);
+    });
+});
+
 // Đóng kết nối DB + Redis sau khi test xong
 afterAll(async () => {
     const redis = require('../config/redisClient');

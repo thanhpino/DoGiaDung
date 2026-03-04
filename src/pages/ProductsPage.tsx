@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/axiosConfig';
-import { ShoppingBag, Search, ChevronLeft, ChevronRight, Filter, Heart } from 'lucide-react';
+import { ShoppingBag, Search, ChevronLeft, ChevronRight, Filter, Heart, Columns3 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { formatCurrency } from '../utils/format';
+import { useWishlist } from '../context/WishlistContext';
+import { useCompare } from '../context/CompareContext';
+import { useAuth } from '../context/AuthContext';
 
 export const ProductsPage = () => {
     const navigate = useNavigate();
+    const { isInWishlist, toggleWishlist } = useWishlist();
+    const { addToCompare } = useCompare();
+    const { user } = useAuth();
 
     // state Dữ liệu & Phân trang
     const [products, setProducts] = useState<any[]>([]);
@@ -17,9 +23,6 @@ export const ProductsPage = () => {
         total: 0,
         totalPages: 1
     });
-
-    // Lưu danh sách ID yêu thích
-    const [favorites, setFavorites] = useState<number[]>([]);
 
     // State Bộ lọc & Tìm kiếm
     const [filter, setFilter] = useState('All');
@@ -59,19 +62,17 @@ export const ProductsPage = () => {
             });
     }, [filter, debouncedSearch, pagination.page]);
 
-    // Hàm xử lý bấm trái tim
-    const toggleFavorite = (e: React.MouseEvent, productId: number) => {
+    // Hàm xử lý bấm trái tim (dùng WishlistContext, sync API)
+    const handleToggleWishlist = (e: React.MouseEvent, productId: number) => {
         e.stopPropagation();
+        if (!user) { toast.error('Vui lòng đăng nhập để thêm yêu thích!'); return; }
+        toggleWishlist(productId);
+    };
 
-        setFavorites(prev => {
-            if (prev.includes(productId)) {
-                toast.success("Đã xóa khỏi yêu thích");
-                return prev.filter(id => id !== productId);
-            } else {
-                toast.success("Đã thêm vào yêu thích ❤️");
-                return [...prev, productId];
-            }
-        });
+    // Hàm xử lý bấm so sánh
+    const handleCompare = (e: React.MouseEvent, product: any) => {
+        e.stopPropagation();
+        addToCompare({ id: product.id, name: product.name, price: product.price, image_url: product.image_url, category: product.category, description: product.description, rating: product.rating });
     };
 
     const handlePageChange = (newPage: number) => {
@@ -165,13 +166,22 @@ export const ProductsPage = () => {
 
                                             {/* NÚT TRÁI TIM YÊU THÍCH */}
                                             <button
-                                                onClick={(e) => toggleFavorite(e, product.id)}
+                                                onClick={(e) => handleToggleWishlist(e, product.id)}
                                                 className="absolute top-2 left-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm z-10 transition hover:scale-110"
                                             >
                                                 <Heart
                                                     size={18}
-                                                    className={`transition-colors ${favorites.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
+                                                    className={`transition-colors ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
                                                 />
+                                            </button>
+
+                                            {/* NÚT SO SÁNH */}
+                                            <button
+                                                onClick={(e) => handleCompare(e, product)}
+                                                className="absolute top-2 left-12 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm z-10 transition hover:scale-110"
+                                                title="So sánh sản phẩm"
+                                            >
+                                                <Columns3 size={18} className="text-gray-400 hover:text-blue-500" />
                                             </button>
 
                                             <img src={product.image_url || product.img} alt={product.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition duration-500" />

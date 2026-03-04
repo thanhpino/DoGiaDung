@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, ShoppingCart, User, LogOut, Package, LayoutDashboard, Sparkles, Menu, X, Sun, Moon } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, User, LogOut, Package, LayoutDashboard, Sparkles, Menu, X, Sun, Moon, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
+import { NotificationBell } from '../components/NotificationBell';
 
 export const Header: React.FC = () => {
     const { user, logout } = useAuth();
@@ -86,6 +87,14 @@ export const Header: React.FC = () => {
                             >
                                 {isDark ? <Sun size={20} /> : <Moon size={20} />}
                             </button>
+
+                            {/* Notification */}
+                            <NotificationBell />
+
+                            {/* Wishlist */}
+                            <Link to="/wishlist" className="p-2.5 rounded-full hover:bg-orange-50 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 hover:text-red-500 transition" title="Yêu thích">
+                                <Heart size={20} />
+                            </Link>
 
                             {/* Cart */}
                             <Link to="/checkout" className="relative p-2.5 rounded-full hover:bg-orange-50 text-gray-600 hover:text-orange-600 transition group">

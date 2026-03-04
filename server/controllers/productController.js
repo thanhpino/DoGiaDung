@@ -44,8 +44,19 @@ const getProductById = async (req, res) => {
     try {
         const [data] = await db.query("SELECT * FROM products WHERE id = ?", [req.params.id]);
         if (data.length === 0) return res.status(404).json("Không tìm thấy sản phẩm");
-        return res.json(data[0]);
+        let images = [];
+        try {
+            const [imgData] = await db.query(
+                "SELECT id, image_url, sort_order, is_primary FROM product_images WHERE product_id = ? ORDER BY sort_order ASC",
+                [req.params.id]
+            );
+            images = imgData;
+        } catch (imgErr) {
+            console.warn(`⚠️ Cảnh báo: Không thể lấy ảnh cho sản phẩm ${req.params.id} (Có thể bảng product_images chưa tồn tại)`);
+        }
+        return res.json({ ...data[0], images });
     } catch (err) {
+        console.error("Lỗi getProductById:", err);
         res.status(500).json({ status: "Error", message: "Lỗi server" });
     }
 };

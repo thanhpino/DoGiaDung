@@ -31,6 +31,9 @@ const chatbotRoutes = require('./routes/chatbotRoutes');
 const vnpayRoutes = require('./routes/vnpayRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const suggestionRoutes = require('./routes/suggestionRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
+const couponRoutes = require('./routes/couponRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Import order controller
 const { setSocketIO } = require('./controllers/orderController');
@@ -113,6 +116,9 @@ app.use('/', chatbotRoutes);
 app.use('/', vnpayRoutes);
 app.use('/', uploadRoutes);
 app.use('/api', suggestionRoutes);
+app.use('/', wishlistRoutes);
+app.use('/', couponRoutes);
+app.use('/', notificationRoutes);
 
 // 5. HEALTH CHECK
 app.get('/', async (req, res) => {

@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Star, Truck, ShieldCheck, Heart } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Star, Truck, ShieldCheck, Heart, Columns3 } from 'lucide-react';
 import api from '../utils/axiosConfig';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useCompare } from '../context/CompareContext';
+import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { ProductSimulation } from '../components/ProductSimulation';
+import { ImageGallery } from '../components/ImageGallery';
 import { formatCurrency } from '../utils/format';
 
 export const ProductDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { addToCompare } = useCompare();
+  const { user } = useAuth();
 
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +73,23 @@ export const ProductDetail = () => {
     }
   };
 
+  const handleToggleWishlist = () => {
+    if (!user) { toast.error('Vui lòng đăng nhập để thêm yêu thích!'); return; }
+    toggleWishlist(product.id);
+  };
+
+  const handleCompare = () => {
+    addToCompare({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
+      category: product.category,
+      description: product.description,
+      rating: product.rating,
+    });
+  };
+
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#FFFBF7] dark:bg-gray-950">
       <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin"></div>
@@ -79,6 +103,8 @@ export const ProductDetail = () => {
       <button onClick={() => navigate('/home')} className="text-orange-600 underline hover:text-orange-700">Quay về trang chủ</button>
     </div>
   );
+
+  const inWishlist = product ? isInWishlist(product.id) : false;
 
   return (
     <div className="min-h-screen bg-[#FFFBF7] dark:bg-gray-950 font-sans text-gray-800 pb-20">
@@ -98,20 +124,33 @@ export const ProductDetail = () => {
           {/* --- CỘT TRÁI: ẢNH & SIMULATION  --- */}
           <div className="lg:col-span-7 space-y-6">
 
-            {/* Ảnh sản phẩm chính */}
-            <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 p-8 flex items-center justify-center relative overflow-hidden group">
-              <img
-                src={product.img || product.image_url}
-                alt={product.name}
-                className="w-full h-[400px] object-contain mix-blend-multiply group-hover:scale-105 transition duration-500 ease-in-out"
+            {/* Gallery ảnh sản phẩm (hỗ trợ multi-image) */}
+            <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 p-6 relative">
+              <ImageGallery
+                images={product.images || []}
+                mainImage={product.img || product.image_url}
+                productName={product.name}
               />
-              <div className="absolute top-4 right-4 flex flex-col gap-2">
-                <button className="p-3 bg-white rounded-full shadow-md text-gray-400 hover:text-red-500 transition hover:shadow-lg"><Heart size={20} /></button>
+              <div className="absolute top-8 right-8 flex flex-col gap-2 z-10">
+                <button
+                  onClick={handleToggleWishlist}
+                  className={`p-3 bg-white rounded-full shadow-md transition hover:shadow-lg ${inWishlist ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                  title="Yêu thích"
+                >
+                  <Heart size={20} fill={inWishlist ? 'currentColor' : 'none'} />
+                </button>
+                <button
+                  onClick={handleCompare}
+                  className="p-3 bg-white rounded-full shadow-md text-gray-400 hover:text-blue-500 transition hover:shadow-lg"
+                  title="So sánh sản phẩm"
+                >
+                  <Columns3 size={20} />
+                </button>
               </div>
 
               {/* LOGIC : Chỉ hiện Badge góc trái khi có giảm giá */}
               {product.oldPrice && product.oldPrice > product.price && (
-                <span className="absolute top-6 left-6 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-red-200 shadow-lg z-10">
+                <span className="absolute top-8 left-8 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-red-200 shadow-lg z-10">
                   -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
                 </span>
               )}

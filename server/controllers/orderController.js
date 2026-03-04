@@ -3,6 +3,7 @@ const db = require('../config/database');
 const { reserveStock, releaseStock } = require('../services/inventoryService');
 const { queueOrderEmail } = require('../queues/emailQueue');
 const { invalidateCache } = require('../middleware/cacheMiddleware');
+const { createNotification } = require('./notificationController');
 const logger = require('../config/logger');
 
 let io;
@@ -78,7 +79,7 @@ const getOrderById = async (req, res) => {
 
 const createOrder = async (req, res) => {
     try {
-        const { user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, items } = req.body;
+        const { user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, items, coupon_code } = req.body;
 
         // 1. KIỂM TRA TỒN KHO (Redis Atomic)
         const stockResult = await reserveStock(items);
@@ -99,9 +100,27 @@ const createOrder = async (req, res) => {
         const [resUser] = await db.query("SELECT email FROM users WHERE id = ?", [user_id]);
         const userEmail = (resUser && resUser.length > 0) ? resUser[0].email : null;
 
-        // 3. Tạo đơn hàng
-        const sqlOrder = "INSERT INTO orders (user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, status) VALUES (?)";
-        const valuesOrder = [user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, 'Chờ xác nhận'];
+        // 3. Xử lý coupon nếu có
+        let discountAmount = 0;
+        if (coupon_code) {
+            const [coupons] = await db.query("SELECT * FROM coupons WHERE code = ? AND is_active = 1", [coupon_code.toUpperCase()]);
+            if (coupons.length > 0) {
+                const coupon = coupons[0];
+                if (coupon.discount_type === 'percent') {
+                    discountAmount = Math.round(total_amount * coupon.discount_value / 100);
+                } else {
+                    discountAmount = coupon.discount_value;
+                }
+                // Tăng used_count
+                await db.query("UPDATE coupons SET used_count = used_count + 1 WHERE id = ?", [coupon.id]);
+            }
+        }
+
+        const finalAmount = total_amount - discountAmount;
+
+        // 4. Tạo đơn hàng
+        const sqlOrder = "INSERT INTO orders (user_id, customer_name, customer_phone, customer_address, total_amount, payment_method, note, status, coupon_code, discount_amount) VALUES (?)";
+        const valuesOrder = [user_id, customer_name, customer_phone, customer_address, finalAmount, payment_method, note, 'Chờ xác nhận', coupon_code || null, discountAmount];
         const [orderResult] = await db.query(sqlOrder, [valuesOrder]);
         const orderId = orderResult.insertId;
 
@@ -124,9 +143,27 @@ const createOrder = async (req, res) => {
                 .catch(err => logger.error(`Queue email error: ${err.message}`));
         }
 
-        // 7. Invalidate product cache (stock đã thay đổi)
+        // 8. Invalidate product cache (stock đã thay đổi)
         invalidateCache('cache:/products*').catch(() => { });
         invalidateCache('cache:/api/stats*').catch(() => { });
+
+        // 9. Ghi coupon_usage
+        if (coupon_code) {
+            const [coupons] = await db.query("SELECT id FROM coupons WHERE code = ?", [coupon_code.toUpperCase()]);
+            if (coupons.length > 0) {
+                db.query("INSERT IGNORE INTO coupon_usage (coupon_id, user_id, order_id) VALUES (?, ?, ?)",
+                    [coupons[0].id, user_id, orderId]).catch(() => { });
+            }
+        }
+
+        // 10. Tạo notification cho user
+        createNotification(io, {
+            userId: user_id,
+            type: 'order_created',
+            title: 'Đơn hàng mới',
+            message: `Đơn hàng #${orderId} đã được tạo thành công!`,
+            relatedId: orderId
+        }).catch(() => { });
 
         return res.json({ status: "Success", orderId });
     } catch (err) {
@@ -155,6 +192,18 @@ const updateOrderStatus = async (req, res) => {
 
         // Invalidate cache
         invalidateCache('cache:/api/stats*').catch(() => { });
+
+        // Tạo notification cho user
+        const [orderData] = await db.query("SELECT user_id FROM orders WHERE id = ?", [orderId]);
+        if (orderData.length > 0) {
+            createNotification(io, {
+                userId: orderData[0].user_id,
+                type: 'order_status',
+                title: 'Cập nhật đơn hàng',
+                message: `Đơn hàng #${orderId} đã chuyển sang: ${status}`,
+                relatedId: parseInt(orderId)
+            }).catch(() => { });
+        }
 
         return res.json("Cập nhật thành công");
     } catch (err) {

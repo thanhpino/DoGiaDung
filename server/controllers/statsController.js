@@ -53,4 +53,52 @@ const getCategoryStats = async (req, res) => {
     }
 };
 
-module.exports = { getGeneralStats, getWeeklyStats, getCategoryStats };
+// Doanh thu 12 tháng gần nhất
+const getMonthlyStats = async (req, res) => {
+    try {
+        const [data] = await db.query(
+            `SELECT DATE_FORMAT(created_at, '%m/%Y') as month, SUM(total_amount) as revenue,
+                    COUNT(*) as orders
+             FROM orders WHERE status != 'Đã hủy' AND created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+             GROUP BY DATE_FORMAT(created_at, '%m/%Y')
+             ORDER BY MIN(created_at) ASC`
+        );
+        return res.json(data);
+    } catch (err) {
+        res.status(500).json({ status: "Error", message: "Lỗi tải thống kê tháng" });
+    }
+};
+
+// Top 10 sản phẩm bán chạy
+const getTopProducts = async (req, res) => {
+    try {
+        const [data] = await db.query(
+            `SELECT p.id, p.name, p.image_url, p.price, SUM(oi.quantity) as total_sold,
+                    SUM(oi.quantity * oi.price) as total_revenue
+             FROM order_items oi
+             JOIN products p ON oi.product_id = p.id
+             JOIN orders o ON oi.order_id = o.id
+             WHERE o.status != 'Đã hủy'
+             GROUP BY p.id ORDER BY total_sold DESC LIMIT 10`
+        );
+        return res.json(data);
+    } catch (err) {
+        res.status(500).json({ status: "Error", message: "Lỗi tải top sản phẩm" });
+    }
+};
+
+// Doanh thu theo phương thức thanh toán
+const getRevenueByPayment = async (req, res) => {
+    try {
+        const [data] = await db.query(
+            `SELECT payment_method as name, COUNT(*) as orders, SUM(total_amount) as revenue
+             FROM orders WHERE status != 'Đã hủy'
+             GROUP BY payment_method ORDER BY revenue DESC`
+        );
+        return res.json(data);
+    } catch (err) {
+        res.status(500).json({ status: "Error", message: "Lỗi tải thống kê thanh toán" });
+    }
+};
+
+module.exports = { getGeneralStats, getWeeklyStats, getCategoryStats, getMonthlyStats, getTopProducts, getRevenueByPayment };
