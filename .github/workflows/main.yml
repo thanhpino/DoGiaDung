@@ -141,4 +141,6 @@ jobs:
           DB_PORT: 3306
           JWT_SECRET: test-secret-key-for-ci
           GEMINI_API_KEY: test-key
-        run: npx jest --forceExit --verbose
+        run: |
+          node migrations/run_all_migrations.js
+          npx jest --forceExit --verbose
