@@ -10,7 +10,7 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
     const [progress, setProgress] = useState(0);
     const [status, setStatus] = useState("Sẵn sàng");
     const [temp, setTemp] = useState(25);
-    const [isOn, setIsOn] = useState(false); 
+    const [isOn, setIsOn] = useState(false);
 
     // Reset khi đổi sản phẩm
     useEffect(() => {
@@ -54,16 +54,21 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
         setTemp(25);
     };
 
-    // --- PHÂN LOẠI SẢN PHẨM
+    // --- PHÂN LOẠI SẢN PHẨM TỐI ƯU HÓA TRÁNH LỖI SUBSTRING ---
     const name = product.name.toLowerCase();
     const cat = product.category || "";
-    const isRobot = (cat === 'Cleaning' || cat === 'Gadget') && (name.includes('robot') || name.includes('hút bụi'));
-    const isCooker = cat === 'Kitchen' && (name.includes('nồi') || name.includes('chiên') || name.includes('bếp') || name.includes('lò') || name.includes('chảo'));
+
+    // Thêm khoảng trắng hai đầu và thay thế dấu câu để dễ dàng map chữ chính xác (tránh lỗi "thấm" chứa "ấm")
+    const paddedName = ` ${name.replace(/[.,-]/g, ' ')} `;
+    const hasWord = (w: string) => paddedName.includes(` ${w} `);
+
+    const isRobot = (cat === 'Cleaning' || cat === 'Gadget') && (hasWord('robot') || name.includes('hút bụi'));
+    const isCooker = cat === 'Kitchen' && (hasWord('nồi') || name.includes('chiên') || hasWord('bếp') || hasWord('lò') || hasWord('chảo'));
     const isKettle = (cat === 'Kitchen' || cat === 'Personal') && (
-        name.includes('ấm ') || name.includes('siêu tốc') || name.includes('bình giữ nhiệt') || name.includes('bình đun')
+        hasWord('ấm') || name.includes('siêu tốc') || name.includes('bình giữ nhiệt') || name.includes('bình đun')
     );
-    const isFan = (cat === 'Cooling' || cat === 'Health' || cat === 'Gadget') && (name.includes('quạt') || name.includes('máy lọc') || name.includes('máy xay'));
-    const isLight = (cat === 'Lighting' || cat === 'Decor' || cat === 'Bedroom') && (name.includes('đèn') || name.includes('led'));
+    const isFan = (cat === 'Cooling' || cat === 'Health' || cat === 'Gadget') && (hasWord('quạt') || name.includes('máy lọc') || name.includes('máy xay'));
+    const isLight = (cat === 'Lighting' || cat === 'Decor' || cat === 'Bedroom') && (hasWord('đèn') || hasWord('led'));
 
 
     // 1. ROBOT
@@ -79,7 +84,7 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
                             <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-gray-400 rounded-full"></div>
                         </>
                     )}
-                    <div 
+                    <div
                         className={`absolute w-12 h-12 bg-black rounded-full border-4 border-orange-500 flex items-center justify-center text-white text-[10px] transition-all duration-75 shadow-xl z-10 ${isRunning ? 'animate-robot-move' : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'}`}
                         style={{
                             left: isRunning ? `${(Math.sin(progress / 10) * 40) + 50}%` : '',
@@ -93,11 +98,11 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
                 <div className="mt-4 flex gap-3">
                     {!isRunning && progress !== 100 ? (
                         <button onClick={handleStart} className="flex items-center gap-2 bg-black text-white px-6 py-2 rounded-full font-bold hover:bg-orange-600 transition">
-                            <Play size={16}/> Chạy Thử
+                            <Play size={16} /> Chạy Thử
                         </button>
                     ) : (
                         <button onClick={handleReset} className="flex items-center gap-2 bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-bold hover:bg-gray-300 transition">
-                            <RotateCcw size={16}/> Làm Lại
+                            <RotateCcw size={16} /> Làm Lại
                         </button>
                     )}
                 </div>
@@ -109,11 +114,11 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
     if (isCooker) {
         return (
             <div className="bg-orange-50 rounded-2xl p-6 h-full flex flex-col items-center justify-center text-center">
-                <Utensils size={40} className={`mb-4 ${isRunning ? 'text-orange-600 animate-bounce' : 'text-gray-400'}`}/>
+                <Utensils size={40} className={`mb-4 ${isRunning ? 'text-orange-600 animate-bounce' : 'text-gray-400'}`} />
                 <h3 className="font-bold text-lg text-gray-800 mb-1">{status}</h3>
                 <p className="text-sm text-gray-500 mb-6">Chế độ: Nấu tiêu chuẩn</p>
                 <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-2 relative">
-                    <div 
+                    <div
                         className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-300"
                         style={{ width: `${progress}%` }}
                     ></div>
@@ -125,7 +130,7 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
                     </button>
                 ) : progress === 100 ? (
                     <div className="flex flex-col items-center animate-fade-in">
-                        <CheckCircle size={40} className="text-green-500 mb-2"/>
+                        <CheckCircle size={40} className="text-green-500 mb-2" />
                         <button onClick={handleReset} className="text-gray-500 underline text-sm hover:text-orange-600">Thử lại</button>
                     </div>
                 ) : (
@@ -143,12 +148,12 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
                     <div className="text-center">
                         {isKettle ? (
                             <>
-                                <Thermometer size={24} className={`mx-auto mb-1 ${Math.round(temp) >= 100 ? 'text-red-600' : 'text-gray-400'}`}/>
+                                <Thermometer size={24} className={`mx-auto mb-1 ${Math.round(temp) >= 100 ? 'text-red-600' : 'text-gray-400'}`} />
                                 <span className="text-3xl font-black text-gray-800">{Math.round(temp)}°C</span>
                             </>
                         ) : (
                             <>
-                                <Fan size={24} className={`mx-auto mb-1 ${isRunning ? 'animate-spin text-blue-600' : 'text-gray-400'}`}/>
+                                <Fan size={24} className={`mx-auto mb-1 ${isRunning ? 'animate-spin text-blue-600' : 'text-gray-400'}`} />
                                 <span className="text-xl font-bold text-gray-800">{isRunning ? 'MAX' : 'OFF'}</span>
                             </>
                         )}
@@ -172,9 +177,9 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
         return (
             <div className={`rounded-2xl p-6 h-full flex flex-col items-center justify-center transition-all duration-500 border border-gray-200 ${isOn ? 'bg-gray-900' : 'bg-white'}`}>
                 <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 transition-all duration-500 ${isOn ? 'bg-yellow-400 shadow-[0_0_60px_rgba(250,204,21,0.5)]' : 'bg-gray-100'}`}>
-                    <Lightbulb size={40} className={isOn ? 'text-white' : 'text-gray-400'}/>
+                    <Lightbulb size={40} className={isOn ? 'text-white' : 'text-gray-400'} />
                 </div>
-                <button 
+                <button
                     onClick={() => setIsOn(!isOn)}
                     className={`px-8 py-2 rounded-full font-bold transition-all transform active:scale-95 ${isOn ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/50' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
                 >
@@ -188,12 +193,12 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
     return (
         <div className="bg-white rounded-2xl p-8 h-full flex flex-col items-center justify-center text-center border border-gray-100 shadow-sm">
             <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle size={32} className="text-green-500"/>
+                <CheckCircle size={32} className="text-green-500" />
             </div>
             <h3 className="font-bold text-gray-800 mb-2">Sản phẩm chính hãng</h3>
             <p className="text-sm text-gray-500">
-                Sản phẩm được kiểm định chất lượng nghiêm ngặt bởi Gia Dụng TMT. 
-                <br/>Bảo hành chính hãng 12 tháng.
+                Sản phẩm được kiểm định chất lượng nghiêm ngặt bởi Gia Dụng TMT.
+                <br />Bảo hành chính hãng 12 tháng.
             </p>
         </div>
     );
