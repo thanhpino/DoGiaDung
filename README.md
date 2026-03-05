@@ -4,10 +4,10 @@
 
   # 🏠 GIA DỤNG TMT — E-COMMERCE PLATFORM
 
-  **Fullstack E-Commerce với Microservice, Gemini AI Chatbot, Thuật toán CSP, Real-time & VNPay**
+  **Fullstack E-Commerce với Microservice, Gemini AI Chatbot, 3D Viewer, Real-time & VNPay**
 
   [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](htzztps://www.typescriptlang.org/)
   [![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
   [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
   [![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
@@ -28,7 +28,7 @@
 
 - 🔐 **JWT Authentication** — Xác thực stateless, phân quyền Admin/Customer
 - 🤖 **AI Chatbot (Gemini)** — Microservice riêng, phân tích ngôn ngữ tự nhiên, tư vấn 24/7
-- 💡 **Thuật toán CSP** — Gợi ý combo bằng Backtracking + Forward Checking
+- 💡 **3D Product Viewer** — Tương tác 3D sản phẩm
 - ⚡ **Real-time** — Socket.IO thông báo đơn hàng mới
 - 💳 **VNPay** — Cổng thanh toán trực tuyến
 - 📖 **Swagger** — API Documentation chuyên nghiệp
@@ -42,7 +42,7 @@
 |-----------|--------|
 | 🛒 Mua sắm | Xem, tìm kiếm, lọc sản phẩm (phân trang) |
 | 🤖 AI Chatbot (Gemini) | Phân tích ngôn ngữ tự nhiên, tư vấn thông minh, query DB thật |
-| 💡 Gợi ý Combo | Thuật toán CSP tìm combo tối ưu theo ngân sách |
+| 💡 3D  Product Viewer | Tương tác 3D sản phẩm |
 | 💳 Thanh toán | VNPay (ATM/QR), COD |
 | 📧 Email tự động | Xác nhận đơn hàng, reset mật khẩu |
 | ⭐ Đánh giá | Viết review + upload ảnh |
