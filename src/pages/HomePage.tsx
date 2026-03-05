@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, ArrowRight } from 'lucide-react';
 import api from '../utils/axiosConfig';
 import { formatCurrency } from '../utils/format';
+import { Helmet } from 'react-helmet-async';
 
 export const HomePage = () => {
     const navigate = useNavigate();
@@ -31,7 +32,12 @@ export const HomePage = () => {
 
     return (
         <div className="min-h-screen bg-[#FFFBF7] dark:bg-gray-950 font-sans text-gray-800 dark:text-gray-100 transition-colors">
-
+            <Helmet>
+                <title>Gia Dụng TMT - Mua sắm thông minh cho ngôi nhà của bạn</title>
+                <meta name="description" content="Chuyên cung cấp các sản phẩm đồ gia dụng chính hãng, giá tốt, bảo hành dài hạn. Freeship toàn quốc cực sốc. Khám phá ngay!" />
+                <meta property="og:title" content="Gia Dụng TMT - Mua sắm thông minh cho ngôi nhà của bạn" />
+                <meta property="og:description" content="Khám phá ưu đãi giảm giá đến 50% chỉ hôm nay với Gia Dụng TMT." />
+            </Helmet>
 
             <main className="max-w-7xl mx-auto px-6 py-8 pb-8">
 

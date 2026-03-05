@@ -65,7 +65,7 @@ const validateOrder = [
 // === USER VALIDATORS ===
 const validateChangePassword = [
     body('oldPassword')
-        .notEmpty().withMessage('Vui lòng nhập mật khẩu cũ'),
+        .optional({ checkFalsy: true }),
     body('newPassword')
         .isLength({ min: 6 }).withMessage('Mật khẩu mới phải ít nhất 6 ký tự'),
     handleValidation

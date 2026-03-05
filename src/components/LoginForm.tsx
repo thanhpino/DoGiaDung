@@ -113,6 +113,12 @@ export const LoginForm = () => {
           appId={import.meta.env.VITE_FACEBOOK_APP_ID || ''}
           fields="name,email,picture"
           callback={responseFacebook}
+          onFailure={(err: any) => {
+            console.error("Facebook Login Failed", err);
+            if (err?.status === "facebookNotLoaded") {
+              alert("Không thể tải Facebook SDK. Vui lòng tắt Adblock (Trình chặn quảng cáo) hoặc tải lại trang.");
+            }
+          }}
           render={(renderProps: any) => (
             <button
               onClick={renderProps.onClick}

@@ -13,7 +13,8 @@ export const UserProfile = () => {
         name: '',
         email: '',
         phone: '',
-        address: ''
+        address: '',
+        hasPassword: true // Default true to prevent flash of wrong UI for local users, will update from API
     });
 
     const [pass, setPass] = useState({
@@ -34,7 +35,8 @@ export const UserProfile = () => {
                         name: res.data.name || '',
                         email: res.data.email || '',
                         phone: res.data.phone || '',
-                        address: res.data.address || ''
+                        address: res.data.address || '',
+                        hasPassword: res.data.hasPassword ?? true
                     });
                     setLoading(false);
                 })
@@ -93,6 +95,14 @@ export const UserProfile = () => {
             if (res.data.status === 'Success') {
                 toast.success("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
                 setPass({ oldPassword: '', newPassword: '', confirmPassword: '' });
+
+                // Clear state & redirect to login 
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+
             } else {
                 toast.error(res.data.message);
             }
@@ -149,14 +159,18 @@ export const UserProfile = () => {
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
                         <div className="flex items-center gap-3 mb-6 border-b pb-4">
                             <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><Lock size={24} /></div>
-                            <h2 className="text-xl font-bold text-gray-800">Bảo Mật</h2>
+                            <h2 className="text-xl font-bold text-gray-800">
+                                {info.hasPassword ? "Đổi Mật Khẩu" : "Tạo Mật Khẩu"}
+                            </h2>
                         </div>
 
                         <form onSubmit={handleChangePassword} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
-                                <input type="password" required value={pass.oldPassword} onChange={e => setPass({ ...pass, oldPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
-                            </div>
+                            {info.hasPassword && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
+                                    <input type="password" required value={pass.oldPassword} onChange={e => setPass({ ...pass, oldPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
                                 <input type="password" required value={pass.newPassword} onChange={e => setPass({ ...pass, newPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
@@ -166,7 +180,7 @@ export const UserProfile = () => {
                                 <input type="password" required value={pass.confirmPassword} onChange={e => setPass({ ...pass, confirmPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
                             </div>
                             <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
-                                <Lock size={18} /> Đổi Mật Khẩu
+                                <Lock size={18} /> {info.hasPassword ? "Đổi Mật Khẩu" : "Tạo Mật Khẩu"}
                             </button>
                         </form>
                     </div>

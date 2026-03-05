@@ -34,6 +34,7 @@ const suggestionRoutes = require('./routes/suggestionRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const couponRoutes = require('./routes/couponRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const sitemapRoutes = require('./routes/sitemapRoutes');
 
 // Import order controller
 const { setSocketIO } = require('./controllers/orderController');
@@ -119,6 +120,7 @@ app.use('/api', suggestionRoutes);
 app.use('/', wishlistRoutes);
 app.use('/', couponRoutes);
 app.use('/', notificationRoutes);
+app.use('/', sitemapRoutes);
 
 // 5. HEALTH CHECK
 app.get('/', async (req, res) => {

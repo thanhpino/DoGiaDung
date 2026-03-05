@@ -14,11 +14,19 @@ const getAllUsers = async (req, res) => {
 const getUserById = async (req, res) => {
     try {
         const [data] = await db.query(
-            "SELECT id, name, email, phone, address, role, created_at, avatar FROM users WHERE id = ?",
+            "SELECT id, name, email, phone, address, role, created_at, avatar, password FROM users WHERE id = ?",
             [req.params.id]
         );
         if (data.length === 0) return res.status(404).json("User not found");
-        return res.json(data[0]);
+
+        // Trả về kèm flag hasPassword (nếu password không rỗng)
+        const user = data[0];
+        const hasPassword = !!(user.password && user.password.trim() !== '');
+
+        // Ẩn hash password đi trước khi gửi về client
+        delete user.password;
+
+        return res.json({ ...user, hasPassword });
     } catch (err) {
         res.status(500).json({ status: "Error", message: "Lỗi server" });
     }
@@ -42,8 +50,17 @@ const changePassword = async (req, res) => {
         const [data] = await db.query("SELECT password FROM users WHERE id = ?", [userId]);
         if (data.length === 0) return res.status(404).json("User not found");
 
-        const isMatch = bcrypt.compareSync(oldPassword, data[0].password);
-        if (!isMatch) return res.json({ status: "Fail", message: "Mật khẩu cũ không đúng" });
+        const currentPassword = data[0].password;
+        const hasPassword = !!(currentPassword && currentPassword.trim() !== '');
+
+        if (hasPassword) {
+            // Nếu đã có mật khẩu, BẮT BUỘC phải gửi và check oldPassword
+            if (!oldPassword) {
+                return res.status(400).json({ status: "Fail", message: "Vui lòng nhập mật khẩu hiện tại" });
+            }
+            const isMatch = bcrypt.compareSync(oldPassword, currentPassword);
+            if (!isMatch) return res.json({ status: "Fail", message: "Mật khẩu cũ không đúng" });
+        }
 
         const salt = bcrypt.genSaltSync(10);
         const newHash = bcrypt.hashSync(newPassword, salt);

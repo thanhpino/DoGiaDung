@@ -63,9 +63,9 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
     try {
-        const { name, price, category, img, description, stock } = req.body;
-        const sql = "INSERT INTO products (name, price, category, image_url, description, stock) VALUES (?)";
-        const [result] = await db.query(sql, [[name, price, category, img, description, stock || 100]]);
+        const { name, price, category, img, description, stock, model_url } = req.body;
+        const sql = "INSERT INTO products (name, price, category, image_url, description, stock, model_url) VALUES (?)";
+        const [result] = await db.query(sql, [[name, price, category, img, description, stock || 100, model_url || null]]);
 
         // Sync stock vào Redis
         const productId = result.insertId;
@@ -84,11 +84,11 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
-        const { name, price, category, img, description, stock } = req.body;
+        const { name, price, category, img, description, stock, model_url } = req.body;
         const productId = req.params.id;
 
-        const sql = "UPDATE products SET name=?, price=?, category=?, image_url=?, description=? WHERE id=?";
-        await db.query(sql, [name, price, category, img, description, productId]);
+        const sql = "UPDATE products SET name=?, price=?, category=?, image_url=?, description=?, model_url=? WHERE id=?";
+        await db.query(sql, [name, price, category, img, description, model_url || null, productId]);
 
         // Cập nhật stock nếu có
         if (stock !== undefined) {

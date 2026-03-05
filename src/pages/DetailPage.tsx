@@ -9,7 +9,9 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { ProductSimulation } from '../components/ProductSimulation';
 import { ImageGallery } from '../components/ImageGallery';
+import { Product3DViewer } from '../components/Product3DViewer';
 import { formatCurrency } from '../utils/format';
+import { Helmet } from 'react-helmet-async';
 
 export const ProductDetail = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ export const ProductDetail = () => {
 
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'2D' | '3D'>('2D');
 
   useEffect(() => {
     api.get(`/api/products/${id}`)
@@ -108,6 +111,14 @@ export const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#FFFBF7] dark:bg-gray-950 font-sans text-gray-800 pb-20">
+      <Helmet>
+        <title>{product.name} | Gia Dụng TMT</title>
+        <meta name="description" content={product.description?.substring(0, 150) || "Sản phẩm công nghệ cao cấp, chính hãng tại Gia Dụng TMT"} />
+        <meta property="og:title" content={`${product.name} - Giảm giá cực sốc`} />
+        <meta property="og:description" content={product.description?.substring(0, 150) || "Sản phẩm công nghệ cao cấp."} />
+        {product.img && <meta property="og:image" content={product.img} />}
+      </Helmet>
+
       {/* Navigation */}
       <nav className="px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-orange-600 font-bold transition group">
@@ -124,13 +135,36 @@ export const ProductDetail = () => {
           {/* --- CỘT TRÁI: ẢNH & SIMULATION  --- */}
           <div className="lg:col-span-7 space-y-6">
 
-            {/* Gallery ảnh sản phẩm (hỗ trợ multi-image) */}
+            {/* Gallery ảnh sản phẩm (hỗ trợ multi-image) & 3D Viewer*/}
             <div className="bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700 p-6 relative">
-              <ImageGallery
-                images={product.images || []}
-                mainImage={product.img || product.image_url}
-                productName={product.name}
-              />
+
+              {/* Nút Toggle 2D/3D */}
+              {product.model_url && (
+                <div className="absolute top-6 left-6 z-20 bg-gray-100/80 dark:bg-gray-900/80 p-1 rounded-xl flex gap-1 backdrop-blur-md border border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={() => setViewMode('2D')}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition ${viewMode === '2D' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                  >
+                    Xem Ảnh
+                  </button>
+                  <button
+                    onClick={() => setViewMode('3D')}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-bold transition flex items-center gap-1 ${viewMode === '3D' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                  >
+                    🚀 Mô hình 3D
+                  </button>
+                </div>
+              )}
+
+              {viewMode === '2D' ? (
+                <ImageGallery
+                  images={product.images || []}
+                  mainImage={product.img || product.image_url}
+                  productName={product.name}
+                />
+              ) : (
+                <Product3DViewer modelUrl={product.model_url} />
+              )}
               <div className="absolute top-8 right-8 flex flex-col gap-2 z-10">
                 <button
                   onClick={handleToggleWishlist}
