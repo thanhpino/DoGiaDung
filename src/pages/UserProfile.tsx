@@ -179,6 +179,19 @@ export const UserProfile = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Nhập lại mật khẩu mới</label>
                                 <input type="password" required value={pass.confirmPassword} onChange={e => setPass({ ...pass, confirmPassword: e.target.value })} className="w-full border p-3 rounded-xl focus:border-blue-500 outline-none" />
                             </div>
+
+                            {info.hasPassword && (
+                                <div className="text-right mt-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate('/forgot-password')}
+                                        className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                                    >
+                                        Quên mật khẩu?
+                                    </button>
+                                </div>
+                            )}
+
                             <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
                                 <Lock size={18} /> {info.hasPassword ? "Đổi Mật Khẩu" : "Tạo Mật Khẩu"}
                             </button>

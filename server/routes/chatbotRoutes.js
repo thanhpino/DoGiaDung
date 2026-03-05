@@ -10,7 +10,7 @@ const CHATBOT_URL = process.env.NODE_ENV === 'test' ? null : process.env.CHATBOT
 // Import chatbot logic trực tiếp làm Fallback an toàn tuyệt đối
 let chatHandler = null;
 try {
-    // Thử load từ chatbot-service (nếu có)
+    // Thử load từ chatbot-service
     chatHandler = require('../../chatbot-service/controllers/chatController');
     logger.info('✅ Loaded chatbot controller from chatbot-service/ for auto-fallback');
 } catch (e) {
@@ -42,19 +42,25 @@ try {
  */
 
 router.post('/api/chat', async (req, res) => {
-    // Nếu có cấu hình microservice URL thì ưu tiên gọi qua đó
     if (CHATBOT_URL) {
         try {
+            // Thêm Timeout 3 giây cho request proxy
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+
             const response = await fetch(`${CHATBOT_URL}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(req.body)
+                body: JSON.stringify(req.body),
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
+
             const data = await response.json();
             return res.json(data);
         } catch (err) {
             logger.error(`ChatBot proxy fetch to ${CHATBOT_URL} failed: ${err.message}. Tự động kích hoạt Fallback local!`);
-            // Nếu gọi microservice lỗi (vd: nhập nhầm port, chưa chạy), tự động fallback
+            // Nếu gọi microservice lỗi (vd: nhập nhầm port, chưa chạy), tự động fallback xuống dưới
         }
     }
 
@@ -65,7 +71,10 @@ router.post('/api/chat', async (req, res) => {
     }
 
     // Ultimate fallback nếu cả proxy và in-process đều chết
-    return res.json({ reply: "Dạ HomeBot đang bảo trì hoặc mất kết nối mạng lưới thông minh, vui lòng thử lại sau ạ! 🙏" });
+    return res.json({
+        reply: "Dạ hiện tại hệ thống HomeBot đang bảo trì hoặc mạng lưới AI đang bận. Các anh/chị cứ để lại lời nhắn, HomeBot sẽ quay lại phản hồi ngay khi có thể ạ! 🙏",
+        products: []
+    });
 });
 
 module.exports = router;
