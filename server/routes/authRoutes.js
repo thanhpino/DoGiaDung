@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { signup, login, forgotPassword, resetPassword } = require('../controllers/authController');
-const { googleLogin } = require('../controllers/oauthController');
+const { googleLogin, facebookLogin } = require('../controllers/oauthController');
 const { validateSignup, validateLogin } = require('../middleware/validators');
 
 /**
@@ -148,5 +148,30 @@ router.post('/reset-password', resetPassword);
  *         description: Token không hợp lệ
  */
 router.post('/auth/google', googleLogin);
+
+/**
+ * @swagger
+ * /auth/facebook:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Đăng nhập bằng Facebook
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [credential]
+ *             properties:
+ *               credential:
+ *                 type: string
+ *                 description: Facebook Access Token
+ *     responses:
+ *       200:
+ *         description: Đăng nhập thành công
+ *       401:
+ *         description: Token không hợp lệ
+ */
+router.post('/auth/facebook', facebookLogin);
 
 module.exports = router;

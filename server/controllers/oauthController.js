@@ -107,4 +107,89 @@ const googleLogin = async (req, res) => {
     }
 };
 
-module.exports = { googleLogin };
+/**
+ * Facebook Login
+ * Frontend gửi accessToken từ Facebook SDK
+ * Backend verify bằng Graph API → tìm/tạo user → trả JWT
+ */
+const facebookLogin = async (req, res) => {
+    try {
+        const { credential } = req.body;
+
+        if (!credential) {
+            return res.status(400).json({ status: "Fail", message: "Thiếu Facebook credential" });
+        }
+
+        // 1. Verify Facebook Access Token via Graph API
+        const fbResponse = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${credential}`);
+        const fbData = await fbResponse.json();
+
+        if (fbData.error) {
+            return res.status(401).json({ status: "Fail", message: "Facebook token không hợp lệ hoặc đã hết hạn" });
+        }
+
+        const { id: facebookId, email, name, picture } = fbData;
+        const avatarUrl = picture?.data?.url || null;
+
+        // XỬ LÝ FIX LỖI 400 TẠI ĐÂY: Tạo email ảo nếu Facebook không trả về email gốc
+        const userEmail = email || `${facebookId}@facebook.com`;
+
+        // 2. Tìm user theo userEmail (thay vì email)
+        const [existingUsers] = await db.query(
+            "SELECT * FROM users WHERE email = ?", [userEmail]
+        );
+
+        let user;
+
+        if (existingUsers.length > 0) {
+            user = existingUsers[0];
+
+            // Cập nhật avatar + provider nếu chưa có
+            if (!user.avatar || user.provider === 'local') {
+                await db.query(
+                    "UPDATE users SET avatar = COALESCE(avatar, ?), provider_id = COALESCE(provider_id, ?) WHERE id = ?",
+                    [avatarUrl, facebookId, user.id]
+                );
+                user.avatar = avatarUrl;
+            }
+
+            logger.info(`🔑 Facebook login (existing): ${userEmail}`);
+        } else {
+            // User mới
+            const [result] = await db.query(
+                "INSERT INTO users (name, email, password, role, provider, provider_id, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [name, userEmail, '', 'customer', 'facebook', facebookId, avatarUrl] // Lưu userEmail vào DB
+            );
+
+            user = {
+                id: result.insertId,
+                name,
+                email: userEmail, // Sử dụng userEmail
+                role: 'customer',
+                provider: 'facebook',
+                provider_id: facebookId,
+                avatar: avatarUrl
+            };
+
+            logger.info(`🆕 Facebook login (new user): ${userEmail}`);
+        }
+
+        // 3. Tạo JWT Token
+        const token = generateToken(user);
+
+        // 4. Trả response (loại bỏ password)
+        const { password: _, reset_token: __, reset_expires: ___, ...userData } = user;
+
+        return res.json({
+            status: "Success",
+            data: userData,
+            token
+        });
+
+    } catch (err) {
+        logger.error(`Facebook login error: ${err.message}`);
+        return res.status(500).json({ status: "Error", message: "Lỗi đăng nhập Facebook" });
+    }
+};
+
+module.exports = { googleLogin, facebookLogin };
