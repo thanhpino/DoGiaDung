@@ -5,9 +5,7 @@ const { embedProducts } = require('../services/embeddingService');
 const vectorStore = require('../services/vectorStore');
 const logger = require('../config/logger');
 
-/**
- * Lấy tất cả sản phẩm active từ DB
- */
+/*Lấy tất cả sản phẩm active từ DB*/
 async function getAllProducts() {
     const [rows] = await db.query(
         "SELECT id, name, price, category, image_url, description FROM products WHERE is_deleted = 0"
@@ -15,8 +13,7 @@ async function getAllProducts() {
     return rows;
 }
 
-/**
- * Sync embeddings: Lấy sản phẩm → Tạo embedding → Nạp vào VectorStore
+/**Sync embeddings: Lấy sản phẩm → Tạo embedding → Nạp vào VectorStore
  * @returns {Promise<number>} Số sản phẩm đã embed thành công
  */
 async function syncEmbeddings() {
@@ -49,7 +46,7 @@ async function syncEmbeddings() {
         return vectorStore.size();
 
     } catch (err) {
-        logger.error(`❌ Lỗi đồng bộ embeddings: ${err.message}`);
+        logger.error(`❌ Lỗi đồng bộ: ${err.message}`);
         throw err;
     }
 }

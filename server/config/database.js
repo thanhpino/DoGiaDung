@@ -21,9 +21,9 @@ const promisePool = pool.promise();
 // Test connection
 pool.getConnection((err, connection) => {
     if (err) {
-        console.error('❌ Lỗi kết nối DB:', err.message);
+        console.error('Lỗi kết nối DB:', err.message);
     } else {
-        console.log('✅ MySQL đã kết nối thành công!');
+        console.log('MySQL đã kết nối thành công!');
         connection.query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         connection.release();
     }

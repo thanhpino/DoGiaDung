@@ -47,7 +47,6 @@ export const ComboSuggestion = () => {
     const [solutions, setSolutions] = useState<ComboSolution[]>([]);
     const [loading, setLoading] = useState(false);
     const [searched, setSearched] = useState(false);
-    const [metadata, setMetadata] = useState<any>(null);
 
     // Danh sách danh mục
     const availableCategories = [
@@ -77,7 +76,7 @@ export const ComboSuggestion = () => {
         setLoading(true);
         setSearched(true);
         setSolutions([]);
-        setMetadata(null);
+
 
         try {
             const res = await api.post<ApiResponse>(
@@ -87,7 +86,7 @@ export const ComboSuggestion = () => {
 
             if (res.data.success) {
                 setSolutions(res.data.solutions);
-                setMetadata(res.data.metadata);
+
                 if (res.data.solutions.length === 0) {
                     toast.error(res.data.message || "Không tìm thấy combo nào phù hợp!");
                 } else {
@@ -137,9 +136,9 @@ export const ComboSuggestion = () => {
                         <div>
                             <h1 className="text-2xl md:text-3xl font-extrabold text-gray-800 flex items-center gap-2">
                                 <Sparkles className="text-orange-600 fill-orange-600 animate-pulse" />
-                                Gợi Ý Combo
+                                Combo Suggestion
                             </h1>
-                            <p className="text-gray-500 text-sm">Tìm trọn bộ sản phẩm tối ưu nhất theo ngân sách của bạn.</p>
+                            <p className="text-gray-500 text-sm">Tìm bộ sản phẩm tối ưu nhất theo ngân sách của bạn.</p>
                         </div>
                     </div>
                 </div>
@@ -179,7 +178,7 @@ export const ComboSuggestion = () => {
                             <div className="mb-8">
                                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-4">
                                     <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">#</div>
-                                    Bạn muốn mua gì?
+                                    Top danh mục
                                 </label>
                                 <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
                                     {availableCategories.map(cat => {
@@ -225,13 +224,6 @@ export const ComboSuggestion = () => {
                                 {loading ? 'TMT Bot Đang Tính...' : 'TÌM COMBO NGAY'}
                             </button>
 
-                            {/* Metadata Mini */}
-                            {metadata && (
-                                <div className="mt-4 pt-4 border-t border-dashed border-gray-200 flex justify-between text-[10px] text-gray-400 uppercase font-bold tracking-wider">
-                                    <span>Time: {metadata.executionTime}</span>
-                                    <span>Nodes: {metadata.exploredNodes}</span>
-                                </div>
-                            )}
                         </div>
                     </div>
 
@@ -263,7 +255,7 @@ export const ComboSuggestion = () => {
                                 {solutions.map((sol, idx) => (
                                     <div key={idx} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300 group relative overflow-hidden">
                                         <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl">
-                                            #{idx + 1} Tối Ưu
+                                            #{idx + 1}
                                         </div>
 
                                         <div className="flex flex-col md:flex-row gap-8">
@@ -307,7 +299,7 @@ export const ComboSuggestion = () => {
                                 <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-4">
                                     <AlertCircle className="text-red-500" size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-800">Không tìm thấy Combo nào! phù hợp với ngân sách của bạn</h3>
+                                <h3 className="text-xl font-bold text-gray-800">Không tìm thấy Combo nào phù hợp với ngân sách của bạn</h3>
                                 <p className="text-gray-400 text-sm mt-2 text-center max-w-xs">
                                     Hic, TMT đã cố gắng nhưng không tìm được. <br />Bạn thử tăng ngân sách một chút nhé?
                                 </p>
@@ -315,7 +307,7 @@ export const ComboSuggestion = () => {
                         ) : (
                             <div className="flex flex-col items-center justify-center h-[500px] bg-white rounded-3xl border border-gray-200 opacity-50">
                                 <Sparkles className="text-gray-300 mb-4" size={64} />
-                                <p className="text-gray-400 font-medium">Nhập thông tin bên trái để bắt đầu...</p>
+                                <p className="text-gray-400 font-medium">Nhập thông tin bên trái để bắt đầu tìm kiếm...</p>
                             </div>
                         )}
                     </div>

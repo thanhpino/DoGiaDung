@@ -29,7 +29,7 @@ export const ForgotPassword = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center border border-gray-100">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Quên mật khẩu?</h2>
-        <p className="text-gray-500 mb-6">Vui lòng nhập email của bạn để TMT gửi hướng dẫn lấy lại mật khẩu.</p>
+        <p className="text-gray-500 mb-6">Vui lòng nhập email của bạn để Shop gửi hướng dẫn lấy lại mật khẩu.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input

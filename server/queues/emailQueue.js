@@ -80,9 +80,7 @@ emailWorker.on('failed', (job, err) => {
     logger.error(`❌ [Email Worker] Job ${job.id} failed (attempt ${job.attemptsMade}): ${err.message}`);
 });
 
-/**
- * Thêm job gửi email đơn hàng vào queue
- */
+/* Thêm job gửi email đơn hàng vào queue */
 async function queueOrderEmail(toEmail, orderId, items, total, customerName) {
     await emailQueue.add('send-order-email', {
         type: 'order',
@@ -91,15 +89,13 @@ async function queueOrderEmail(toEmail, orderId, items, total, customerName) {
     logger.info(`📮 Đã queue email đơn hàng #${orderId} → ${toEmail}`);
 }
 
-/**
- * Thêm job gửi email reset password vào queue
- */
+/* Thêm job gửi email reset password vào queue */
 async function queueResetEmail(toEmail, resetLink) {
     await emailQueue.add('send-reset-email', {
         type: 'reset_password',
         data: { to: toEmail, resetLink }
     });
-    logger.info(`📮 Đã queue email reset password → ${toEmail}`);
+    logger.info(`Đã queue email reset password → ${toEmail}`);
 }
 
 module.exports = { emailQueue, queueOrderEmail, queueResetEmail };

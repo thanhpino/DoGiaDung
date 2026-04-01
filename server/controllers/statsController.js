@@ -5,16 +5,78 @@ const logger = require('../config/logger');
 
 const getGeneralStats = async (req, res) => {
     try {
+        // Tổng doanh thu & đơn hàng (all time)
         const [[rev]] = await db.query("SELECT SUM(total_amount) as totalRevenue FROM orders WHERE status != 'Đã hủy'");
-        const [[ord]] = await db.query("SELECT COUNT(*) as totalOrders FROM orders");
+        const [[ord]] = await db.query("SELECT COUNT(*) as totalOrders FROM orders WHERE status != 'Đã hủy'");
         const [[usr]] = await db.query("SELECT COUNT(*) as totalUsers FROM users WHERE role = 'customer'");
 
+        // Doanh thu & đơn tháng này
+        const [[thisMonth]] = await db.query(
+            `SELECT COALESCE(SUM(total_amount),0) as revenue, COUNT(*) as orders 
+             FROM orders WHERE status != 'Đã hủy' 
+             AND MONTH(created_at) = MONTH(NOW()) AND YEAR(created_at) = YEAR(NOW())`
+        );
+
+        // Doanh thu & đơn tháng trước
+        const [[lastMonth]] = await db.query(
+            `SELECT COALESCE(SUM(total_amount),0) as revenue, COUNT(*) as orders 
+             FROM orders WHERE status != 'Đã hủy' 
+             AND MONTH(created_at) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) 
+             AND YEAR(created_at) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH))`
+        );
+
+        // Khách mới tháng này vs tháng trước
+        const [[usersThisMonth]] = await db.query(
+            `SELECT COUNT(*) as cnt FROM users WHERE role='customer' 
+             AND MONTH(created_at)=MONTH(NOW()) AND YEAR(created_at)=YEAR(NOW())`
+        );
+        const [[usersLastMonth]] = await db.query(
+            `SELECT COUNT(*) as cnt FROM users WHERE role='customer' 
+             AND MONTH(created_at)=MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) 
+             AND YEAR(created_at)=YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH))`
+        );
+
+        // Hôm nay
+        const [[today]] = await db.query(
+            `SELECT COALESCE(SUM(total_amount),0) as revenue, COUNT(*) as orders 
+             FROM orders WHERE status != 'Đã hủy' AND DATE(created_at) = CURDATE()`
+        );
+
+        // Đơn chờ xử lý
+        const [[pending]] = await db.query(
+            "SELECT COUNT(*) as cnt FROM orders WHERE status = 'Chờ xử lý'"
+        );
+
+        // Giá trị đơn trung bình
+        const totalOrders = ord.totalOrders || 0;
+        const totalRevenue = rev.totalRevenue || 0;
+        const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+
+        // Tính % thay đổi
+        const calcChange = (current, previous) => {
+            if (!previous || previous === 0) return current > 0 ? 100 : 0;
+            return Math.round(((current - previous) / previous) * 1000) / 10;
+        };
+
+        const monthlyTarget = parseInt(process.env.MONTHLY_TARGET) || 20000000;
+
         res.json({
-            revenue: rev.totalRevenue || 0,
-            orders: ord.totalOrders || 0,
-            users: usr.totalUsers || 0
+            revenue: totalRevenue,
+            orders: totalOrders,
+            users: usr.totalUsers || 0,
+            avgOrderValue,
+            revenueChange: calcChange(thisMonth.revenue, lastMonth.revenue),
+            ordersChange: calcChange(thisMonth.orders, lastMonth.orders),
+            usersChange: calcChange(usersThisMonth.cnt, usersLastMonth.cnt),
+            monthlyRevenue: thisMonth.revenue || 0,
+            monthlyTarget,
+            monthlyProgress: monthlyTarget > 0 ? Math.min(Math.round((thisMonth.revenue / monthlyTarget) * 100), 100) : 0,
+            todayRevenue: today.revenue || 0,
+            todayOrders: today.orders || 0,
+            pendingOrders: pending.cnt || 0
         });
     } catch (err) {
+        logger.error('getGeneralStats error: ' + err.message);
         res.status(500).json({ status: "Error", message: "Lỗi tải thống kê" });
     }
 };

@@ -2,7 +2,7 @@
 const Redis = require('ioredis');
 const logger = require('./logger');
 
-// Mặc định lấy biến môi trường, nếu không có thì tự hiểu là đang chạy Local ở máy bro
+// Lấy biến môi trường, nếu không có thì tự hiểu là đang chạy Local ở máy
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
 // Tự động phát hiện xem đang xài Cloud (rediss://) hay Local (redis://)
@@ -13,7 +13,7 @@ const redisConfig = {
     enableReadyCheck: false,
     retryStrategy(times) {
         const delay = Math.min(times * 500, 5000);
-        logger.warn(`🔴 Redis reconnecting... (lần ${times}, chờ ${delay}ms)`);
+        logger.warn(`Redis reconnecting... (lần ${times}, chờ ${delay}ms)`);
         return delay;
     }
 };
@@ -28,11 +28,11 @@ if (isTLS) {
 const redis = new Redis(REDIS_URL, redisConfig);
 
 redis.on('connect', () => {
-    logger.info(`🟢 Redis đã kết nối thành công! (${isTLS ? 'Cloud/Upstash' : 'Local'})`);
+    logger.info(`Redis đã kết nối thành công! (${isTLS ? 'Cloud/Upstash' : 'Local'})`);
 });
 
 redis.on('error', (err) => {
-    logger.error(`🔴 Redis error: ${err.message}`);
+    logger.error(`Redis error: ${err.message}`);
 });
 
 module.exports = redis;

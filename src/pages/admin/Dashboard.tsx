@@ -4,7 +4,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   AreaChart, Area, PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
-import { DollarSign, ShoppingCart, Users, TrendingUp, Calendar, ArrowUpRight, ArrowDownRight, Download, Trophy } from 'lucide-react';
+import { DollarSign, ShoppingCart, Users, TrendingUp, Calendar, ArrowUpRight, ArrowDownRight, Download, Trophy, Package } from 'lucide-react';
 import { formatCurrency } from '../../utils/format';
 
 // @ts-ignore
@@ -12,8 +12,29 @@ import * as XLSX from 'xlsx';
 
 const COLORS = ['#ea580c', '#3b82f6', '#8b5cf6', '#10b981', '#ef4444', '#f59e0b', '#ec4899'];
 
+interface StatsData {
+  revenue: number;
+  orders: number;
+  users: number;
+  avgOrderValue: number;
+  revenueChange: number;
+  ordersChange: number;
+  usersChange: number;
+  monthlyRevenue: number;
+  monthlyTarget: number;
+  monthlyProgress: number;
+  todayRevenue: number;
+  todayOrders: number;
+
+}
+
 export const AdminDashboard = () => {
-  const [stats, setStats] = useState({ revenue: 0, orders: 0, users: 0 });
+  const [stats, setStats] = useState<StatsData>({
+    revenue: 0, orders: 0, users: 0, avgOrderValue: 0,
+    revenueChange: 0, ordersChange: 0, usersChange: 0,
+    monthlyRevenue: 0, monthlyTarget: 20000000, monthlyProgress: 0,
+    todayRevenue: 0, todayOrders: 0
+  });
   const [chartData, setChartData] = useState<any[]>([]);
   const [topCategories, setTopCategories] = useState<any[]>([]);
   const [monthlyData, setMonthlyData] = useState<any[]>([]);
@@ -58,6 +79,17 @@ export const AdminDashboard = () => {
       setChartData(formattedChart);
 
     } catch (err) { console.error("Lỗi tải dashboard:", err); }
+  };
+
+  // Component hiển thị % thay đổi
+  const ChangeIndicator = ({ value }: { value: number }) => {
+    const isPositive = value >= 0;
+    return (
+      <div className={`flex items-center gap-1 text-xs font-bold mt-2 w-fit px-2 py-1 rounded-full ${isPositive ? 'text-green-600 bg-green-50' : 'text-red-500 bg-red-50'}`}>
+        {isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+        {isPositive ? '+' : ''}{value}%
+      </div>
+    );
   };
 
   // Xuất Excel
@@ -118,42 +150,74 @@ export const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* 1. STATS CARDS */}
+      {/* 1. STATS CARDS - Hàng chính */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center justify-between hover:shadow-md transition">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center justify-between hover:shadow-md transition group">
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Tổng Doanh Thu</p>
             <h3 className="text-2xl font-extrabold text-gray-800">{formatCurrency(stats.revenue)}</h3>
-            <div className="flex items-center gap-1 text-xs font-bold text-green-600 mt-2 bg-green-50 w-fit px-2 py-1 rounded-full"><ArrowUpRight size={14} /> +12.5%</div>
+            <ChangeIndicator value={stats.revenueChange} />
+            <p className="text-[10px] text-gray-400 mt-1">so với tháng trước</p>
           </div>
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600"><DollarSign size={24} /></div>
+          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform"><DollarSign size={24} /></div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center justify-between hover:shadow-md transition">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center justify-between hover:shadow-md transition group">
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Tổng Đơn Hàng</p>
             <h3 className="text-2xl font-extrabold text-gray-800">{stats.orders} đơn</h3>
-            <div className="flex items-center gap-1 text-xs font-bold text-green-600 mt-2 bg-green-50 w-fit px-2 py-1 rounded-full"><ArrowUpRight size={14} /> +5.2%</div>
+            <ChangeIndicator value={stats.ordersChange} />
+            <p className="text-[10px] text-gray-400 mt-1">so với tháng trước</p>
           </div>
-          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-600"><ShoppingCart size={24} /></div>
+          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 group-hover:scale-110 transition-transform"><ShoppingCart size={24} /></div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center justify-between hover:shadow-md transition">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex items-center justify-between hover:shadow-md transition group">
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Khách Hàng</p>
             <h3 className="text-2xl font-extrabold text-gray-800">{stats.users} người</h3>
-            <div className="flex items-center gap-1 text-xs font-bold text-red-500 mt-2 bg-red-50 w-fit px-2 py-1 rounded-full"><ArrowDownRight size={14} /> -2.1%</div>
+            <ChangeIndicator value={stats.usersChange} />
+            <p className="text-[10px] text-gray-400 mt-1">khách mới so tháng trước</p>
           </div>
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><Users size={24} /></div>
+          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform"><Users size={24} /></div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 rounded-2xl shadow-lg text-white flex items-center justify-between">
-          <div>
-            <p className="text-purple-100 text-sm font-medium mb-1">Mục Tiêu Tháng</p>
-            <h3 className="text-2xl font-extrabold">85%</h3>
-            <div className="text-xs text-purple-100 mt-2">Sắp đạt mốc doanh thu</div>
+        <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between hover:shadow-xl transition group">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-purple-100 text-sm font-medium">Mục Tiêu Tháng</p>
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-sm group-hover:scale-110 transition-transform"><TrendingUp size={20} /></div>
           </div>
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-sm"><TrendingUp size={24} /></div>
+          <h3 className="text-3xl font-extrabold">{stats.monthlyProgress}%</h3>
+          <div className="mt-3">
+            <div className="w-full bg-white/20 rounded-full h-2.5 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-white transition-all duration-1000 ease-out"
+                style={{ width: `${stats.monthlyProgress}%` }}
+              />
+            </div>
+            <p className="text-[11px] text-purple-200 mt-2">
+              {formatCurrency(stats.monthlyRevenue)} / {formatCurrency(stats.monthlyTarget)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* STATS CARDS - Hàng phụ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition group">
+          <div className="w-11 h-11 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform"><Package size={22} /></div>
+          <div>
+            <p className="text-gray-400 text-xs font-medium">Giá Trị Đơn TB</p>
+            <p className="text-xl font-extrabold text-gray-800">{formatCurrency(stats.avgOrderValue)}</p>
+          </div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition group">
+          <div className="w-11 h-11 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform"><DollarSign size={22} /></div>
+          <div>
+            <p className="text-gray-400 text-xs font-medium">Doanh Thu Hôm Nay</p>
+            <p className="text-xl font-extrabold text-gray-800">{formatCurrency(stats.todayRevenue)}</p>
+            <p className="text-[10px] text-gray-400">{stats.todayOrders} đơn hôm nay</p>
+          </div>
         </div>
       </div>
 
@@ -195,7 +259,7 @@ export const AdminDashboard = () => {
         {/* CỘT PHẢI: TOP DANH MỤC */}
         <div className="flex flex-col gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex-1 h-full">
-            <h3 className="font-bold text-gray-800 text-lg mb-6">Top Danh Mục</h3>
+            <h3 className="font-bold text-gray-800 text-lg mb-6">Top Danh Mục Được Bán Nhiều Nhất</h3>
             <div className="space-y-6">
               {topCategories.length === 0 ? <p className="text-gray-400 text-center">Chưa có dữ liệu</p> :
                 topCategories.map((cat, idx) => (

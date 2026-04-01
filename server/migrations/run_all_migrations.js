@@ -88,7 +88,7 @@ const runMigrations = async () => {
     } catch (error) {
         console.error('❌ Lỗi khi chạy migrations:', error);
     } finally {
-        process.exit(); // Tắt script sau khi chạy xong
+        process.exit(); // Tắt script
     }
 };
 

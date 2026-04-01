@@ -1,6 +1,6 @@
 // services/embeddingService.js
 // Gemini Embedding Service - Tạo vector embeddings cho sản phẩm và câu hỏi
-// Dùng REST API v1 trực tiếp (SDK mặc định dùng v1beta không hỗ trợ text-embedding-004)
+// Dùng REST API
 const logger = require('../config/logger');
 
 const EMBEDDING_MODEL = process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-001';
@@ -9,7 +9,7 @@ const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${EMBED
 
 // Rate limiting
 let lastEmbedTime = 0;
-const MIN_EMBED_INTERVAL = 1500; // 1.5s giữa các embed requests
+const MIN_EMBED_INTERVAL = 1500; // 1.5s
 
 /**
  * Throttle để tránh rate limit Gemini API

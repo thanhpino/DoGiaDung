@@ -2,9 +2,7 @@
 const db = require('../config/database');
 const logger = require('../config/logger');
 
-/**
- * Tìm sản phẩm theo keyword (tên)
- */
+// Tìm sản phẩm theo keyword (tên)
 async function searchProducts(keyword, limit = 3) {
     try {
         const [rows] = await db.query(

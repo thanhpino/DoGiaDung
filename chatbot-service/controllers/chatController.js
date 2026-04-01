@@ -8,11 +8,9 @@ const chatSessions = new Map();
 
 // Track thời gian request gần nhất để tránh rate limit
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 2000; // 2 giây giữa các requests
+const MIN_REQUEST_INTERVAL = 2000; // 2s
 
-/**
- * Trích xuất số tiền từ message (hỗ trợ "500k", "500000", "5 triệu", "1tr")
- */
+/*Trích xuất số tiền từ message (hỗ trợ "500k", "500000", "5 triệu", "1tr")*/
 function extractPrice(msg) {
     let match;
     match = msg.match(/(\d+)\s*triệu/);
@@ -26,15 +24,13 @@ function extractPrice(msg) {
     return null;
 }
 
-/**
- * Fallback rule-based khi Gemini bị rate limit
- */
+/*Fallback rule-based khi Gemini bị rate limit*/
 function getFallbackResponse(message) {
     const msg = message.toLowerCase().trim();
 
-    // --- CHÀO HỎI ---
+    // CHÀO HỎI
     if (msg.includes('xin chào') || msg.includes('hello') || msg === 'hi' || msg.startsWith('hi ') || msg.includes('chào shop') || msg.includes('chào bạn') || msg.includes('chào ad')) {
-        return { intent: 'greeting', reply: 'Dạ Gia Dụng TMT xin chào anh/chị! Em có thể tìm sản phẩm, tư vấn combo hoặc giải đáp thắc mắc cho mình ạ 🤖', keyword: '' };
+        return { intent: 'greeting', reply: 'Dạ Gia Dụng TMT xin chào anh/chị! Em có thể tìm sản phẩm, tư vấn combo hoặc giải đáp thắc mắc cho mình ạ.', keyword: '' };
     }
     if (msg.includes('cảm ơn') || msg.includes('thanks') || msg.includes('ok') || msg.includes('tuyệt')) {
         return { intent: 'thanks', reply: 'Dạ không có gì ạ! Cần gì cứ nhắn em nhé ❤️', keyword: '' };
@@ -43,67 +39,67 @@ function getFallbackResponse(message) {
         return { intent: 'farewell', reply: 'Dạ bye anh/chị! Hẹn gặp lại sớm nha 👋', keyword: '' };
     }
 
-    // --- SHOP IDENTITY ---
+    // SHOP IDENTITY
     if (msg.includes('shop là') || msg.includes('của ai') || msg.includes('bạn là ai') || msg.includes('bạn là gì') || msg.includes('giới thiệu')) {
         return { intent: 'shop_info', reply: '🏠 Em là HomeBot — trợ lý AI của **Gia Dụng TMT**! Shop chuyên đồ gia dụng chất lượng, địa chỉ 670/32 Đoàn Văn Bơ, Q.4, TP.HCM. Hotline ☎️ 0932 013 424 ạ!', keyword: '' };
     }
 
-    // --- SHIP / VẬN CHUYỂN ---
+    // SHIP / VẬN CHUYỂN
     if (msg.includes('ship') || msg.includes('vận chuyển') || msg.includes('giao hàng') || msg.includes('phí')) {
         return { intent: 'shop_info', reply: 'Dạ phí ship nội thành 30k, ngoại thành 50k. Đơn trên 2 triệu em FreeShip luôn ạ! 🚚', keyword: '' };
     }
 
-    // --- ĐỊA CHỈ / LIÊN HỆ ---
+    // ĐỊA CHỈ / LIÊN HỆ
     if (msg.includes('địa chỉ') || msg.includes('ở đâu') || msg.includes('liên hệ') || msg.includes('hotline') || msg.includes('số điện thoại')) {
         return { intent: 'shop_info', reply: '🏠 670/32 Đoàn Văn Bơ, Q.4, TP.HCM\n☎️ Hotline/Zalo: 0932 013 424 (Anh Thành)\nGhé shop chơi nha anh/chị!', keyword: '' };
     }
 
-    // --- BẢO HÀNH / ĐỔI TRẢ ---
+    // BẢO HÀNH / ĐỔI TRẢ
     if (msg.includes('bảo hành') || msg.includes('đổi trả') || msg.includes('hư') || msg.includes('sửa chữa')) {
         return { intent: 'shop_info', reply: '🛡️ Bảo hành 12 tháng chính hãng, lỗi 1 đổi 1 trong 7 ngày đầu ạ! Anh/chị cứ yên tâm mua sắm!', keyword: '' };
     }
 
-    // --- THANH TOÁN ---
+    // THANH TOÁN
     if (msg.includes('thanh toán') || msg.includes('trả tiền') || msg.includes('chuyển khoản') || msg.includes('tiền mặt')) {
         return { intent: 'shop_info', reply: '💳 Bên em nhận: COD (tiền mặt), VNPay (QR/ATM), chuyển khoản ngân hàng ạ!', keyword: '' };
     }
 
-    // --- CÁCH ĐẶT HÀNG ---
+    // CÁCH ĐẶT HÀNG
     if (msg.includes('đặt hàng') || msg.includes('mua sao') || msg.includes('cách mua') || msg.includes('cách đặt')) {
         return { intent: 'shop_info', reply: 'Dạ đơn giản lắm ạ:\n1. Chọn sản phẩm ưng ý\n2. Bấm "Thêm vào giỏ" 🛒\n3. Vào giỏ hàng → Thanh toán là xong!', keyword: '' };
     }
 
-    // --- KHUYẾN MÃI ---
+    // KHUYẾN MÃI
     if (msg.includes('khuyến mãi') || msg.includes('giảm giá') || msg.includes('voucher') || msg.includes('sale')) {
         return { intent: 'shop_info', reply: '🔥 Đang có giảm 10% cho đơn hàng đầu tiên khi đăng ký thành viên đó ạ!', keyword: '' };
     }
 
-    // --- GIỜ MỞ CỬA ---
+    // GIỜ MỞ CỬA
     if (msg.includes('mấy giờ') || msg.includes('mở cửa') || msg.includes('làm việc')) {
         return { intent: 'shop_info', reply: '⏰ Shop mở cửa 8h00 - 20h00, làm việc cả tuần không nghỉ ạ!', keyword: '' };
     }
 
-    // --- SẢN PHẨM BÁN CHẠY ---
+    // SẢN PHẨM BÁN CHẠY
     if (msg.includes('bán chạy') || msg.includes('hot') || msg.includes('xu hướng') || msg.includes('top') || msg.includes('nổi bật')) {
         return { intent: 'top_products', reply: 'Dạ đây là những sản phẩm bán chạy nhất hiện tại ạ:', keyword: '' };
     }
 
-    // --- HÀNG MỚI ---
+    // HÀNG MỚI
     if (msg.includes('hàng mới') || msg.includes('món mới') || msg.includes('new') || msg.includes('mới về')) {
         return { intent: 'new_products', reply: 'Dạ hàng mới về nóng hổi đây ạ:', keyword: '' };
     }
 
-    // --- GIÁ RẺ ---
+    // GIÁ RẺ
     if (msg.includes('rẻ') || msg.includes('tiết kiệm') || msg.includes('sinh viên') || msg.includes('dưới 500')) {
         return { intent: 'cheap_products', reply: 'Dạ đây là các sản phẩm giá hạt dẻ cho anh/chị:', keyword: '', maxPrice: 500000 };
     }
 
-    // --- CAO CẤP ---
+    // CAO CẤP
     if (msg.includes('cao cấp') || msg.includes('xịn') || msg.includes('đắt nhất') || msg.includes('premium')) {
         return { intent: 'premium_products', reply: 'Dạ đây là các dòng cao cấp nhất bên em ạ:', keyword: '' };
     }
 
-    // --- BUDGET / "có X triệu nên mua gì" ---
+    // BUDGET / "có X triệu nên mua gì"
     const price = extractPrice(msg);
     if (price && (msg.includes('mua') || msg.includes('gợi ý') || msg.includes('nên') || msg.includes('tư vấn') || msg.includes('budget') || msg.includes('ngân sách'))) {
         return { intent: 'cheap_products', reply: `Dạ với ngân sách ${(price / 1000000).toFixed(0)} triệu, em gợi ý anh/chị xem mấy món này:`, keyword: '', maxPrice: price };
@@ -113,7 +109,7 @@ function getFallbackResponse(message) {
         return { intent: 'cheap_products', reply: `Dạ để em tìm sản phẩm phù hợp với khoảng giá của anh/chị nha:`, keyword: '', maxPrice: price };
     }
 
-    // --- TÌM KIẾM SẢN PHẨM THEO TÊN ---
+    // TÌM KIẾM SẢN PHẨM THEO TÊN
     const productKeywords = ['nồi', 'chảo', 'quạt', 'robot', 'bếp', 'lò', 'máy giặt', 'máy',
         'tủ lạnh', 'máy lạnh', 'máy hút', 'hút bụi', 'ấm', 'cốc', 'ly', 'bình', 'dao', 'thớt',
         'nồi cơm', 'nồi chiên', 'bàn ủi', 'máy xay', 'máy ép', 'lò vi sóng', 'bàn là'];
@@ -123,18 +119,16 @@ function getFallbackResponse(message) {
         }
     }
 
-    // --- "NÊN MUA GÌ" / GỢI Ý CHUNG ---
+    // "NÊN MUA GÌ" / GỢI Ý CHUNG
     if (msg.includes('mua gì') || msg.includes('gợi ý') || msg.includes('tư vấn') || msg.includes('giúp')) {
         return { intent: 'top_products', reply: 'Dạ anh/chị xem thử mấy món đang hot bên em nha:', keyword: '' };
     }
 
-    // --- FALLBACK CUỐI ---
+    // FALLBACK CUỐI
     return { intent: 'search_product', reply: 'Dạ để em tìm kiếm cho anh/chị nha:', keyword: msg.split(' ').slice(0, 3).join(' ') };
 }
 
-/**
- * Gọi Gemini với timeout và retry
- */
+/*Gọi Gemini với timeout và retry*/
 async function callGeminiSafe(model, prompt) {
     // Throttle: đảm bảo ít nhất 2s giữa các request
     const now = Date.now();
@@ -163,9 +157,7 @@ async function callGeminiSafe(model, prompt) {
     }
 }
 
-/**
- * Phân tích intent + tạo response trong 1 lần gọi Gemini
- */
+/*Phân tích intent + tạo response trong 1 lần gọi Gemini*/
 async function analyzeAndRespond(model, message, chatHistory) {
     const historyText = chatHistory.slice(-4).map(h =>
         `${h.role === 'user' ? 'Khách' : 'HomeBot'}: ${h.text}`
@@ -191,9 +183,7 @@ CHỈ trả về JSON.`;
     return JSON.parse(cleaned);
 }
 
-/**
- * Main handler
- */
+/*Main handler*/
 const handleChat = async (req, res) => {
     const { message, sessionId } = req.body;
     if (!message) {
@@ -228,7 +218,7 @@ const handleChat = async (req, res) => {
     try {
         switch (aiResult.intent) {
             case 'search_product':
-                // Ưu tiên Semantic Search (Gemini Embedding)
+                // Ưu tiên Semantic Search
                 if (aiResult.keyword) {
                     products = await productService.semanticSearch(aiResult.keyword, 5);
                 }

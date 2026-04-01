@@ -54,11 +54,11 @@ export const ProductSimulation: React.FC<Props> = ({ product }) => {
         setTemp(25);
     };
 
-    // --- PHÂN LOẠI SẢN PHẨM TỐI ƯU HÓA TRÁNH LỖI SUBSTRING ---
+    // --- PHÂN LOẠI SẢN PHẨM TỐI ---
     const name = product.name.toLowerCase();
     const cat = product.category || "";
 
-    // Thêm khoảng trắng hai đầu và thay thế dấu câu để dễ dàng map chữ chính xác (tránh lỗi "thấm" chứa "ấm")
+    // Thêm khoảng trắng hai đầu và thay thế dấu câu để dễ dàng map chữ chính xác
     const paddedName = ` ${name.replace(/[.,-]/g, ' ')} `;
     const hasWord = (w: string) => paddedName.includes(` ${w} `);
 

@@ -1,5 +1,5 @@
 // queues/embeddingQueue.js
-// BullMQ Embedding Sync Queue — Đồng bộ embedding khi thêm/sửa sản phẩm
+// BullMQ Embedding Sync Queue
 const { Queue, Worker } = require('bullmq');
 const redis = require('../config/redisClient');
 const logger = require('../config/logger');
@@ -35,9 +35,7 @@ const embeddingWorker = new Worker('embedding-queue', async (job) => {
     concurrency: 1
 });
 
-/**
- * Queue re-embed khi admin thêm/sửa sản phẩm
- */
+/* Queue re-embed khi admin thêm/sửa sản phẩm */
 async function queueEmbeddingSync(action = 'sync_all', productId = null) {
     await embeddingQueue.add(`embedding-${action}`, { action, productId });
     logger.info(`📮 Đã queue embedding ${action} ${productId ? '#' + productId : ''}`);

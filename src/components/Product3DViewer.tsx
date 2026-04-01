@@ -35,7 +35,7 @@ export const Product3DViewer: React.FC<Product3DViewerProps> = ({ modelUrl }) =>
                         autoRotateSpeed={1.5}
                         enableZoom={true}
                         enablePan={false}
-                        minPolarAngle={Math.PI / 4} // Không cho lật ngửa nhìn từ dưới đáy quá nhiều
+                        minPolarAngle={Math.PI / 4} // Không cho phép lật ngửa nhìn từ dưới đáy
                         maxPolarAngle={Math.PI / 1.5}
                     />
                 </Suspense>

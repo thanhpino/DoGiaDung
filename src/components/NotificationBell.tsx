@@ -28,7 +28,7 @@ export const NotificationBell = () => {
             ]);
             setNotifications(notiRes.data);
             setUnreadCount(countRes.data.count);
-        } catch { /* ignore */ }
+        } catch { }
     };
 
     useEffect(() => { fetchNotifications(); }, [user]);

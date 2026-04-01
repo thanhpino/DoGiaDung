@@ -47,7 +47,7 @@ export const ReviewModal = ({ isOpen, onClose, product, userId, onSuccess }: Rev
             });
             toast.success('Cảm ơn bạn đã đánh giá!');
 
-            onSuccess(); // <--- 2. GỌI HÀM NÀY KHI THÀNH CÔNG
+            onSuccess(); // 2. GỌI HÀM NÀY KHI THÀNH CÔNG
             onClose();
         } catch (error) {
             toast.error('Lỗi khi gửi đánh giá');

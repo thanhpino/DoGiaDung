@@ -2,9 +2,7 @@
 // In-memory Vector Store với Cosine Similarity Search
 const logger = require('../config/logger');
 
-/**
- * Vector Store - Lưu trữ và tìm kiếm embeddings bằng cosine similarity
- */
+// Vector Store - Lưu trữ và tìm kiếm embeddings bằng cosine similarity
 class VectorStore {
     constructor() {
         // Map<productId, { vector: number[], metadata: Object }>
@@ -15,7 +13,7 @@ class VectorStore {
      * Thêm/cập nhật embedding của sản phẩm
      * @param {number} productId
      * @param {number[]} vector - Embedding vector (768 chiều)
-     * @param {Object} metadata - Thông tin sản phẩm (name, price, category...)
+     * @param {Object} metadata - Thông tin sản phẩm
      */
     addProduct(productId, vector, metadata) {
         this.store.set(productId, { vector, metadata });

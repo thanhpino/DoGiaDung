@@ -13,7 +13,7 @@ async function migrate() {
     for (const col of columns) {
         try {
             await db.query(col.sql);
-            console.log(`✅ Added column: ${col.name}`);
+            console.log(` Added column: ${col.name}`);
         } catch (e) {
             if (e.code === 'ER_DUP_FIELDNAME') {
                 console.log(`⏭️ Column ${col.name} already exists`);
@@ -24,8 +24,8 @@ async function migrate() {
     }
 
     await db.query("UPDATE users SET provider = 'local' WHERE provider IS NULL");
-    console.log('✅ Set defaults done');
+    console.log('Set defaults done');
     process.exit(0);
 }
 
-migrate().catch(e => { console.error('❌', e.message); process.exit(1); });
+migrate().catch(e => { console.error('Cannot add', e.message); process.exit(1); });

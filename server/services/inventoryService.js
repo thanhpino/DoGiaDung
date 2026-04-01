@@ -22,7 +22,7 @@ end
 return 1
 `;
 
-// Lua Script: Release stock (khi hủy đơn)
+// Lua Script: Release stock
 const RELEASE_STOCK_SCRIPT = `
 local n = #KEYS
 for i = 1, n do

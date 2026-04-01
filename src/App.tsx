@@ -79,7 +79,7 @@ function App() {
                     <Route path="/products" element={<ProductsPage />} />
                     <Route path="/product/:id" element={<ProductDetail />} />
 
-                    {/* Các trang cần đăng nhập mới xem được  */}
+                    {/* Các trang cần đăng nhập  */}
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/thank-you" element={<ThankYouPage />} />
                     <Route path="/order-history" element={<OrderHistory />} />

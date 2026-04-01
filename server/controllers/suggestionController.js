@@ -110,7 +110,7 @@ const getComboSuggestion = async (req, res) => {
     }
 };
 
-// Api nâng cao
+// Api advanced
 const getAdvancedComboSuggestion = async (req, res) => {
     try {
         const { budget, categories, preferredColor, preferredBrand } = req.body;
