@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ShoppingBag, Users, Settings, LogOut, Package, Ticket } from 'lucide-react';
 import { useEffect } from 'react';
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { io } from "socket.io-client";
 
 export const AdminLayout = () => {
@@ -72,7 +72,6 @@ export const AdminLayout = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-50 font-sans">
-            <Toaster />
 
             {/* SIDEBAR */}
             <aside className="w-64 bg-[#1a1c23] text-white flex flex-col fixed h-full z-10 shadow-xl">

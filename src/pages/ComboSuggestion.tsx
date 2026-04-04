@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Sparkles, ShoppingBag, ArrowLeft, CheckCircle, AlertCircle, Zap, TrendingUp, Utensils, Wind, Home, Smile, Eraser, Lightbulb, HeartPulse, Search, BedDouble, Bath, Palette, Gamepad2 } from 'lucide-react';
 import api from '../utils/axiosConfig';
@@ -49,6 +49,7 @@ export const ComboSuggestion = () => {
     const [solutions, setSolutions] = useState<ComboSolution[]>([]);
     const [loading, setLoading] = useState(false);
     const [searched, setSearched] = useState(false);
+    const hasFetched = useRef(false);
 
     // Danh sách danh mục
     const availableCategories = [
@@ -72,6 +73,7 @@ export const ComboSuggestion = () => {
     };
 
     const handleFindCombo = async () => {
+        if (loading) return; // Ngăn chặn gọi trùng lặp
         if (selectedCats.length === 0) return toast.error("Vui lòng chọn ít nhất 1 loại sản phẩm!");
         if (budget < 100000) return toast.error("Ngân sách đang thấp quá ạ, vui lòng nhập ngân sách cao hơn!");
 
@@ -108,8 +110,11 @@ export const ComboSuggestion = () => {
 
     // Tự động chạy lần đầu nếu có budget từ URL
     useEffect(() => {
-        if (searchParams.get('budget')) handleFindCombo();
-    }, []);
+        if (searchParams.get('budget') && !hasFetched.current) {
+            hasFetched.current = true;
+            handleFindCombo();
+        }
+    }, [searchParams]);
 
     const handleAddComboToCart = (items: Product[]) => {
         items.forEach(item => {

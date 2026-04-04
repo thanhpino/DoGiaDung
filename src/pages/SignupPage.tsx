@@ -40,9 +40,9 @@ export const SignupPage = () => {
 
         {/* Top Header Section */}
         <div className="text-center mb-16 text-white animate-fade-in-down">
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-14 h-14 bg-orange-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-orange-500/50 transition-transform hover:scale-110">
-              <span className="text-3xl font-black text-white italic">TMT</span>
+          <div className="flex items-center justify-center mb-10">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-orange-500/40 transform hover:scale-110 transition-transform duration-300">
+              <span className="text-2xl font-black text-white italic tracking-tighter">TMT</span>
             </div>
           </div>
           <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl">

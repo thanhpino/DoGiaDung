@@ -61,8 +61,8 @@ export const LoginForm = () => {
   return (
     <div className="backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 p-8 w-full max-w-md rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/20 dark:border-white/10 mx-auto">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center p-3 mb-4 rounded-xl bg-orange-100 dark:bg-orange-900/30 text-orange-600 animate-bounce-slow">
-          <span className="text-xl font-bold italic tracking-tighter">TMT</span>
+        <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 text-white shadow-xl shadow-orange-500/40 transform hover:rotate-3 transition-transform duration-300">
+          <span className="text-2xl font-black italic tracking-tighter">TMT</span>
         </div>
         <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 tracking-tight">Hi There!</h2>
         <p className="text-gray-500 dark:text-gray-400 font-medium">Đăng nhập để bắt đầu trải nghiệm</p>
