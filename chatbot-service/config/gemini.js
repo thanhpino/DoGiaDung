@@ -34,11 +34,18 @@ const SYSTEM_PROMPT = `Bạn là "HomeBot" — trợ lý bán hàng AI của c�
 - Nếu được cung cấp danh sách sản phẩm, hãy giới thiệu chúng cho khách
 `;
 
-/*Tạo Gemini chat model */
+/* Tạo Gemini chat model */
 function createChatModel() {
     return genAI.getGenerativeModel({
         model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
-        systemInstruction: SYSTEM_PROMPT
+        systemInstruction: SYSTEM_PROMPT,
+        generationConfig: {
+            temperature: 0.7,
+            topP: 0.95,
+            topK: 40,
+            maxOutputTokens: 1024,
+            responseMimeType: "application/json",
+        }
     });
 }
 

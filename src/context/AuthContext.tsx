@@ -35,12 +35,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 1. Đăng ký
   const register = async (name: string, email: string, pass: string) => {
     try {
-      await api.post('/signup', { name, email, password: pass });
-      toast.success('Đăng ký thành công! Hãy đăng nhập.');
-      navigate('/login');
+      const res = await api.post('/signup', { name, email, password: pass });
+      if (res.data.status === "Success") {
+        toast.success('Đăng ký thành công! Hãy đăng nhập.');
+        navigate('/login');
+      } else {
+        toast.error(res.data.message || "Đăng ký không thành công");
+      }
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.response?.data || "Đăng ký thất bại";
-      toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+      console.error("Signup Error:", err.response?.data);
+      // Handle express-validator style errors
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        toast.error(err.response.data.errors[0].msg);
+      } else {
+        const msg = err.response?.data?.message || err.response?.data || "Đăng ký thất bại";
+        toast.error(typeof msg === 'string' ? msg : "Lỗi hệ thống");
+      }
     }
   };
 

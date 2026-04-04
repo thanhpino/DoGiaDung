@@ -157,7 +157,7 @@ async function callGeminiSafe(model, prompt) {
     }
 }
 
-/*Phân tích intent + tạo response trong 1 lần gọi Gemini*/
+/* Phân tích intent + tạo response trong 1 lần gọi Gemini */
 async function analyzeAndRespond(model, message, chatHistory) {
     const historyText = chatHistory.slice(-4).map(h =>
         `${h.role === 'user' ? 'Khách' : 'HomeBot'}: ${h.text}`
@@ -166,21 +166,32 @@ async function analyzeAndRespond(model, message, chatHistory) {
     const prompt = `Bạn là HomeBot — trợ lý AI của Gia Dụng TMT.
 ${historyText ? `Chat gần đây:\n${historyText}\n` : ''}Khách: "${message}"
 
-Trả về JSON (không có backticks):
+Yêu cầu trả về JSON schema:
 {
-  "intent": "search_product"|"top_products"|"new_products"|"cheap_products"|"premium_products"|"category_filter"|"shop_info"|"greeting"|"farewell"|"thanks"|"general_chat",
-  "keyword": "tên sản phẩm nếu tìm kiếm, hoặc rỗng",
-  "maxPrice": null hoặc số nguyên,
-  "category": "danh mục hoặc rỗng",
-  "reply": "câu trả lời 1-2 câu tiếng Việt, xưng em, thân thiện, có emoji. Nếu intent là search/top/new/cheap/premium thì kết thúc bằng dấu hai chấm(:)"
+  "intent": string,
+  "keyword": string,
+  "maxPrice": number|null,
+  "category": string,
+  "reply": string
 }
 
-Shop info: Ship 30k-50k, FreeShip đơn >2tr, địa chỉ 670/32 Đoàn Văn Bơ Q4, 8h-20h, bảo hành 12 tháng, COD/VNPay.
-CHỈ trả về JSON.`;
+Quy tắc: 
+1. Thân thiện, hài hước, xưng em.
+2. Nếu là tìm kiếm sản phẩm (intent: search_product, top_products, new_products, cheap_products, premium_products), câu trả lời cuối phải có dấu hai chấm(:).
+
+Shop info: Ship 30k-50k, FreeShip đơn >2tr, địa chỉ 670/32 Đoàn Văn Bơ Q4, bảo hành 12 tháng.
+TRẢ VỀ JSON DUY NHẤT.`;
 
     const text = await callGeminiSafe(model, prompt);
+    // Xử lý cả trường hợp có hoặc không có backticks
     const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    return JSON.parse(cleaned);
+    
+    try {
+        return JSON.parse(cleaned);
+    } catch (parseErr) {
+        logger.error(`JSON Parse Error: ${parseErr.message}. Raw: ${text}`);
+        throw new Error('FAILED_TO_PARSE_JSON');
+    }
 }
 
 /*Main handler*/
@@ -207,8 +218,13 @@ const handleChat = async (req, res) => {
         aiResult = await analyzeAndRespond(model, message, chatHistory);
         logger.info(`[${session}] Gemini → Intent: ${aiResult.intent}`);
     } catch (err) {
-        // Fallback khi Gemini rate-limited hoặc timeout
-        logger.warn(`[${session}] Gemini ${err.isRateLimit ? 'rate-limited' : 'error'}, dùng fallback`);
+        // Log chi tiết lỗi để admin có thể kiểm tra console/file log
+        logger.error(`[${session}] Gemini Error:`, {
+            message: err.message,
+            stack: err.stack,
+            isRateLimit: err.isRateLimit
+        });
+        
         aiResult = getFallbackResponse(message);
         usedFallback = true;
     }

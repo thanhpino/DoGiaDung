@@ -17,6 +17,7 @@ import { CompareBar } from './components/CompareBar';
 
 // Pages - Client
 import { HomePage } from './pages/HomePage';
+import { LoginPage } from './pages/LoginPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { ProductDetail } from './pages/DetailPage';
 import { Checkout } from './pages/Checkout';
@@ -68,7 +69,7 @@ function App() {
                 <Routes>
                   {/* --- PUBLIC ROUTES --- */}
                   <Route path="/" element={<Navigate to="/home" replace />} />
-                  <Route path="/login" element={<LoginForm />} />
+                  <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<SignupPage />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />

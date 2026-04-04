@@ -33,7 +33,7 @@ export const LoginForm = () => {
     login(email, password);
   };
 
-  // Google Login handler using OAuth2 Implicit Flow (more flexible for custom UI)
+  // Google Login handler using OAuth2 Implicit Flow
   const handleGoogleLogin = () => {
     // @ts-ignore
     if (window.google) {
@@ -59,53 +59,57 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FDF8F3] dark:bg-gray-950 p-4 transition-colors">
-      <div className="bg-white dark:bg-gray-800 p-8 w-full max-w-md rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Welcome Back!</h2>
-          <p className="text-gray-500 dark:text-gray-400">Đăng nhập tài khoản</p>
+    <div className="backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 p-8 w-full max-w-md rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/20 dark:border-white/10 mx-auto">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center p-3 mb-4 rounded-xl bg-orange-100 dark:bg-orange-900/30 text-orange-600 animate-bounce-slow">
+          <span className="text-xl font-bold italic tracking-tighter">TMT</span>
+        </div>
+        <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 tracking-tight">Hi There!</h2>
+        <p className="text-gray-500 dark:text-gray-400 font-medium">Đăng nhập để bắt đầu trải nghiệm</p>
+      </div>
+
+      <form className="flex flex-col gap-5" onSubmit={handleLogin}>
+        <Input
+          label="Email"
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="123456@email.com"
+        />
+
+        <Input
+          label="Mật khẩu"
+          type="password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+        />
+
+        <div className="flex justify-end">
+          <Link to="/forgot-password" disable-nav-auto-load="true" className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors">Quên mật khẩu?</Link>
         </div>
 
-        <form className="flex flex-col gap-5" onSubmit={handleLogin}>
-          <Input
-            label="Email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="123456@email.com"
-          />
+        <Button type="submit" fullWidth variant="primary" className="py-3.5 shadow-lg shadow-orange-500/20">
+          ĐĂNG NHẬP
+        </Button>
+      </form>
 
-          <Input
-            label="Mật khẩu"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-          />
+      {/* Divider */}
+      <div className="flex items-center gap-3 my-6">
+        <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700"></div>
+        <span className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">hoặc</span>
+        <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700"></div>
+      </div>
 
-          <div className="flex justify-end">
-            <Link to="/forgot-password" className="text-sm font-semibold text-orange-600 hover:text-orange-700">Quên mật khẩu?</Link>
-          </div>
-
-          <Button type="submit" fullWidth variant="primary">
-            ĐĂNG NHẬP
-          </Button>
-        </form>
-
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
-          <span className="text-sm text-gray-400 dark:text-gray-500 font-medium">hoặc</span>
-          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
-        </div>
-
-        {/* Google Login Button (Custom styled to match Facebook) */}
+      {/* Social Login Buttons */}
+      <div className="space-y-3">
+        {/* Google Login Button */}
         <button
           onClick={handleGoogleLogin}
           type="button"
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 mb-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer bg-white dark:bg-transparent"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-transparent shadow-sm"
         >
           <GoogleIcon />
           Đăng nhập bằng Google
@@ -116,29 +120,22 @@ export const LoginForm = () => {
           appId={import.meta.env.VITE_FACEBOOK_APP_ID || ''}
           fields="name,email,picture"
           callback={responseFacebook}
-          onFailure={(err: any) => {
-            console.error("Facebook Login Failed", err);
-            if (err?.status === "facebookNotLoaded") {
-              alert("Không thể tải Facebook SDK. Vui lòng tắt Adblock (Trình chặn quảng cáo) hoặc tải lại trang.");
-            }
-          }}
           render={(renderProps: any) => (
             <button
               onClick={renderProps.onClick}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer bg-white dark:bg-transparent"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 bg-white dark:bg-transparent shadow-sm"
             >
               <FacebookIcon />
               Đăng nhập bằng Facebook
             </button>
           )}
         />
-
-        <p className="text-center mt-8 text-gray-600 dark:text-gray-400">
-          Chưa có tài khoản? <Link to="/register" className="text-orange-600 font-bold hover:underline">Đăng ký ngay</Link>
-        </p>
-
       </div>
+
+      <p className="text-center mt-10 text-gray-600 dark:text-gray-400 text-sm font-medium">
+        Chưa có tài khoản? <Link to="/register" className="text-orange-600 font-bold hover:underline transition-all hover:text-orange-500">Đăng ký ngay</Link>
+      </p>
     </div>
   );
 };
-
+
