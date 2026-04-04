@@ -6,7 +6,6 @@ import MainLayout from './layout/MainLayout';
 import { AdminLayout } from './layout/AdminLayout';
 
 // Components & Context
-import { LoginForm } from './components/LoginForm';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';

@@ -182,8 +182,8 @@ export const CustomerManager = () => {
                     <div className="flex items-center gap-2">
                       <h4 className="font-bold text-gray-800 truncate">{user.name}</h4>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${user.role === 'admin'
-                          ? 'bg-purple-100 text-purple-600'
-                          : 'bg-blue-50 text-blue-500'
+                        ? 'bg-purple-100 text-purple-600'
+                        : 'bg-blue-50 text-blue-500'
                         }`}>
                         {user.role === 'admin' ? '👑 Admin' : 'Khách hàng'}
                       </span>
