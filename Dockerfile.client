@@ -1,4 +1,4 @@
-# --- GIAI ĐOẠN 1: BUILD ---
+# GIAI ĐOẠN 1: BUILD
 FROM node:22-alpine as build-stage
 
 WORKDIR /app
@@ -8,7 +8,7 @@ COPY . .
 # Lệnh build của Vite
 RUN npm run build
 
-# --- GIAI ĐOẠN 2: RUN VỚI NGINX ---
+# GIAI ĐOẠN 2: RUN VỚI NGINX
 FROM nginx:alpine as production-stage
 
 # Copy file đã build từ giai đoạn 1 sang thư mục của Nginx

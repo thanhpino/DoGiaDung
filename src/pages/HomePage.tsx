@@ -46,7 +46,7 @@ export const HomePage = () => {
                     <div className="z-10 mt-6 md:mt-0 text-center md:text-left">
                         <span className="inline-block px-4 py-1 rounded-full bg-orange-200 text-orange-800 text-sm font-bold mb-4 animate-pulse">Hot Deal 🔥</span>
                         <h1 className="text-4xl md:text-5xl font-extrabold text-orange-900 mb-4 leading-tight">GIẢM GIÁ SỐC 50%!</h1>
-                        <p className="mb-8 text-orange-800 text-lg max-w-md">Cơ hội sở hữu đồ gia dụng thông minh với giá hủy diệt. Chỉ duy nhất hôm nay.</p>
+                        <p className="mb-8 text-orange-800 text-lg max-w-md">Cơ hội sở hữu đồ gia dụng thông minh với giá siêu ưu đãi. Chỉ duy nhất hôm nay</p>
                         <button onClick={() => navigate('/products')} className="bg-orange-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-orange-700 hover:scale-105 transition shadow-lg shadow-orange-300">
                             Mua Ngay Kẻo Lỡ
                         </button>

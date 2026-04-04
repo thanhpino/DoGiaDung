@@ -17,12 +17,12 @@ export const Checkout = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showQR, setShowQR] = useState(false);
 
-    // --- COUPON STATE ---
+    // COUPON STATE
     const [couponCode, setCouponCode] = useState('');
     const [couponApplied, setCouponApplied] = useState<{ code: string; discount_type: string; discount_value: number; discount_amount: number } | null>(null);
     const [couponLoading, setCouponLoading] = useState(false);
 
-    // --- STATE QUẢN LÝ FORM ---
+    // STATE QUẢN LÝ FORM
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -100,7 +100,7 @@ export const Checkout = () => {
         };
 
         try {
-            // --- XỬ LÝ RIÊNG CHO VNPAY ---
+            // XỬ LÝ RIÊNG CHO VNPAY
             if (method === 'vnpay') {
                 // Gọi API tạo URL thanh toán từ Backend
                 const res = await api.post('/api/create_payment_url', {
@@ -117,7 +117,7 @@ export const Checkout = () => {
                 return;
             }
 
-            // --- XỬ LÝ CÁC PHƯƠNG THỨC KHÁC  ---
+            // XỬ LÝ CÁC PHƯƠNG THỨC KHÁC
             await api.post('/api/orders', orderPayload);
 
             toast.success("Đặt hàng thành công! 🎉");

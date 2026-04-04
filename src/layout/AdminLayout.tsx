@@ -14,7 +14,6 @@ export const AdminLayout = () => {
         const socket = io(socketUrl);
 
         socket.on("connect", () => {
-            console.log("🟢 Admin đã kết nối Socket để nhận đơn!");
         });
 
         // 2. Lắng nghe sự kiện "NEW_ORDER" từ Server
@@ -88,8 +87,8 @@ export const AdminLayout = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden ${isActive
-                                        ? 'bg-orange-600 text-white shadow-lg shadow-orange-900/20 font-bold'
-                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                    ? 'bg-orange-600 text-white shadow-lg shadow-orange-900/20 font-bold'
+                                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                                     }`}
                             >
                                 <div className={`absolute left-0 top-0 h-full w-1 bg-white transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}></div>

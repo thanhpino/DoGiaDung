@@ -19,7 +19,7 @@ const MainLayout = () => {
       {/* FOOTER */}
       <Footer />
 
-      {/* --- 2. THÊM CHATBOT  --- */}
+      {/* 2. CHATBOT */}
       <ChatBot />
 
     </div>

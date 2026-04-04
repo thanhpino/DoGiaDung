@@ -1,9 +1,7 @@
 // server/controllers/suggestionController.js
 const db = require('../config/database');
 
-/**
- * Thuật toán CSP (Constraint Satisfaction Problem) với Backtracking
- */
+/** CSP với Backtracking*/
 const getComboSuggestion = async (req, res) => {
     try {
         // 1. Nhận và ép kiểu
@@ -50,7 +48,7 @@ const getComboSuggestion = async (req, res) => {
             // Base case: Đã chọn đủ số lượng món theo danh mục
             if (index === categories.length) {
                 const totalAfterDiscount = Math.round(currentOriginalTotal * DISCOUNT_RATE);
-                
+
                 if (totalAfterDiscount <= budget && totalAfterDiscount > 0) {
                     solutions.push({
                         items: [...currentCombo],
@@ -136,7 +134,7 @@ const getAdvancedComboSuggestion = async (req, res) => {
         const backtrack = (index, currentCombo, currentOriginalTotal) => {
             if (index === categories.length) {
                 const totalAfterDiscount = Math.round(currentOriginalTotal * DISCOUNT_RATE);
-                
+
                 if (totalAfterDiscount <= budgetNum && totalAfterDiscount > 0) {
                     // Check Color
                     if (preferredColor) {
@@ -148,12 +146,12 @@ const getAdvancedComboSuggestion = async (req, res) => {
                         const allSameBrand = currentCombo.every(item => item.brand && item.brand.toLowerCase() === preferredBrand.toLowerCase());
                         if (!allSameBrand) return;
                     }
-                    solutions.push({ 
-                        items: [...currentCombo], 
+                    solutions.push({
+                        items: [...currentCombo],
                         originalPrice: currentOriginalTotal,
-                        totalPrice: totalAfterDiscount, 
+                        totalPrice: totalAfterDiscount,
                         savings: currentOriginalTotal - totalAfterDiscount,
-                        remaining: budgetNum - totalAfterDiscount 
+                        remaining: budgetNum - totalAfterDiscount
                     });
                 }
                 return;

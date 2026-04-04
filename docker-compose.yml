@@ -30,7 +30,7 @@ services:
       - chatbot
       - redis
 
-  # 3. CHATBOT MICROSERVICE (Gemini AI)
+  # 3. CHATBOT MICROSERVICE
   chatbot:
     build: ./chatbot-service
     container_name: tmt_chatbot

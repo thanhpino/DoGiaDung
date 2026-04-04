@@ -42,7 +42,7 @@ export const InvoicePage = () => {
     return (
         <div className="bg-white text-black font-sans p-8 max-w-[210mm] mx-auto min-h-screen relative">
 
-            {/* --- HEADER --- */}
+            {/* HEADER */}
             <div className="flex justify-between items-start border-b-2 border-gray-800 pb-6 mb-6">
                 <div>
                     <h1 className="text-4xl font-extrabold uppercase tracking-widest text-gray-900">Hóa Đơn</h1>
@@ -62,7 +62,7 @@ export const InvoicePage = () => {
                 </div>
             </div>
 
-            {/* --- THÔNG TIN KHÁCH HÀNG --- */}
+            {/* THÔNG TIN KHÁCH HÀNG */}
             <div className="mb-8 grid grid-cols-2 gap-12">
                 <div>
                     <h3 className="font-bold text-gray-800 text-sm uppercase mb-3 border-b pb-1 inline-block">Thông tin khách hàng</h3>
@@ -89,7 +89,7 @@ export const InvoicePage = () => {
                 </div>
             </div>
 
-            {/* --- BẢNG SẢN PHẨM --- */}
+            {/* BẢNG SẢN PHẨM */}
             <table className="w-full mb-8">
                 <thead>
                     <tr className="bg-gray-100 text-gray-700 text-sm uppercase tracking-wider">
@@ -111,7 +111,7 @@ export const InvoicePage = () => {
                 </tbody>
             </table>
 
-            {/* --- TỔNG KẾT --- */}
+            {/* TỔNG KẾT */}
             <div className="flex justify-end">
                 <div className="w-1/2 space-y-2">
                     {/* Phí vận chuyển */}
@@ -126,7 +126,7 @@ export const InvoicePage = () => {
                 </div>
             </div>
 
-            {/* --- FOOTER --- */}
+            {/* FOOTER */}
             <div className="mt-20 text-center space-y-2">
                 <p className="font-bold text-gray-800">Cảm ơn quý khách đã mua hàng!</p>
                 <div className="text-xs text-gray-500">

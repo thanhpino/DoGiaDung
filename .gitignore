@@ -30,7 +30,7 @@ build/
 *.sln
 *.sw?
 
-# --- PHẦN BẢO MẬT & SERVER ---
+# PHẦN BẢO MẬT & SERVER
 .env
 server/.env
 chatbot-service/.env

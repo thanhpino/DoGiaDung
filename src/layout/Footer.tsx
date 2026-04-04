@@ -62,7 +62,7 @@ export const Footer: React.FC = () => {
                   <ul className="space-y-4 text-gray-400 text-sm">
                      <li className="flex items-start gap-3">
                         <MapPin size={18} className="text-[#ea8d35] mt-1 shrink-0" />
-                        <span>670/32 Đoàn Văn Bơ phường 16 Quận 4 TPHCM</span>
+                        <span>Millenium Apartment 305F, District 4, Ho Chi Minh City</span>
                      </li>
                      <li className="flex items-center gap-3">
                         <Phone size={18} className="text-[#ea8d35] shrink-0" />
