@@ -36,8 +36,9 @@ const SYSTEM_PROMPT = `Bạn là "HomeBot" — trợ lý bán hàng AI của c�
 
 /* Tạo Gemini chat model */
 function createChatModel() {
+    // Sử dụng model Gemini 2.0 Flash
     return genAI.getGenerativeModel({
-        model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+        model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
         systemInstruction: SYSTEM_PROMPT,
         generationConfig: {
             temperature: 0.7,

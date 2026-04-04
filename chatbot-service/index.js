@@ -36,8 +36,8 @@ const PORT = process.env.PORT || 8082;
 
 app.listen(PORT, () => {
     logger.info(`🤖 ChatBot Service đang chạy tại http://localhost:${PORT}`);
-    logger.info(`🧠 AI Model: ${process.env.GEMINI_MODEL || 'gemini-1.5-flash'}`);
-    logger.info(`📐 Embedding Model: ${process.env.GEMINI_EMBEDDING_MODEL || 'text-embedding-004'}`);
+    logger.info(`🧠 AI Model: ${process.env.GEMINI_MODEL || 'gemini-2.0-flash'}`);
+    logger.info(`📐 Embedding Model: ${process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-2-preview'}`);
 
     // Sync embeddings (non-blocking, không delay startup)
     syncEmbeddings()

@@ -1,15 +1,15 @@
 // services/embeddingService.js
-// Gemini Embedding Service - Tạo vector embeddings cho sản phẩm và câu hỏi
-// Dùng REST API
+// Gemini Embedding Service
 const logger = require('../config/logger');
 
-const EMBEDDING_MODEL = process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-001';
+// Nâng cấp lên model Gemini 2.0
+const EMBEDDING_MODEL = process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-2-preview';
 const API_KEY = process.env.GEMINI_API_KEY;
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent?key=${API_KEY}`;
 
 // Rate limiting
 let lastEmbedTime = 0;
-const MIN_EMBED_INTERVAL = 1500; // 1.5s
+const MIN_EMBED_INTERVAL = 1000;
 
 /**
  * Throttle để tránh rate limit Gemini API
@@ -24,8 +24,7 @@ async function throttle() {
 }
 
 /**
- * Embed một đoạn text → vector (768 chiều)
- * Gọi trực tiếp REST API v1 thay vì SDK (v1beta không hỗ trợ text-embedding-004)
+ * Embed một đoạn text → vector (Dùng model 2.0)
  * @param {string} text - Nội dung cần embed
  * @returns {Promise<number[]>} Vector embedding
  */
@@ -53,8 +52,8 @@ async function embedText(text) {
     } catch (err) {
         // Retry 1 lần nếu rate limit (429)
         if (err.message?.includes('429')) {
-            logger.warn('Embedding rate limited, retrying sau 3s...');
-            await new Promise(r => setTimeout(r, 3000));
+            logger.warn('Embedding rate limited, retrying sau 2s...');
+            await new Promise(r => setTimeout(r, 2000));
             lastEmbedTime = Date.now();
 
             const response = await fetch(API_URL, {
@@ -122,7 +121,6 @@ async function embedProducts(products, onProgress = null) {
             }
         } catch (err) {
             logger.error(`Lỗi embed sản phẩm #${product.id} "${product.name}": ${err.message}`);
-            // Tiếp tục với sản phẩm tiếp theo, không dừng cả batch
         }
     }
 
