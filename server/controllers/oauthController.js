@@ -30,13 +30,29 @@ const googleLogin = async (req, res) => {
             return res.status(400).json({ status: "Fail", message: "Thiếu Google credential" });
         }
 
-        // 1. Verify Google ID Token
-        const ticket = await googleClient.verifyIdToken({
-            idToken: credential,
-            audience: GOOGLE_CLIENT_ID
-        });
+        let payload;
 
-        const payload = ticket.getPayload();
+        // 1. Phân biệt ID Token (JWT) và Access Token
+        // ID Token (JWT) của Google luôn bắt đầu bằng 'eyJ', Access Token thường bắt đầu bằng 'ya29.'
+        if (credential.startsWith('eyJ')) {
+            // Trường hợp A: Verify Google ID Token (khung One Tap)
+            const ticket = await googleClient.verifyIdToken({
+                idToken: credential,
+                audience: GOOGLE_CLIENT_ID
+            });
+            payload = ticket.getPayload();
+        } else {
+            // Trường hợp B: Verify Google Access Token (nút tự thiết kế)
+            // Gọi Google userinfo endpoint để lấy profile
+            const gResponse = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${credential}`);
+            payload = await gResponse.json();
+
+            if (payload.error || !payload.sub) {
+                logger.error(`Google Access Token invalid: ${JSON.stringify(payload)}`);
+                return res.status(401).json({ status: "Fail", message: "Google Access Token không hợp lệ hoặc đã hết hạn" });
+            }
+        }
+
         const { sub: googleId, email, name, picture } = payload;
 
         if (!email) {

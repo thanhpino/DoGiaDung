@@ -18,7 +18,9 @@ interface Product {
 
 interface ComboSolution {
     items: Product[];
+    originalPrice: number;
     totalPrice: number;
+    savings: number;
     remaining: number;
 }
 
@@ -30,7 +32,7 @@ interface ApiResponse {
     metadata?: {
         executionTime: string;
         exploredNodes: number;
-        totalSolutions: number;
+        discountRate: string;
     };
 }
 
@@ -111,15 +113,17 @@ export const ComboSuggestion = () => {
 
     const handleAddComboToCart = (items: Product[]) => {
         items.forEach(item => {
+            const discountedPrice = Math.round(item.price * 0.9);
             addToCart({
                 id: item.id,
                 name: item.name,
-                price: item.price,
+                price: discountedPrice,
+                old_price: item.price,
                 img: item.image_url,
                 category: item.category
             });
         });
-        toast.success("✅ Đã thêm Combo vào giỏ hàng! 🎁");
+        toast.success("✅ Đã thêm Combo được giảm giá vào giỏ hàng! 🎁");
         navigate('/checkout');
     };
 
@@ -254,8 +258,8 @@ export const ComboSuggestion = () => {
 
                                 {solutions.map((sol, idx) => (
                                     <div key={idx} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300 group relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl">
-                                            #{idx + 1}
+                                        <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl flex items-center gap-1">
+                                            <Zap size={10} fill="currentColor" /> COMBO #{idx + 1}
                                         </div>
 
                                         <div className="flex flex-col md:flex-row gap-8">
@@ -267,7 +271,10 @@ export const ComboSuggestion = () => {
                                                             <img src={item.image_url} className="w-full h-full object-contain mix-blend-multiply" alt={item.name} />
                                                         </div>
                                                         <div className="flex-1">
-                                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-0.5">{item.category}</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">{item.category}</p>
+                                                                <span className="text-[10px] bg-green-50 text-green-600 px-1.5 rounded font-bold">-10%</span>
+                                                            </div>
                                                             <h4 className="font-bold text-gray-800 text-sm line-clamp-1 group-hover/item:text-orange-600 transition">{item.name}</h4>
                                                             <p className="text-sm font-medium text-gray-500">{formatCurrency(item.price)}</p>
                                                         </div>
@@ -276,12 +283,23 @@ export const ComboSuggestion = () => {
                                             </div>
 
                                             {/* Summary Card */}
-                                            <div className="md:w-64 bg-gray-50 rounded-2xl p-6 flex flex-col justify-center items-center text-center border border-gray-100">
-                                                <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Tổng giá trị</p>
-                                                <p className="text-3xl font-extrabold text-orange-600 mb-1">{formatCurrency(sol.totalPrice)}</p>
-                                                <p className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-md font-bold mb-6">
-                                                    Tiết kiệm: {formatCurrency(sol.remaining)}
-                                                </p>
+                                            <div className="md:w-64 bg-gray-50 rounded-2xl p-6 flex flex-col justify-center items-center text-center border border-gray-100 relative">
+                                                <div className="absolute -top-3 bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg transform -rotate-3 animate-bounce">
+                                                    TIẾT KIỆM 10%
+                                                </div>
+
+                                                <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Tổng cộng</p>
+                                                <p className="text-sm text-gray-400 line-through font-medium mb-1">{formatCurrency(sol.originalPrice)}</p>
+                                                <p className="text-3xl font-extrabold text-orange-600 mb-1 leading-tight">{formatCurrency(sol.totalPrice)}</p>
+                                                
+                                                <div className="flex flex-col gap-1 mb-6">
+                                                    <p className="text-[11px] text-green-600 bg-green-100 px-3 py-1 rounded-full font-bold">
+                                                        Giảm giá: -{formatCurrency(sol.savings)}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-400 italic">
+                                                        (Dư ngân sách: {formatCurrency(sol.remaining)})
+                                                    </p>
+                                                </div>
 
                                                 <button
                                                     onClick={() => handleAddComboToCart(sol.items)}

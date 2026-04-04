@@ -6,7 +6,7 @@ import { Button } from '../ui/Button';
 import FacebookLoginPackage from 'react-facebook-login/dist/facebook-login-render-props';
 const FacebookLogin = (FacebookLoginPackage as any).default || FacebookLoginPackage;
 
-// Google SVG Icon
+// Google SVG Icon 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -33,19 +33,21 @@ export const LoginForm = () => {
     login(email, password);
   };
 
-  // Google Login handler
+  // Google Login handler using OAuth2 Implicit Flow (more flexible for custom UI)
   const handleGoogleLogin = () => {
-    // @ts-ignore - google is loaded via script tag
+    // @ts-ignore
     if (window.google) {
       // @ts-ignore
-      window.google.accounts.id.initialize({
+      const client = window.google.accounts.oauth2.initTokenClient({
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: (response: { credential: string }) => {
-          socialLogin('google', response.credential);
-        }
+        scope: 'email profile openid',
+        callback: (response: { access_token: string }) => {
+          if (response.access_token) {
+            socialLogin('google', response.access_token);
+          }
+        },
       });
-      // @ts-ignore
-      window.google.accounts.id.prompt();
+      client.requestAccessToken();
     }
   };
 
@@ -99,10 +101,11 @@ export const LoginForm = () => {
           <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
         </div>
 
-        {/* Google Login Button */}
+        {/* Google Login Button (Custom styled to match Facebook) */}
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 mb-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer"
+          type="button"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 mb-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer bg-white dark:bg-transparent"
         >
           <GoogleIcon />
           Đăng nhập bằng Google
@@ -122,7 +125,7 @@ export const LoginForm = () => {
           render={(renderProps: any) => (
             <button
               onClick={renderProps.onClick}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 cursor-pointer bg-white dark:bg-transparent"
             >
               <FacebookIcon />
               Đăng nhập bằng Facebook
@@ -138,3 +141,4 @@ export const LoginForm = () => {
     </div>
   );
 };
+

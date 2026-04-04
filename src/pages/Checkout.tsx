@@ -214,8 +214,20 @@ export const Checkout = () => {
                                     <div key={item.id} className="flex gap-4 items-center border-b border-gray-100 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
                                         <img src={item.img} className="w-16 h-16 rounded-lg object-cover" />
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-gray-800 dark:text-gray-100">{item.name}</h4>
-                                            <p className="text-orange-600 font-bold text-sm">{formatCurrency(item.price)}</p>
+                                            <h4 className="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                                                {item.name}
+                                                {item.old_price && item.old_price > item.price && (
+                                                    <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                                        Combo -10%
+                                                    </span>
+                                                )}
+                                            </h4>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-orange-600 font-bold text-sm">{formatCurrency(item.price)}</p>
+                                                {item.old_price && item.old_price > item.price && (
+                                                    <p className="text-gray-400 text-xs line-through">{formatCurrency(item.old_price)}</p>
+                                                )}
+                                            </div>
                                         </div>
                                         <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
                                             <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-white rounded shadow-sm"><Minus size={14} /></button>

@@ -230,8 +230,8 @@ export const AdminDashboard = () => {
             <TrendingUp className="text-orange-600" /> Biểu Đồ Doanh Thu (7 Ngày)
           </h3>
 
-          <div style={{ width: '100%', height: 300, minWidth: 0 }}>
-            <ResponsiveContainer>
+          <div className="h-[300px] w-full min-w-0">
+            <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
@@ -287,8 +287,8 @@ export const AdminDashboard = () => {
           <h3 className="font-bold text-gray-800 text-lg mb-6 flex items-center gap-2">
             <Calendar className="text-blue-600" /> Doanh Thu Theo Tháng (12 tháng gần nhất)
           </h3>
-          <div style={{ width: '100%', height: 300 }}>
-            <ResponsiveContainer>
+          <div className="h-[300px] w-full min-w-0">
+            <ResponsiveContainer width="100%" height="100%">
               <LineChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} fontSize={12} />
@@ -350,8 +350,8 @@ export const AdminDashboard = () => {
             <p className="text-gray-400 text-center py-8">Chưa có dữ liệu</p>
           ) : (
             <div className="flex flex-col items-center gap-6">
-              <div style={{ width: 260, height: 260 }}>
-                <ResponsiveContainer>
+              <div className="h-[260px] w-[260px] min-w-0">
+                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={paymentData}

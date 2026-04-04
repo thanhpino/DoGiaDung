@@ -54,7 +54,7 @@ export const CustomerManager = () => {
 
   // Filter & Sort
   const filtered = useMemo(() => {
-    let result = customers.filter(u => {
+    const result = customers.filter(u => {
       const q = search.toLowerCase();
       return (
         u.name?.toLowerCase().includes(q) ||
