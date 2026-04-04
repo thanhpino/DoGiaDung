@@ -1,6 +1,6 @@
 import { LoginForm } from '../components/LoginForm';
 import loginBg from '../assets/login-bg.png';
-import { ShieldCheck, Truck, Sparkles } from 'lucide-react';
+import { ShieldCheck, Truck, Sparkles, ShoppingBag } from 'lucide-react';
 
 export const LoginPage = () => {
   return (
@@ -20,7 +20,7 @@ export const LoginPage = () => {
       <div className="absolute top-0 left-0 right-0 p-8 flex items-center justify-between z-20">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/40 transform hover:scale-110 transition-all duration-300">
-            <span className="text-xl font-black text-white italic tracking-tighter">TMT</span>
+            <ShoppingBag size={24} strokeWidth={2.5} className="text-white" />
           </div>
           <span className="text-2xl font-black text-white tracking-tight hidden sm:inline-block">Gia Dụng TMT</span>
         </div>

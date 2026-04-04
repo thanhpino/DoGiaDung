@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import loginBg from '../assets/login-bg.png';
 import { Input } from '../ui/input';
 import { Button } from '../ui/Button';
-import { ShieldCheck, Sparkles, Star, PartyPopper } from 'lucide-react';
+import { ShieldCheck, Sparkles, Star, PartyPopper, ShoppingBag } from 'lucide-react';
 
 export const SignupPage = () => {
   const { register } = useAuth();
@@ -42,7 +42,7 @@ export const SignupPage = () => {
         <div className="text-center mb-16 text-white animate-fade-in-down">
           <div className="flex items-center justify-center mb-10">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-orange-500/40 transform hover:scale-110 transition-transform duration-300">
-              <span className="text-2xl font-black text-white italic tracking-tighter">TMT</span>
+              <ShoppingBag size={32} strokeWidth={2.5} className="text-white" />
             </div>
           </div>
           <h1 className="text-4xl md:text-6xl font-black leading-tight drop-shadow-2xl">
