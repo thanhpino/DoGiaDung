@@ -13,6 +13,7 @@ export interface Product {
   description?: string;
   rating?: number;
   review_count?: number;
+  isCombo?: boolean;
 }
 
 export interface CartItem extends Product {

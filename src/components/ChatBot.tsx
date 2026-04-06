@@ -67,7 +67,7 @@ export const ChatBot = () => {
 
             {/* CỬA SỔ CHAT  */}
             {isOpen && (
-                <div className="w-[360px] md:w-[400px] h-[600px] bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl flex flex-col mb-6 animate-fade-in-up overflow-hidden border border-gray-100 dark:border-gray-700 ring-4 ring-orange-50 dark:ring-gray-800 relative">
+                <div className="w-[360px] md:w-[400px] h-[600px] bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-2xl flex flex-col mb-6 animate-scaleIn overflow-hidden border border-gray-100 dark:border-gray-700 ring-8 ring-orange-500/5 dark:ring-gray-800/50 relative">
 
                     {/* HEADER: Gradient + Glass effect */}
                     <div className="bg-gradient-to-r from-orange-600 via-red-500 to-red-600 p-5 flex justify-between items-center text-white shadow-lg relative overflow-hidden">
@@ -107,22 +107,22 @@ export const ChatBot = () => {
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex gap-3 ${msg.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                                 {/* Avatar */}
-                                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm border-2 ${msg.isUser ? 'bg-gray-100 border-white' : 'bg-gradient-to-br from-orange-500 to-red-500 border-orange-200'}`}>
+                                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm border-2 animate-scaleIn ${msg.isUser ? 'bg-gray-100 border-white' : 'bg-gradient-to-br from-orange-500 to-red-500 border-orange-200'}`}>
                                     {msg.isUser ? <User size={18} className="text-gray-500" /> : <Bot size={18} className="text-white" />}
                                 </div>
 
-                                <div className={`flex flex-col max-w-[80%] ${msg.isUser ? 'items-end' : 'items-start'}`}>
+                                <div className={`flex flex-col max-w-[80%] animate-fadeInUp ${msg.isUser ? 'items-end' : 'items-start'}`}>
                                     {/* Bong bóng chat */}
-                                    <div className={`px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm relative ${msg.isUser
+                                    <div className={`px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm relative transition-all hover:shadow-md ${msg.isUser
                                         ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-tr-none'
                                         : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-100 dark:border-gray-700 rounded-tl-none shadow-[0_2px_8px_rgba(0,0,0,0.05)]'
                                         }`}>
                                         {msg.text}
                                     </div>
 
-                                    {/* --- THẺ SẢN PHẨM GỢI Ý --- */}
+                                    {/* THẺ SẢN PHẨM GỢI Ý */}
                                     {msg.products && msg.products.length > 0 && (
-                                        <div className="mt-3 space-y-3 w-full animate-fade-in-up">
+                                        <div className="mt-3 space-y-3 w-full animate-fadeInUp delay-100">
                                             {msg.products.map(p => (
                                                 <div key={p.id} className="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden">
                                                     {/* Hiệu ứng shine */}
@@ -219,7 +219,7 @@ export const ChatBot = () => {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="group relative flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-full shadow-[0_8px_30px_rgb(234,88,12,0.4)] hover:shadow-[0_8px_35px_rgb(234,88,12,0.6)] transition-all duration-300 hover:scale-110 active:scale-95 z-50 hover:-translate-y-1"
+                    className="group relative flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-full shadow-[0_8px_30px_rgb(234,88,12,0.4)] hover:shadow-[0_8px_35px_rgb(234,88,12,0.6)] transition-all duration-300 hover:scale-110 active:scale-95 z-50 hover:-translate-y-1 animate-scaleIn"
                 >
                     {/* Hiệu ứng sóng lan tỏa */}
                     <span className="absolute w-full h-full bg-orange-500 rounded-full animate-ping opacity-20"></span>

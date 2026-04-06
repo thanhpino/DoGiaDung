@@ -12,18 +12,127 @@
     @apply dark:bg-gray-950 dark:text-gray-100;
   }
 
-  /* Cards & Containers */
-  .dark input,
-  .dark textarea,
-  .dark select {
-    @apply bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400;
+  /* Global Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  /* Scrollbar */
-  .dark ::-webkit-scrollbar {
-    @apply bg-gray-800;
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
-  .dark ::-webkit-scrollbar-thumb {
-    @apply bg-gray-600 rounded-full;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes textShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(30px, -50px); }
+    66% { transform: translate(-20px, 20px); }
+  }
+
+  @keyframes cartBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.4) rotate(-10deg); }
+    75% { transform: scale(1.1) rotate(5deg); }
+  }
+
+  @keyframes loadingProgress {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(-30%); }
+    100% { transform: translateX(0); }
+  }
+
+  .animate-cartBounce {
+    animation: cartBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .animate-loadingProgress {
+    animation: loadingProgress 1.5s ease-out forwards;
+  }
+
+  /* Scroll Reveal Helper */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .animate-fadeInUp {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-orbFloat {
+    animation: orbFloat 10s ease-in-out infinite;
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .text-shimmer {
+    background: linear-gradient(110deg, #EA580C 45%, #FDBA74 50%, #EA580C 55%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textShimmer 3s infinite linear;
+  }
+
+  /* Glass Effects */
+  .glass-premium {
+    @apply bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/50 dark:hover:bg-gray-900/50;
+  }
+
+  /* Product Card Tilt Simulation */
+  .hover-tilt:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-1000 { animation-delay: 1000ms; }
 }

@@ -216,9 +216,13 @@ export const Checkout = () => {
                                         <div className="flex-1">
                                             <h4 className="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
                                                 {item.name}
-                                                {item.old_price && item.old_price > item.price && (
+                                                {item.isCombo ? (
                                                     <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
                                                         Combo -10%
+                                                    </span>
+                                                ) : item.old_price && item.old_price > item.price && (
+                                                    <span className="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                                        Giảm giá
                                                     </span>
                                                 )}
                                             </h4>

@@ -125,7 +125,8 @@ export const ComboSuggestion = () => {
                 price: discountedPrice,
                 old_price: item.price,
                 img: item.image_url,
-                category: item.category
+                category: item.category,
+                isCombo: true
             });
         });
         toast.success("✅ Đã thêm Combo được giảm giá vào giỏ hàng! 🎁");
