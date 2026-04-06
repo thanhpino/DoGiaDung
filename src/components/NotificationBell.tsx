@@ -70,7 +70,7 @@ export const NotificationBell = () => {
     if (!user) return null;
 
     return (
-        <div ref={ref} className="relative">
+        <div ref={ref} className="group relative">
             <button onClick={() => setIsOpen(!isOpen)}
                 className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition cursor-pointer">
                 <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -80,6 +80,7 @@ export const NotificationBell = () => {
                     </span>
                 )}
             </button>
+            <span className="tooltip-text">Thông báo <span className="tooltip-arrow" /></span>
 
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">

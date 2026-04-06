@@ -96,19 +96,23 @@ export const Header: React.FC = () => {
                         
                         <div className="flex items-center gap-2 ml-4">
                             {user?.role === 'admin' && (
-                                <Link to="/admin" className="p-2.5 rounded-full bg-gray-900 text-white hover:scale-105 transition shadow-lg">
+                                <Link to="/admin" className="group relative p-2.5 rounded-full bg-gray-900 text-white hover:scale-105 transition shadow-lg">
                                     <LayoutDashboard size={18} />
+                                    <span className="tooltip-text">Quản trị Admin <span className="tooltip-arrow" /></span>
                                 </Link>
                             )}
-                            <button onClick={toggleTheme} className="p-2.5 rounded-full hover:bg-orange-50 text-gray-500 transition">
+                            <button onClick={toggleTheme} className="group relative p-2.5 rounded-full hover:bg-orange-50 text-gray-500 transition">
                                 {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                                <span className="tooltip-text">{isDark ? 'Chế độ sáng' : 'Chế độ tối'} <span className="tooltip-arrow" /></span>
                             </button>
                             <NotificationBell />
-                            <Link to="/wishlist" className="p-2.5 rounded-full hover:bg-orange-50 text-gray-500 transition">
+                            <Link to="/wishlist" className="group relative p-2.5 rounded-full hover:bg-orange-50 text-gray-500 transition">
                                 <Heart size={20} />
+                                <span className="tooltip-text">Yêu thích <span className="tooltip-arrow" /></span>
                             </Link>
-                            <Link to="/checkout" className={`relative p-2.5 rounded-full hover:bg-orange-50 transition ${isCartBouncing ? 'animate-cartBounce' : ''}`}>
+                            <Link to="/checkout" className={`group relative p-2.5 rounded-full hover:bg-orange-50 transition ${isCartBouncing ? 'animate-cartBounce' : ''}`}>
                                 <ShoppingCart size={22} />
+                                <span className="tooltip-text">Giỏ hàng <span className="tooltip-arrow" /></span>
                                 {cartItems.length > 0 && (
                                     <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
                                         {cartItems.length}
@@ -122,7 +126,10 @@ export const Header: React.FC = () => {
                                         <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-orange-600"><User size={14} /></div>
                                         <span className="text-sm">{user.name}</span>
                                     </Link>
-                                    <button onClick={handleLogout} className="p-2 text-gray-400 hover:text-red-500"><LogOut size={20} /></button>
+                                    <button onClick={handleLogout} className="group relative p-2 text-gray-400 hover:text-red-500">
+                                        <LogOut size={20} />
+                                        <span className="tooltip-text">Đăng xuất <span className="tooltip-arrow" /></span>
+                                    </button>
                                 </div>
                             ) : (
                                 <Link to="/login" className="bg-orange-600 text-white px-5 py-2 rounded-full font-bold shadow-lg text-sm">Đăng nhập</Link>
